@@ -1,44 +1,41 @@
 import React from 'react';
 import { StyleSheet, Text, View, Button, Alert,Platform, ScrollView} from 'react-native';
-import List from './src/components/List.js'
+import List from './List.js'
 
-class Navbar extends Component {
-   _onPress = () => {
-    console.log('click');
- 
-  }
+export default class Navbar extends React.Component{
+
   render() {
   return (
     <View style={styles.container}>
         <View style={styles.header} >
-          <View style={styles.icon_Menu}>
+          <View style={styles.iconMenu}>
           <Button
             title="Press me"  
-            onPress={_onPress}
+           
             color="#841584"  
             />
           </View>
           <View>
             <Text style={styles.title}> Alabanza Band</Text>
           </View>
-          <View style={styles.icon_navbar}>
+          <View style={styles.iconnavbar}>
             <Button
-              onPress={_onPress}  
+             
               title="A"  
               color="#841584"
             />
             <Button
-              onPress={_onPress}  
+             
               title="B"  
               color="#841584"
             />
             <Button
-              onPress={_onPress}  
+              
               title="C"  
               color="#841584"
             />
             <Button
-              onPress={_onPress}  
+              
               title="D"  
               color="#841584"
             />
@@ -52,7 +49,7 @@ class Navbar extends Component {
   );
   }
 }
-export default Navbar
+
 
 const styles = StyleSheet.create({
   container: {
@@ -73,11 +70,11 @@ const styles = StyleSheet.create({
   red:{
     
   },
-  icon_Menu:{
+  iconMenu:{
     width: 50, 
     height: 50,
   },
-  icon_navbar:{
+  iconnavbar:{
     flexDirection:'row',
     justifyContent:'center',
     alignItems:'center'
