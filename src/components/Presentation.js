@@ -48,7 +48,7 @@ export default class Login extends React.Component {
 
 
             <TouchableOpacity style={styles.btn_sesion} onPress={this._Login} >
-              <Text style={{  fontFamily: 'Arial',color:'#fff', fontSize:15, fontWeight:'bold'}}>
+              <Text style={{  color:'#fff', fontSize:15, fontWeight:'bold'}}>
                 Accede con tu correo electrónico
               </Text>
             </TouchableOpacity>
@@ -59,7 +59,7 @@ export default class Login extends React.Component {
             style={{ position:'absolute', left:0, marginLeft:30}}
             >
             </Icon>
-            <Text style={{ fontFamily: 'Arial', fontSize: 15, color:'#fff', fontWeight:'bold',paddingLeft:5 }}>
+            <Text style={{ fontSize: 15, color:'#fff', fontWeight:'bold',paddingLeft:5 }}>
                 Iniciar con Facebook
               </Text>
             </TouchableOpacity>
