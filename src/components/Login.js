@@ -85,11 +85,9 @@ export default class Login extends React.Component {
                 style={{ color:'#808080', width:'90%', fontSize:18, paddingLeft:5,}}
               />
               <TouchableOpacity onPress={this.toggleSwitch}  value={!this.state.showPassword}>
-                <Icon name={this.state.showPassword ? "eye-slash" : "eye"} style={{ color:'#ddd', width:'10%'}} size={25}/>
+                <Icon name={this.state.showPassword ? "eye-slash" : "eye"} style={{ color:'#ddd'}} size={25}/>
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => this.props.navigation.goBack()}>
-                <Icon name='chevron-circle-left' size={25}/>
-              </TouchableOpacity>
+             
               
              </View>
             </View>
@@ -129,7 +127,9 @@ export default class Login extends React.Component {
             </TouchableOpacity>
 
             </View>
-       
+            <TouchableOpacity style={{ marginTop:50}}  onPress={() => this.props.navigation.goBack()}>
+                <Icon name='chevron-circle-left' size={40}/>
+              </TouchableOpacity>
             </View>
           </View>
         )

@@ -1,6 +1,7 @@
 import React from 'react';
-import { StyleSheet, Text, View, Button, Alert,Platform, ScrollView} from 'react-native';
+import { StyleSheet, Text, View, Button, TouchableOpacity} from 'react-native';
 import List from './List.js'
+import Icon from 'react-native-vector-icons/Feather';
 
 export default class Navbar extends React.Component{
 
@@ -9,36 +10,52 @@ export default class Navbar extends React.Component{
     <View style={styles.container}>
         <View style={styles.header} >
           <View style={styles.iconMenu}>
-          <Button
-            title="Press me"  
-           
-            color="#841584"  
-            />
+            
+          <TouchableOpacity style={styles.btn_nav}>
+              <Icon 
+                name='menu'
+                color='#5f25fe'
+                size={25}
+             
+              />
+            </TouchableOpacity>
           </View>
-          <View>
-            <Text style={styles.title}> Alabanza Band</Text>
+          <View style={{ flex:1, justifyContent:'flex-start'}}>
+            <Text style={styles.title}> ALABANZABAND</Text>
           </View>
           <View style={styles.iconnavbar}>
-            <Button
+          <TouchableOpacity style={styles.btn_nav}>
+              <Icon 
+                name='search'
+                color='#5f25fe'
+                size={20}
              
-              title="A"  
-              color="#841584"
-            />
-            <Button
+              />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.btn_nav}>
+              <Icon 
+                name='comment'
+                color='#5f25fe'
+                size={20}
              
-              title="B"  
-              color="#841584"
-            />
-            <Button
-              
-              title="C"  
-              color="#841584"
-            />
-            <Button
-              
-              title="D"  
-              color="#841584"
-            />
+              />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.btn_nav}>
+              <Icon 
+                name='bell'
+                color='#5f25fe'
+                size={20}
+             
+              />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.btn_nav}>
+              <Icon 
+                name='user'
+                color='#5f25fe'
+                size={20}
+             
+              />
+            </TouchableOpacity>
           </View>
         </View>
         <View style={styles.body} >
@@ -67,13 +84,16 @@ const styles = StyleSheet.create({
     alignItems:'center' , 
    
   }, 
-  red:{
-    
+  btn_nav:{
+    margin:8
   },
   iconMenu:{
     width: 50, 
     height: 50,
+    justifyContent:'center',
+    alignItems:'center'
   },
+
   iconnavbar:{
     flexDirection:'row',
     justifyContent:'center',
@@ -86,7 +106,7 @@ const styles = StyleSheet.create({
  
   title: {
     color: '#777',
-    fontSize:16,
+    fontSize:20,
    
   },
 });

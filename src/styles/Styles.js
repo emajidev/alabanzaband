@@ -76,4 +76,19 @@ export default StyleSheet.create({
         shadowColor: "#000", shadowOffset: { width: 2, height: 4, }, shadowOpacity: 0.2, shadowRadius: 10
 
       },
+      btn_primary_light:{
+        
+        borderColor:'#5f25fe',
+        borderWidth:2,
+        borderRadius:50,
+        marginTop:40,
+        width:'80%',
+        height:50,
+        borderRadius:50,
+        justifyContent:"center",
+        alignItems:'center',
+        flexDirection:'row',
+        shadowColor: "#000", shadowOffset: { width: 2, height: 4, }, shadowOpacity: 0.2, shadowRadius: 10
+
+      },
 });
