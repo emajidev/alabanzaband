@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View, Button, TouchableOpacity} from 'react-native';
-import List from './List.js'
+import List from './list/List'
 import Icon from 'react-native-vector-icons/Feather';
 
 export default class Navbar extends React.Component{
@@ -34,7 +34,7 @@ export default class Navbar extends React.Component{
             </TouchableOpacity>
             <TouchableOpacity style={styles.btn_nav}>
               <Icon 
-                name='comment'
+                name='bell'
                 color='#5f25fe'
                 size={20}
              

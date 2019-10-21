@@ -7,7 +7,8 @@ import Loading from './src/components/Loading.js'
 import SignUp from './src/components/SignUp.js'
 import Login from './src/components/Login.js'
 import Main from './src/components/Main.js'// create our app's navigation stack
-import List from './src/components/List.js'
+import List from './src/components/list/List.js'
+import contList from './src/components/list/ContentList.js'
 import Navbar from './src/components/Navbar.js'
 const AppNavigator = createStackNavigator(
 {
@@ -18,8 +19,8 @@ const AppNavigator = createStackNavigator(
   Login: {screen: Login },
   Main: {screen: Main},
   List:{screen:List},
-  Navbar:{screen:Navbar}
-  
+  Navbar:{screen:Navbar},
+  contList:{screen:contList}
 },
 {headerMode: 'none',
   initialRouteName: 'Navbar',

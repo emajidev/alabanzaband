@@ -55,7 +55,7 @@ class List extends Component {
      },
     TouchableOpacity: {
        padding: 10,
-       marginTop: 3,
+       marginBottom: 10,
        backgroundColor: '#d8ff41',
        alignItems:'center'
     },
