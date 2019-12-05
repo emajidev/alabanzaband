@@ -1,16 +1,18 @@
 import React from 'react'
-import { StyleSheet, Platform, Image, Text, View, TouchableOpacity, Button } from 'react-native'
+import {StatusBar, StyleSheet, Platform, Image, Text, View, TouchableOpacity, Button } from 'react-native'
 import * as firebase from "firebase/app";
 import Navbar from './Navbar.js';
+import List from './List.js';
 import DrawerStack from './DrawerStack'
 import NavDrawer from './NavDrawer'
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { createDrawerNavigator } from 'react-navigation-drawer';
+import {createDrawerNavigator } from 'react-navigation-drawer';
 import {createAppContainer} from 'react-navigation';
+import ListNotification from './ListNotification.js'
 
 class Main extends React.Component {
     static navigationOptions = {
-      drawerLabel: 'Home',
+      drawerLabel: 'Inicio',
     /*   drawerIcon: ({ tintColor }) => (
         <Image
           source={require('./chats-icon.png')}
@@ -38,15 +40,19 @@ class Main extends React.Component {
         const { currentUser } = this.state
         return (
           
-          <View style={styles.container}>
+   /*        <View style={styles.container}>
             <Text>pantalla principal</Text>
             <Button
               onPress={() => this.props.navigation.openDrawer()}
               title="Go to notifications"
             />
-          </View>
+            
+          </View> */
           
-          
+          <Navbar/>
+         
+    
+   
          
             
        
@@ -56,11 +62,12 @@ class Main extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    marginTop: StatusBar.currentHeight,
     justifyContent: 'center',
     alignItems: 'center'
   }
 })
-class MyNotificationsScreen extends React.Component {
+class NotificationsScreen extends React.Component {
   static navigationOptions = {
     drawerLabel: 'Notifications',
  /*    drawerIcon: ({ tintColor }) => (
@@ -80,15 +87,38 @@ class MyNotificationsScreen extends React.Component {
     );
   }
 }
+class Page1 extends React.Component {
+  static navigationOptions = {
+    drawerLabel: 'Ajustes',
+ /*    drawerIcon: ({ tintColor }) => (
+      <Image
+        source={require('./notif-icon.png')}
+        style={[styles.icon, { tintColor: tintColor }]}
+      />
+    ), */
+  };
+
+  render() {
+    return (
+      <View>
+        <ListNotification/>
+      </View>
+    );
+  }
+}
 const MyDrawerNavigator = createDrawerNavigator({
-  Home: {
+  Inicio: {
     screen: Main,
   },
   Notifications: {
-    screen: MyNotificationsScreen,
+    screen: NotificationsScreen,
   },
+  Ajustes:{
+    screen:Page1,
+  }
+
 },{
-  initialRouteName:'Home',
+  initialRouteName:'Inicio',
   drawerPosition:'left',
   drawerType:'slide',
   statusBarAnimation:'slide'

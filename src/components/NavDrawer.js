@@ -4,7 +4,7 @@ import {createAppContainer} from 'react-navigation';
 import {createDrawerNavigator} from 'react-navigation-drawer'
 class MyHomeScreen extends React.Component {
     static navigationOptions = {
-      drawerLabel: 'Home',
+      drawerLabel: 'Inicio',
       drawerIcon: ({ tintColor }) => (
         <Image
           source={require('../img/bg.jpg')}
@@ -54,7 +54,7 @@ class MyHomeScreen extends React.Component {
   });
   
   const MyDrawerNavigator = createDrawerNavigator({
-    Home: {
+    Inicio: {
       screen: MyHomeScreen,
     },
     Notifications: {

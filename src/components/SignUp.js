@@ -58,7 +58,7 @@ export default class SignUp extends React.Component {
             </Text>
             {this.state.errorMessage &&
               <Text style={{ color: 'red' , marginBottom:20}}>
-                datos invalidos{/*  {this.state.errorMessage} */}
+                {this.state.errorMessage} */}
               </Text>}
             <View style={styles.borderBox}>
               <View style={styles.TextInput}>

@@ -76,7 +76,7 @@ export default class Login extends React.Component {
               size={25}
               />
               <TextInput
-                textAlign={'center'}
+               
                 secureTextEntry={this.state.showPassword}
                 autoCapitalize="none"
                 placeholder="Password"
@@ -100,7 +100,7 @@ export default class Login extends React.Component {
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.btn_accept} onPress={this.handleLogin} >
-              <Text style={{ color:'#ddd', fontSize:16, fontWeight:'bold'}}>
+              <Text style={{ color:'#ffff', fontSize:16, fontWeight:'bold'}}>
                 Iniciar sesión
               </Text>
               <Icon 

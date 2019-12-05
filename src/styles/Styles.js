@@ -1,8 +1,9 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, StatusBar } from 'react-native';
 
 export default StyleSheet.create({
     header:{
       flex: 1,
+      marginTop: StatusBar.currentHeight,
       justifyContent: 'center',
       alignItems: 'center',
     },

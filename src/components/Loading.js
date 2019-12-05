@@ -2,6 +2,7 @@
 import React from 'react'
 import { View, Text, ActivityIndicator, StyleSheet } from 'react-native'
 import * as firebase from 'firebase'
+
 import Firebase from './firebase.js'
 
 
@@ -9,7 +10,6 @@ import Firebase from './firebase.js'
 export default class Loading extends React.Component {
    constructor(){
        super()
-       firebase.initializeApp(Firebase)
    }
     componentDidMount() {
         firebase.auth().onAuthStateChanged(user => {
@@ -18,7 +18,7 @@ export default class Loading extends React.Component {
     render() {
       return (
         <View style={styles.container}>
-          <Text>Loading</Text>
+          <Text>Cargando...</Text>
           <ActivityIndicator size="large" />
         </View>
       )
@@ -28,5 +28,6 @@ export default class Loading extends React.Component {
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
+      
     }
   })

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Button, View, Text, StyleSheet } from 'react-native';
 import { StackNavigator } from 'react-navigation';
-class Home extends Component {
+class Home extends React.Component {
  
     render() {
         return (
