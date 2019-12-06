@@ -1,55 +1,44 @@
 import React, {Component} from 'react';
-import {TextInput, View, Keyboard} from 'react-native';
+import {TextInput, View, Keyboard,Text,TouchableHighlight,Platform} from 'react-native';
 import { Notifications} from 'expo';
 import * as Permissions from 'expo-permissions';
 import Constants from 'expo-constants';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 export default class Timer extends Component {
-    onSubmit(e) {
-        Keyboard.dismiss();
+    componentDidMount() {
+        // ...
+        if (Platform.OS === 'android') {
+            Notifications.createChannelAndroidAsync('chat-messages', {
+              name: 'Chat messages',
+              sound: true,
+            });
+          }
+       
 
-        const localNotification = {
-            title: 'mi primera notificacion',
-            body: 'fiesta el sabado',
-        };
-
-        const schedulingOptions = {
-            time: (new Date()).getTime() + Number(e.nativeEvent.text)
-        }
-
-        // Notifications show only when app is not active.
-        // (ie. another app being used or device's screen is locked)
-        Notifications.scheduleLocalNotificationAsync(
-            localNotification, schedulingOptions
-        );
-    }
-
-    handleNotification() {
-        console.warn('ok! got your notif');
-
-    }
-
-    async componentDidMount() {
-        // We need to ask for Notification permissions for ios devices
-        let result = await Permissions.askAsync(Permissions.NOTIFICATIONS);
-
-        if (Constants.isDevice && result.status === 'granted') {
-            console.log('Notification permissions granted.')
-        }
-
-        // If we want to do something with the notification when the app
-        // is active, we need to listen to notification events and 
-        // handle them in a callback
-        Notifications.addListener(this.handleNotification);
-    }
-
+   }
+    sendNotificationImmediately = async () => {
+        let notificationId = await Notifications.presentLocalNotificationAsync({
+          sound: 'default',
+          title: 'This is crazy',
+          body: 'Your mind will blow after reading this',
+          android: {
+            channelId: 'chat-messages',
+            vibrate: [0, 250, 250, 250],
+            color: '#FF0000'
+          },
+        });
+        console.log(notificationId); // can be saved in AsyncStorage or send to server
+      };
     render() {
         return (
-            <View style={{flex: 1, flexDirection: 'row', justifyContent: 'center'}}>
-                <TextInput
-                    onSubmitEditing={this.onSubmit}
-                    placeholder={'time in ms'}
-                />
+            <View style={{flex: 1, alignItems:'center', justifyContent: 'center'}}>
+              <Text >Notificacion</Text>      
+              <TouchableHighlight 
+              onPress={this.sendNotificationImmediately}
+              >
+                <Text >Enviar</Text>     
+              </TouchableHighlight>
             </View>
         );
     }

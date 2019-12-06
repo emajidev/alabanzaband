@@ -10,7 +10,6 @@ let phone = '04169029089'
 let itemsRef = db.ref('user'+phone+'/'+'contacts' );
 
 
-const options = ["apple", "pear", "orange"];
 
 
 class Option extends React.Component {
@@ -72,7 +71,6 @@ class Select extends React.Component {
    }
  
   render() {
-    const { options } = this.props;
     const {ItemNotification} = this.props;
     let notif = ItemNotification
     console.log("pasando notif",notif)
@@ -132,7 +130,7 @@ class SendNotification extends React.Component {
       console.log("item pasado",ItemNotification)
       return (
         <View style={styles.container}>
-          <Select options={options} ItemNotification={ItemNotification} />
+          <Select ItemNotification={ItemNotification} />
         </View>
         
       )

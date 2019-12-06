@@ -25,7 +25,7 @@ componentDidMount() {
       let data = snapshot.val();
       let items = Object.values(data);
       this.setState({ items });
-      
+      console.log("tamaño de notificaiones",items.length)
     });
   }
 

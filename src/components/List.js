@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet,TextInput ,ActivityIndicator} from 'react-native';
+import { View, Text, StyleSheet,TextInput ,ActivityIndicator,Platform} from 'react-native';
 import ItemComponent from '../components/ItemComponent';
-
+import { Notifications} from 'expo';
 import { db } from './firebase.js';
 
 let itemsRef = db.ref('/items');
+let phone = '04169029089'
+let notifRef = db.ref('user'+phone+'/'+'notifications' );
 
 export default class List extends React.Component {
   state = {
@@ -17,16 +19,57 @@ export default class List extends React.Component {
     this.state={
       search: '',
       items: [],
+      notiitems:[]
     }
   }
+nofiticationsBd(){
+  notifRef.on('value', snapshot => {
+    let notidata = snapshot.val();
+    let notiitems = Object.values(notidata);
+    this.setState({ notiitems });
+    console.log("tamaño de notificaiones",notiitems.length)
+    notiitems.map((item, index) => {
+      console.log("id",index)
+      this.sendNotificationImmediately();
+    })
+  });
+}
+songsBd(){
+  itemsRef.on('value', snapshot => {
+    let data = snapshot.val();
+    let items = Object.values(data);
+    this.setState({ items });
+    console.log("base de datos", this.state.items)
+  });
+}
+sendNotificationImmediately = async () => {
+  let notificationId = await Notifications.presentLocalNotificationAsync({
+    sound: 'default',
+    title: 'This is crazy',
+    body: 'Your mind will blow after reading this',
+    android: {
+      channelId: 'chat-messages',
+      vibrate: [0, 250, 250, 250],
+      color: '#FF0000'
+    },
+  });
+  console.log(notificationId); // can be saved in AsyncStorage or send to server
+  };
+chanelAndroid() {
+  // ...
+  if (Platform.OS === 'android') {
+      Notifications.createChannelAndroidAsync('chat-messages', {
+        name: 'Chat messages',
+        sound: true,
+      });
+    }
+  
+}
 
 componentDidMount() {
-    itemsRef.on('value', snapshot => {
-      let data = snapshot.val();
-      let items = Object.values(data);
-      this.setState({ items });
-      
-    });
+    this.songsBd()
+    this.nofiticationsBd();
+    this.chanelAndroid();
   }
   filterSearch(text){
     const filterItem = items.filter(function(item){

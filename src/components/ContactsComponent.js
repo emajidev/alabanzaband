@@ -12,7 +12,7 @@ class ContactsComponent extends React.Component {
     search:'',
     typeOfSearch:'name',
   };
- 
+
 render() {
   
  

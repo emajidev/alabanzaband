@@ -3,6 +3,7 @@ import { View, Text, StyleSheet,TouchableOpacity,TextInput } from 'react-native'
 import PropTypes from 'prop-types';
 import {withNavigation} from 'react-navigation';
 
+
 class NotificationComponent extends React.Component {
   static propTypes = {
     items: PropTypes.array.isRequired
@@ -12,15 +13,19 @@ class NotificationComponent extends React.Component {
     typeOfSearch:'name',
   };
  
+
 render() {
   
  
     return (
       <View style={styles.itemsList}>
         {this.props.items.map((item, index) => {
+        
           return (
-          
-              <Text style={styles.itemtext} key={index}>{item.name} </Text>
+              <View key={index}>
+                <Text style={styles.itemtext} >{item.name} </Text>
+                <Text style={styles.itemtext} >{item.coment} </Text>
+              </View>
          
           );
         })}
