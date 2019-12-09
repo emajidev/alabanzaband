@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet,TextInput ,ActivityIndicator,Platform} from 'react-native';
 import ItemComponent from '../components/ItemComponent';
-import { Notifications} from 'expo';
 import { db } from './firebase.js';
+import { Notifications} from 'expo';
+import * as firebase from "firebase/app";
 
 let itemsRef = db.ref('/items');
+let usersRef = db.ref('/users');
 let phone = '04169029089'
 let notifRef = db.ref('user'+phone+'/'+'notifications' );
 
@@ -22,6 +24,7 @@ export default class List extends React.Component {
       notiitems:[]
     }
   }
+
 nofiticationsBd(){
   notifRef.on('value', snapshot => {
     let notidata = snapshot.val();
@@ -70,6 +73,16 @@ componentDidMount() {
     this.songsBd()
     this.nofiticationsBd();
     this.chanelAndroid();
+    console.log("inicio session")
+    firebase.auth().onAuthStateChanged(function(user){
+      if(user){
+        let email=user.email
+        console.log("user conectado",email)
+      }
+    })
+  
+   console.log("users array")
+   ;
   }
   filterSearch(text){
     const filterItem = items.filter(function(item){

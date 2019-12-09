@@ -4,10 +4,13 @@ import List from './List.js'
 import Icon from 'react-native-vector-icons/Feather';
 import ContactsIcon from 'react-native-vector-icons/AntDesign';
 import {withNavigation} from 'react-navigation';
+import * as firebase from "firebase/app";
 
 
 class Navbar extends React.Component{
-
+  componentDidMount(){
+    
+  }
   render() {
   return (
     <View style={styles.container}>
