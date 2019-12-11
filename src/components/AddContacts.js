@@ -1,13 +1,22 @@
 import React, { Component } from 'react'
-import { Text, View, TouchableOpacity, StyleSheet,ScrollView,Alert,TextInput,TouchableHighlight} from 'react-native'
+import { Text, View, TouchableOpacity, StyleSheet,ScrollView,AsyncStorage,TextInput,TouchableHighlight} from 'react-native'
 import { db } from './firebase.js';
 
-let addItem = (name,phoneContact) => {
-    let phone = '04169029089'
-    db.ref('user'+phone+'/'+'contacts').push({
-     name: name,
-     phoneContact:phoneContact
-   })
+let addItem = async (name,phoneContact) => {
+   try {
+      const phone = await AsyncStorage.getItem('@storage_Key')
+      if(phone !== null) {
+        // value previously stored
+        db.ref('/users/'+phone+'/'+'contacts').push({
+         name: name,
+         phoneContact:phoneContact
+       })
+      }
+    } catch(e) {
+      // error reading value
+    }
+    
+
  };
  class AddContacts extends React.Component {
        state = {

@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet,StatusBar ,ActivityIndicator} from 'react-native';
+import { View, Text, StyleSheet,StatusBar ,ActivityIndicator,AsyncStorage} from 'react-native';
 import NotificationComponent from './NotificationComponent';
 
 import { db } from './firebase.js';
-let phone = '04169029089'
-let itemsRef = db.ref('user'+phone+'/'+'notifications' );
+
 
 export default class ListNotification extends Component {
   state = {
@@ -19,14 +18,31 @@ export default class ListNotification extends Component {
       items: [],
     }
   }
-
+  getData = async () => {
+    try {
+      const phone = await AsyncStorage.getItem('@storage_Key')
+      
+      if(phone !== null) {
+        // value previously stored
+        let itemsRef = db.ref('/users/'+phone+'/'+'notifications' );
+        itemsRef.on('value', snapshot => {
+          let data = snapshot.val();
+          if(data !== null){  
+            let items = Object.values(data);
+            this.setState({ items });
+            console.log("tamaño de notificaiones",items.length)
+          }else[
+            console.log("no hay notificaciones")
+          ]
+        });
+      }
+    } catch(e) {
+      // error reading value
+      console.log("error notification list",e)
+    }
+  }
 componentDidMount() {
-    itemsRef.on('value', snapshot => {
-      let data = snapshot.val();
-      let items = Object.values(data);
-      this.setState({ items });
-      console.log("tamaño de notificaiones",items.length)
-    });
+   this.getData()
   }
 
 render() {

@@ -6,6 +6,7 @@ import Presentation from './src/components/Presentation.js'
 import Loading from './src/components/Loading.js'
 import SignUp from './src/components/SignUp.js'
 import Login from './src/components/Login.js'
+import FormProfile from './src/components/FormProfile.js'
 import Main from './src/components/Main.js'// create our app's navigation stack
 import List from './src/components/List.js'
 import AddItem from './src/components/AddItem.js'
@@ -29,6 +30,7 @@ const AppNavigator = createStackNavigator(
 
   SignUp:{screen:SignUp},
   Login: {screen: Login },
+  FormProfile:{screen:FormProfile},
   Main: {screen: Main},
   List:{screen:List},
   Navbar:{screen:Navbar},

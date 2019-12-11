@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet,StatusBar ,ActivityIndicator} from 'react-native';
+import { View, Text, StyleSheet,StatusBar ,AsyncStorage} from 'react-native';
 import ContactsComponent from './ContactsComponent';
 
 import { db } from './firebase.js';
-let phone = '04169029089'
-let itemsRef = db.ref('user'+phone+'/'+'contacts' );
+
 
 export default class ListContacts extends Component {
   state = {
@@ -18,14 +17,34 @@ export default class ListContacts extends Component {
       items: [],
     }
   }
-
-componentDidMount() {
-    itemsRef.on('value', snapshot => {
-      let data = snapshot.val();
-      let items = Object.values(data);
-      this.setState({ items });
+  getData = async () => {
+    try {
+      const phone = await AsyncStorage.getItem('@storage_Key')
+     
       
-    });
+      if(phone !== null) {
+        // value previously stored
+        let itemsRef = db.ref('/users/'+phone+'/'+'contacts' );
+        itemsRef.on('value', snapshot => {
+          try{
+            let data = snapshot.val();
+            let items = Object.values(data);
+            this.setState({ items });
+          }catch(e){
+            console.log("error en list constactos",e)
+          }
+         
+          
+        });
+      }
+    } catch(e) {
+      // error reading value
+      console.log("error en list constactos",e)
+    }
+  }
+componentDidMount() {
+    this.getData()
+   
   }
 
 render() {

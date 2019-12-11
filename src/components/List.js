@@ -1,14 +1,12 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet,TextInput ,ActivityIndicator,Platform} from 'react-native';
+import { View, Text, StyleSheet,TextInput ,ActivityIndicator,Platform,AsyncStorage} from 'react-native';
 import ItemComponent from '../components/ItemComponent';
 import { db } from './firebase.js';
 import { Notifications} from 'expo';
 import * as firebase from "firebase/app";
 
 let itemsRef = db.ref('/items');
-let usersRef = db.ref('/users');
-let phone = '04169029089'
-let notifRef = db.ref('user'+phone+'/'+'notifications' );
+
 
 export default class List extends React.Component {
   state = {
@@ -21,21 +19,44 @@ export default class List extends React.Component {
     this.state={
       search: '',
       items: [],
+      users:[],
       notiitems:[]
     }
   }
 
-nofiticationsBd(){
-  notifRef.on('value', snapshot => {
-    let notidata = snapshot.val();
-    let notiitems = Object.values(notidata);
-    this.setState({ notiitems });
-    console.log("tamaño de notificaiones",notiitems.length)
-    notiitems.map((item, index) => {
-      console.log("id",index)
-      this.sendNotificationImmediately();
-    })
-  });
+nofiticationsBd = async () => {
+  try {
+    const phone = await AsyncStorage.getItem('@storage_Key')
+    if(phone !== null) {
+      // value previously stored
+        console.log("llego data",phone)
+        let notifRef = db.ref('/users/'+phone+'/'+'notifications' );
+        try{
+          notifRef.on('value', snapshot => {
+            let notidata = snapshot.val();
+            if(notidata !== null){
+              let notiitems = Object.values(notidata);
+              this.setState({ notiitems });
+              console.log("tamaño de notificaiones",notiitems.length)
+              notiitems.map((item, index) => {
+              console.log("id",index)
+              this.sendNotificationImmediately(item.sender, item.coment);
+              })
+            }else{
+              console.log("no hay notificaciones")
+            }
+          });
+        }catch(e){
+          console.log("notificacions error",e)
+        }
+       
+    
+    }
+  } catch(e) {
+    // error reading value
+    console.log("error",e)
+  }
+  
 }
 songsBd(){
   itemsRef.on('value', snapshot => {
@@ -45,13 +66,14 @@ songsBd(){
     console.log("base de datos", this.state.items)
   });
 }
-sendNotificationImmediately = async () => {
+
+sendNotificationImmediately = async (username,coment) => {
   let notificationId = await Notifications.presentLocalNotificationAsync({
     sound: 'default',
-    title: 'This is crazy',
-    body: 'Your mind will blow after reading this',
+    title: username,
+    body: coment,
     android: {
-      channelId: 'chat-messages',
+      channelId: 'notifications-messages',
       vibrate: [0, 250, 250, 250],
       color: '#FF0000'
     },
@@ -61,18 +83,31 @@ sendNotificationImmediately = async () => {
 chanelAndroid() {
   // ...
   if (Platform.OS === 'android') {
-      Notifications.createChannelAndroidAsync('chat-messages', {
-        name: 'Chat messages',
+      Notifications.createChannelAndroidAsync('notifications-messages', {
+        name: 'notifications messages',
         sound: true,
       });
     }
   
 }
-
+getData = async () => {
+  try {
+    const value = await AsyncStorage.getItem('@storage_Key')
+    if(value !== null) {
+      // value previously stored
+      console.log("llego data",value)
+    }
+  } catch(e) {
+    // error reading value
+    console.log("error",e)
+  }
+}
 componentDidMount() {
     this.songsBd()
     this.nofiticationsBd();
+
     this.chanelAndroid();
+    
     console.log("inicio session")
     firebase.auth().onAuthStateChanged(function(user){
       if(user){

@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
-import { Text, View, FlatList,TouchableOpacity, StyleSheet,ScrollView,StatusBar,TextInput,TouchableHighlight} from 'react-native'
+import { Text, View, AsyncStorage,TouchableOpacity, StyleSheet,ScrollView,StatusBar,TextInput,TouchableHighlight} from 'react-native'
 import { withNavigation } from 'react-navigation'
 import MusicIcon from 'react-native-vector-icons/Entypo'
 import ContactsComponent from './ContactsComponent';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 import { db } from './firebase.js';
-let phone = '04169029089'
-let itemsRef = db.ref('user'+phone+'/'+'contacts' );
+
 
 
 
@@ -52,13 +51,27 @@ class Select extends React.Component {
     this.setState({ selected });
     
   }
+  getData = async () => {
+    try {
+      const phone = await AsyncStorage.getItem('@storage_Key')
+
+      let itemsRef = db.ref('/users/'+phone+'/'+'contacts' );
+      if(phone !== null) {
+        // value previously stored
+        itemsRef.on('value', snapshot => {
+          let data = snapshot.val();
+          let items = Object.values(data);
+          this.setState({ items });
+          
+        });
+      }
+    } catch(e) {
+      // error reading value
+    }
+  }
+
   componentDidMount() {
-    itemsRef.on('value', snapshot => {
-      let data = snapshot.val();
-      let items = Object.values(data);
-      this.setState({ items });
-      
-    });
+    this.getData()
   }
   SendNotification=(item)=>{
    
@@ -95,22 +108,28 @@ class Select extends React.Component {
         <TouchableHighlight
                style={styles.btn_primary_light}
                underlayColor="#000"
-               onPress={() => {
-                 console.log("cosa",ItemNotification)
-                 this.state.selected.map((phoneToSend, index) =>{
-                   let phoneSender='04262216526'
-                  db.ref('user'+phoneToSend+'/'+'notifications'+'/').push({
-                    sender:'user'+phoneSender,
-                    name:ItemNotification.item.name,
-                    category:ItemNotification.item.category,
-                    lyrics:ItemNotification.item.lyrics,
-                    coment:ItemNotification.coment
-                  }) 
-                  console.log(ItemNotification.item.name)
-                  console.log(ItemNotification.item.lyrics)
-                  console.log(ItemNotification.coment)
-                })
-               
+               onPress={async () => {
+                try {
+                  const username = await AsyncStorage.getItem('@storage_Key')
+                  if(username !== null) {
+                    // value previously stored
+                    this.state.selected.map((phoneToSend, index) =>{
+                    let phoneSender= username
+                    db.ref('/users/user'+phoneToSend+'/'+'notifications'+'/').push({
+                       sender:phoneSender,
+                       name:ItemNotification.item.name,
+                       category:ItemNotification.item.category,
+                       lyrics:ItemNotification.item.lyrics,
+                       coment:ItemNotification.coment
+                     }) 
+                   })
+                  
+                  }
+                 
+              
+                }catch(e){
+
+                }               
                 }}
             >
                <Text style={styles.buttonText}>Enviar</Text>
