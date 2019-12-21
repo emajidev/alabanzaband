@@ -1,14 +1,16 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet,TextInput ,ActivityIndicator,Platform,AsyncStorage} from 'react-native';
+import { View, Text, StyleSheet,TextInput ,ActivityIndicator,Platform,AsyncStorage, BackHandler,
+  ToastAndroid,} from 'react-native';
 import ItemComponent from '../components/ItemComponent';
 import { db } from './firebase.js';
 import { Notifications} from 'expo';
+import { withNavigation } from 'react-navigation';
 import * as firebase from "firebase/app";
 
 let itemsRef = db.ref('/items');
 
 
-export default class List extends React.Component {
+class List extends Component {
   state = {
     text:'',
     
@@ -16,21 +18,24 @@ export default class List extends React.Component {
   };
   constructor(props){
     super(props);
+    this.getNavigationParams = this.getNavigationParams.bind(this)
     this.state={
       search: '',
       items: [],
       users:[],
-      notiitems:[]
+      notiitems:[],
+      navigation: this.props.navigation
     }
   }
 
 nofiticationsBd = async () => {
   try {
-    const phone = await AsyncStorage.getItem('@storage_Key')
-    if(phone !== null) {
+    const data = await AsyncStorage.getItem('@storage_Key')
+    let newData = JSON.parse(data);
+    if(newData.phone !== null) {
       // value previously stored
-        console.log("llego data",phone)
-        let notifRef = db.ref('/users/'+phone+'/'+'notifications' );
+        console.log("llego data",newData.phone)
+        let notifRef = db.ref('/users/'+newData.phone+'/'+'notifications' );
         try{
           notifRef.on('value', snapshot => {
             let notidata = snapshot.val();
@@ -80,7 +85,7 @@ sendNotificationImmediately = async (username,coment) => {
   });
   console.log(notificationId); // can be saved in AsyncStorage or send to server
   };
-chanelAndroid() {
+chanelAndroid=() => {
   // ...
   if (Platform.OS === 'android') {
       Notifications.createChannelAndroidAsync('notifications-messages', {
@@ -103,6 +108,7 @@ getData = async () => {
   }
 }
 componentDidMount() {
+
     this.songsBd()
     this.nofiticationsBd();
 
@@ -119,6 +125,22 @@ componentDidMount() {
    console.log("users array")
    ;
   }
+getNavigationParams=() => {
+  const {navegar} =this.props.navigation.getParam('name', 'Peter');
+
+
+    
+    return console.log("parametros de nav",navegar)
+  }
+componentWillUnmount() {
+    BackHandler.removeEventListener('hardwareBackPress', this.handleBackButton);
+}
+
+handleBackButton() {
+    ToastAndroid.show('Back button is pressed', ToastAndroid.SHORT);
+
+    return true;
+}
   filterSearch(text){
     const filterItem = items.filter(function(item){
     const itemdata=  item.name.toUpperCase()
@@ -140,7 +162,7 @@ render() {
    
         {this.state.items.length > 0 ? (
           
-          <ItemComponent items={this.state.items} />
+          <ItemComponent items={this.state.items}  />
         ) : (
           <View style={styles.cont}>
             <Text style={{margin:10}}>Buscando canciones...</Text>
@@ -151,6 +173,7 @@ render() {
     );
   }
 }
+export default withNavigation(List);
 
 const styles = StyleSheet.create({
   container: {

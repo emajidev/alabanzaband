@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet,StatusBar ,AsyncStorage} from 'react-native';
 import ContactsComponent from './ContactsComponent';
+import { withNavigation } from 'react-navigation';
 
 import { db } from './firebase.js';
 
 
-export default class ListContacts extends Component {
+class ListContacts extends Component {
   state = {
     text:'',
     
@@ -13,18 +14,26 @@ export default class ListContacts extends Component {
   };
   constructor(props){
     super(props);
+    this._isMounted = false;
+
     this.state={
       items: [],
     }
   }
+componentWillUnmount() {
+   this._isMounted = false;
+}
+componentDidMount() {
+    this._isMounted = true;
+  
+}
   getData = async () => {
     try {
-      const phone = await AsyncStorage.getItem('@storage_Key')
-     
-      
-      if(phone !== null) {
+      const data = await AsyncStorage.getItem('@storage_Key')
+      let newData = JSON.parse(data);
+      if(newData.phone !== null) {
         // value previously stored
-        let itemsRef = db.ref('/users/'+phone+'/'+'contacts' );
+        let itemsRef = db.ref('/users/'+newData.phone+'/contacts' );
         itemsRef.on('value', snapshot => {
           try{
             let data = snapshot.val();
@@ -34,12 +43,13 @@ export default class ListContacts extends Component {
             console.log("error en list constactos",e)
           }
          
-          
         });
       }
+   
     } catch(e) {
       // error reading value
       console.log("error en list constactos",e)
+  
     }
   }
 componentDidMount() {
@@ -53,7 +63,6 @@ render() {
     return (
      
       <View style={styles.container}>
-   
         {this.state.items.length > 0 ? (
           
           <ContactsComponent items={this.state.items} />
@@ -67,6 +76,7 @@ render() {
     );
   }
 }
+export default withNavigation(ListContacts);
 
 const styles = StyleSheet.create({
   container: {

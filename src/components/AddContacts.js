@@ -4,10 +4,11 @@ import { db } from './firebase.js';
 
 let addItem = async (name,phoneContact) => {
    try {
-      const phone = await AsyncStorage.getItem('@storage_Key')
-      if(phone !== null) {
+      const data = await AsyncStorage.getItem('@storage_Key')
+      let newData = JSON.parse(data);
+      if(newData.phone !== null) {
         // value previously stored
-        db.ref('/users/'+phone+'/'+'contacts').push({
+        db.ref('/users/'+newData.phone+'/'+'contacts').push({
          name: name,
          phoneContact:phoneContact
        })

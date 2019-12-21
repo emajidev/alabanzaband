@@ -20,11 +20,11 @@ export default class ListNotification extends Component {
   }
   getData = async () => {
     try {
-      const phone = await AsyncStorage.getItem('@storage_Key')
-      
-      if(phone !== null) {
+      const data = await AsyncStorage.getItem('@storage_Key')
+      let newData = JSON.parse(data);
+      if(newData.phone !== null) {
         // value previously stored
-        let itemsRef = db.ref('/users/'+phone+'/'+'notifications' );
+        let itemsRef = db.ref('/users/'+newData.phone+'/'+'notifications' );
         itemsRef.on('value', snapshot => {
           let data = snapshot.val();
           if(data !== null){  

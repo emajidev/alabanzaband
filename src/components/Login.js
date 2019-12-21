@@ -1,5 +1,5 @@
 import React from 'react'
-import { StyleSheet,ImageBackground, Text, TextInput, View, TouchableOpacity } from 'react-native'
+import { StyleSheet,AsyncStorage, Text, TextInput, View, TouchableOpacity } from 'react-native'
 import Icon from 'react-native-vector-icons/FontAwesome';
 import styles from '../styles/Styles'
 import * as firebase from "firebase/app";
@@ -16,6 +16,22 @@ export default class Login extends React.Component {
       }
     }
     state = { email: '', password: '', errorMessage: null }
+    getData = async () => {
+      try {
+        const data = await AsyncStorage.getItem('@storage_Key')
+        let newData = JSON.parse(data);
+        if(newData.phone !== null) {
+       
+          this.props.navigation.dismiss()
+        }
+      } catch(e) {
+        // error reading value
+        console.log("error en list constactos",e)
+      }
+    }
+    componentDidMount() {
+     this.getData()
+    }
     handleLogin = () => {
      const { email, password } = this.state
     firebase

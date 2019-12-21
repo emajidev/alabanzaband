@@ -6,8 +6,12 @@ import * as firebase from "firebase/app";
 import { db } from './firebase.js';
 
 storeData = async (phone,user) => {
+  data={
+    phone:phone,
+    user:user
+  }
   try {
-    await AsyncStorage.setItem('@storage_Key', phone.toString())
+    await AsyncStorage.setItem('@storage_Key',JSON.stringify(data))
     
   } catch (e) {
     // saving error
@@ -21,17 +25,14 @@ let addUser = (user,numberPhone) => {
     }).then(function(){
         //update succesful
         let userlogger = 'user'+currentUser.displayName
-        this.storeData(userlogger,currentUser.email)
+        this.storeData(userlogger,user)
         console.log("displayName",numberPhone)
         db.ref('/users/'+userlogger).update({
             uid :currentUser.uid,
             user: currentUser.email,
             numberPhone:numberPhone
             })
-            db.ref('/users/').once('value').then(function(snapshot){
-                var contacts = snapshot.val();
-                console.log(contacts)
-            })
+     
         
     }).catch(function(error){
         //error 

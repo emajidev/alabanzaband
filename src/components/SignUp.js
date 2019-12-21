@@ -24,7 +24,22 @@ export default class SignUp extends React.Component {
       }
     }
     state = { email: '', password: '',numberPhone:'', errorMessage: null }
-    
+    getData = async () => {
+      try {
+        const data = await AsyncStorage.getItem('@storage_Key')
+        let newData = JSON.parse(data);
+        if(newData.phone !== null) {
+       
+          this.props.navigation.navigate('Main')
+        }
+      } catch(e) {
+        // error reading value
+        console.log("error en list constactos",e)
+      }
+    }
+    componentDidMount() {
+     this.getData()
+    }
     numberPhoneHandle = e => {
       this.setState({
       numberPhone: e.nativeEvent.text

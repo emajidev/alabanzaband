@@ -53,10 +53,11 @@ class Select extends React.Component {
   }
   getData = async () => {
     try {
-      const phone = await AsyncStorage.getItem('@storage_Key')
+      const data = await AsyncStorage.getItem('@storage_Key')
+      let newData = JSON.parse(data);
+      let itemsRef = db.ref('/users/'+newData.phone+'/contacts' );
 
-      let itemsRef = db.ref('/users/'+phone+'/'+'contacts' );
-      if(phone !== null) {
+      if(newData.phone !== null) {
         // value previously stored
         itemsRef.on('value', snapshot => {
           let data = snapshot.val();
@@ -110,11 +111,14 @@ class Select extends React.Component {
                underlayColor="#000"
                onPress={async () => {
                 try {
-                  const username = await AsyncStorage.getItem('@storage_Key')
-                  if(username !== null) {
+               
+                  const dataUser = await AsyncStorage.getItem('@storage_Key')
+                  let newDataUser = JSON.parse(dataUser);
+                  
+                  if(newDataUser.phone !== null) {
                     // value previously stored
                     this.state.selected.map((phoneToSend, index) =>{
-                    let phoneSender= username
+                    let phoneSender= newDataUser.user
                     db.ref('/users/user'+phoneToSend+'/'+'notifications'+'/').push({
                        sender:phoneSender,
                        name:ItemNotification.item.name,

@@ -20,7 +20,7 @@ render() {
       <View style={styles.itemsList}>
         {this.props.items.map((item, index) => {
           return (
-              <View style={styles.boxContact} >
+              <View style={styles.boxContact} key={index}>
                 <Icon 
                 name='md-contact'
                 color='#5f25fe'

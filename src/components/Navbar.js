@@ -1,15 +1,52 @@
 import React from 'react';
-import { StatusBar,StyleSheet, Text, View, Button, TouchableOpacity} from 'react-native';
+import { StatusBar,StyleSheet, Text, View, Button, TouchableOpacity,AsyncStorage} from 'react-native';
 import List from './List.js'
 import Icon from 'react-native-vector-icons/Feather';
 import ContactsIcon from 'react-native-vector-icons/AntDesign';
 import {withNavigation} from 'react-navigation';
 import * as firebase from "firebase/app";
+import Menu, { MenuItem, MenuDivider } from 'react-native-material-menu';
 
 
 class Navbar extends React.Component{
+  constructor(props) {
+    super(props);
+  }
+  _menu = null;
+ 
+  setMenuRef = ref => {
+    this._menu = ref;
+  };
+ 
+  hideMenu = () => {
+    this._menu.hide();
+  };
+ 
+  showMenu = () => {
+    this._menu.show();
+  };
+  removeStoreData = async () => {
+    try {
+      await AsyncStorage.removeItem('@storage_Key')
+      console.log("storage clear")
+      this.props.navigation.navigate('AuthLoading')
+      
+    }
+    catch(e) {
+    
+      console.log("error en remover ",e)
+    }
+   
+  }
+  
+  singOut = () =>{
+    firebase
+    .auth()
+    .signOut()
+    .then(() => {this.removeStoreData();console.log('cerrar')})
+    .catch(error => this.setState({ errorMessage: error.message }))
+    
 
-  componentDidMount(){
     
   }
   render() {
@@ -60,20 +97,27 @@ class Navbar extends React.Component{
                 color='#5f25fe'
                 size={25}
               />
-                 <Icon 
+              <Icon 
                 name='plus'
                 color='#5f25fe'
                 size={10}
               />
             </TouchableOpacity>
-            <TouchableOpacity style={styles.btn_nav}>
-              <Icon 
+            <Menu style={styles.btn_nav}
+              ref={this.setMenuRef}
+              button={
+              <TouchableOpacity onPress={this.showMenu}>
+                <Icon 
                 name='user'
                 color='#5f25fe'
                 size={25}
-               
               />
-            </TouchableOpacity>
+              </TouchableOpacity>}
+            >
+              <MenuItem onPress={this.hideMenu}>Perfil</MenuItem>
+              <MenuItem onPress={this.singOut}>Cerrar sesión </MenuItem>
+              <MenuDivider />
+            </Menu>
           </View>
         </View>
         <View style={styles.body} >
