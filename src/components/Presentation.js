@@ -1,7 +1,7 @@
 import React from 'react'
 import { StyleSheet,ImageBackground, Text, AsyncStorage, View, TouchableOpacity } from 'react-native'
 import Icon from 'react-native-vector-icons/FontAwesome';
-import styles from '../styles/Styles'
+import {styles} from '../styles/Styles'
 import * as firebase from "firebase/app";
 import { create } from 'uuid-js';
 

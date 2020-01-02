@@ -6,7 +6,7 @@ import { db } from './firebase.js';
 import { Notifications} from 'expo';
 import { withNavigation } from 'react-navigation';
 import * as firebase from "firebase/app";
-
+import {AppColors}from './global'
 let itemsRef = db.ref('/items');
 
 
@@ -18,13 +18,16 @@ class List extends Component {
   };
   constructor(props){
     super(props);
+    console.log("variable global",AppColors.componentDidMount)
+
     this.getNavigationParams = this.getNavigationParams.bind(this)
     this.state={
       search: '',
       items: [],
       users:[],
       notiitems:[],
-      navigation: this.props.navigation
+      navigation: this.props.navigation,
+      date:new Date().getTime() + 10000,
     }
   }
 
@@ -34,7 +37,7 @@ nofiticationsBd = async () => {
     let newData = JSON.parse(data);
     if(newData.phone !== null) {
       // value previously stored
-        console.log("llego data",newData.phone)
+        /* console.log("llego data",newData.phone) */
         let notifRef = db.ref('/users/'+newData.phone+'/'+'notifications' );
         try{
           notifRef.on('value', snapshot => {
@@ -42,10 +45,11 @@ nofiticationsBd = async () => {
             if(notidata !== null){
               let notiitems = Object.values(notidata);
               this.setState({ notiitems });
-              console.log("tamaño de notificaiones",notiitems.length)
+              /* console.log("tamaño de notificaiones",notiitems.length) */
               notiitems.map((item, index) => {
               console.log("id",index)
               this.sendNotificationImmediately(item.sender, item.coment);
+              this.scheduleNotification(this.state.date);
               })
             }else{
               console.log("no hay notificaciones")
@@ -68,10 +72,29 @@ songsBd(){
     let data = snapshot.val();
     let items = Object.values(data);
     this.setState({ items });
-    console.log("base de datos", this.state.items)
+    /* console.log("base de datos", this.state.items) */
   });
 }
-
+/* notificaciones programadas  */
+scheduleNotification = async (datecurrent) => {
+  let notificationId = Notifications.scheduleLocalNotificationAsync(
+    {
+      title: "notificacion programada",
+      body: 'Wow, I can show up even when app is closed',
+      android: {
+        channelId: 'notifications-messages',
+        vibrate: [0, 250, 250, 250],
+        color: '#FF0000'
+      }
+    },
+    {
+      repeat: 'minute',
+      time: new Date().getTime() + 10000,
+    },
+  );
+  /* console.log(notificationId); */
+};
+/* notificaciones inmediatas  */
 sendNotificationImmediately = async (username,coment) => {
   let notificationId = await Notifications.presentLocalNotificationAsync({
     sound: 'default',
@@ -83,7 +106,7 @@ sendNotificationImmediately = async (username,coment) => {
       color: '#FF0000'
     },
   });
-  console.log(notificationId); // can be saved in AsyncStorage or send to server
+  /* console.log(notificationId); */ // can be saved in AsyncStorage or send to server
   };
 chanelAndroid=() => {
   // ...
@@ -100,7 +123,7 @@ getData = async () => {
     const value = await AsyncStorage.getItem('@storage_Key')
     if(value !== null) {
       // value previously stored
-      console.log("llego data",value)
+      /* console.log("llego data",value) */
     }
   } catch(e) {
     // error reading value
@@ -121,8 +144,6 @@ componentDidMount() {
         console.log("user conectado",email)
       }
     })
-  
-   console.log("users array")
    ;
   }
 getNavigationParams=() => {

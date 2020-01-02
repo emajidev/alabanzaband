@@ -7,8 +7,15 @@ import {withNavigation} from 'react-navigation';
 import * as firebase from "firebase/app";
 import Menu, { MenuItem, MenuDivider } from 'react-native-material-menu';
 
+import {navbarStyles} from '../styles/Styles'
+import {ThemeContext, themes} from './conext/theme-context';
+
+import {ThemeProvider} from 'styled-components/native'
+import {Container,Header} from './conext/themes/styled'
+
 
 class Navbar extends React.Component{
+
   constructor(props) {
     super(props);
   }
@@ -28,7 +35,7 @@ class Navbar extends React.Component{
   removeStoreData = async () => {
     try {
       await AsyncStorage.removeItem('@storage_Key')
-      console.log("storage clear")
+      /* console.log("storage clear") */
       this.props.navigation.navigate('AuthLoading')
       
     }
@@ -51,11 +58,14 @@ class Navbar extends React.Component{
   }
   render() {
   return (
-    <View style={styles.container}>
-        <View style={styles.header} >
-          <View style={styles.iconMenu}>
-            
-          <TouchableOpacity style={styles.btn_nav}
+ 
+    <View style={navbarStyles.container}>
+    <ThemeContext.Consumer>
+        {data =>
+      <ThemeProvider theme={data}>
+        <Header>
+          <View style={navbarStyles.iconMenu}>
+          <TouchableOpacity style={navbarStyles.btn_nav}
           onPress={() => this.props.navigation.openDrawer()}
           >
             
@@ -63,34 +73,34 @@ class Navbar extends React.Component{
                 name='menu'
                 color='#5f25fe'
                 size={30}
-             
+            
               />
             </TouchableOpacity>
           </View>
           <View style={{ flex:1, justifyContent:'flex-start'}}>
-            <Text style={styles.title}> ALABANZABAND</Text>
+            <Text style={navbarStyles.title}> ALABANZABAND</Text>
           </View>
-          <View style={styles.iconnavbar}>
-       
-            <TouchableOpacity style={styles.btn_nav}>
+          <View style={navbarStyles.iconnavbar}>
+      
+            <TouchableOpacity style={navbarStyles.btn_nav}>
               <ContactsIcon 
                 name='contacts'
                 color='#5f25fe'
                 onPress={() => this.props.navigation.navigate('Contacts')}
                 size={25}
-             
+            
               />
             </TouchableOpacity>
-            <TouchableOpacity style={styles.btn_nav}>
+            <TouchableOpacity style={navbarStyles.btn_nav}>
               <Icon 
                 name='bell'
                 color='#5f25fe'
                 onPress={() => this.props.navigation.navigate('ListNotification')}
                 size={25}
-             
+            
               />
             </TouchableOpacity>
-            <TouchableOpacity style={styles.btn_nav}
+            <TouchableOpacity style={navbarStyles.btn_nav}
             onPress={() => this.props.navigation.navigate('AddItem')}>
               <Icon 
                 name='music'
@@ -103,7 +113,7 @@ class Navbar extends React.Component{
                 size={10}
               />
             </TouchableOpacity>
-            <Menu style={styles.btn_nav}
+            <Menu style={navbarStyles.btn_nav}
               ref={this.setMenuRef}
               button={
               <TouchableOpacity onPress={this.showMenu}>
@@ -119,58 +129,19 @@ class Navbar extends React.Component{
               <MenuDivider />
             </Menu>
           </View>
-        </View>
-        <View style={styles.body} >
+        </Header>
+        <View style={navbarStyles.body} >
           <List/>
         </View>
       
-    </View>
+      
+      </ThemeProvider>
+    }
+      
+      </ThemeContext.Consumer>
+  </View>
   );
   }
 }
 export default withNavigation(Navbar);
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    marginTop:StatusBar.currentHeight,
-    backgroundColor: '#fff',
-
-
-   
-  },
-  header:{
-    flex: .5,
-    flexDirection:'row',
-    backgroundColor: '#eee',
-    justifyContent:'space-around',
-    alignItems:'center' , 
-   
-  }, 
-  btn_nav:{
-    margin:8
-  },
- 
-  iconMenu:{
-    width: 50, 
-    height: 50,
-    justifyContent:'center',
-    alignItems:'center'
-  },
-
-  iconnavbar:{
-    flexDirection:'row',
-    justifyContent:'center',
-    alignItems:'center'
-  },
-  body:{
-    flex: 5,
-    backgroundColor: '#fff',
-  },
- 
-  title: {
-    color: '#777',
-    fontSize:20,
-   
-  },
-});

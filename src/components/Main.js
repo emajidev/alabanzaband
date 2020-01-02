@@ -1,5 +1,5 @@
 import React from 'react'
-import {StatusBar, StyleSheet, Platform, Image, Text, View, TouchableOpacity, Button } from 'react-native'
+import {StatusBar, StyleSheet, AsyncStorage, Image, Text, View, TouchableOpacity, Button } from 'react-native'
 import * as firebase from "firebase/app";
 import Navbar from './Navbar.js';
 import List from './List.js';
@@ -8,7 +8,92 @@ import NavDrawer from './NavDrawer'
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {createDrawerNavigator } from 'react-navigation-drawer';
 import {createAppContainer} from 'react-navigation';
-import ListNotification from './ListNotification.js'
+import Settings from './Settings'
+
+
+import {ThemeContext, themes} from './conext/theme-context';
+
+import {ThemeProvider} from 'styled-components/native'
+import {Container} from './conext/themes/styled'
+
+let user;
+let newData
+class Child  extends React.Component {
+  
+
+
+  render(){
+     return(
+       <View>
+          <ThemeContext.Consumer>
+             {data =>
+           <ThemeProvider theme={data}>
+              <Navbar/>
+           </ThemeProvider>
+        }
+           
+          </ThemeContext.Consumer>
+       </View>
+       
+     )
+  }
+}
+class Content extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      theme: themes.light,
+    };
+ }
+
+  componentWillMount(){
+   this.getData()
+    
+
+  }     
+  componentWillUpdate(){
+    this.getData()
+  }
+   getData = async () => {
+    try {
+      user = await AsyncStorage.getItem('@storage_Key')
+      newData = JSON.parse(user);
+      /* console.log(" storage ",newData.theme) */
+      const valueDefault = themes.light
+      if ( this.state.theme !=newData.theme){
+        this.setState({theme:newData.theme ? newData.theme:valueDefault})
+        return true
+      }
+      this.setState({theme:newData.theme ? newData.theme:valueDefault})
+       }
+       catch(e) {
+         // error reading value
+         console.log(e)
+      }
+   }
+ 
+
+   render() {
+      const dataTheme = this.state.theme
+/*       console.log("state despues del renderizado",dataTheme)
+ */      return (
+        <ThemeContext.Provider value={{...this.state.theme}}>
+           {this.props.children}
+           <View style={styles.container}>
+               <Text>Alertar notificaciones</Text>
+               <Text style={{backgroundColor:this.state.theme.bg}}>tema</Text>
+              
+              <View>
+                 <Child />
+              </View>
+            
+           </View>
+     </ThemeContext.Provider>   
+      
+      )
+   }
+}
+
 
 class Main extends React.Component {
     static navigationOptions = {
@@ -49,8 +134,8 @@ class Main extends React.Component {
             
           </View> */
           
-          <Navbar/>
-         
+       
+          <Content/>
     
    
          
@@ -60,13 +145,32 @@ class Main extends React.Component {
       
     }}
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    marginTop: StatusBar.currentHeight,
-    justifyContent: 'center',
-    alignItems: 'center'
-  }
+  container:{
+    flex:1,
+    justifyContent:'flex-start',
+    alignItems:'center',
+    marginTop:StatusBar.currentHeight+15,  
+ },
+ theme1:{
+    width:50,
+    height:50,
+    backgroundColor:'#Ff2'
+ },
+
+ theme2:{
+    width:50,
+    height:50,
+    backgroundColor:'#F23'
+ },
+ theme3:{
+    width:50,
+    height:50,
+    backgroundColor:'#5ff9'
+ },
 })
+
+
+
 class NotificationsScreen extends React.Component {
   static navigationOptions = {
     drawerLabel: 'Notifications',
@@ -100,9 +204,9 @@ class Page1 extends React.Component {
 
   render() {
     return (
-      <View>
-        <ListNotification/>
-      </View>
+      
+        <Settings/>
+    
     );
   }
 }

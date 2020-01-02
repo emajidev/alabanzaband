@@ -17,7 +17,7 @@ class MyHomeScreen extends React.Component {
       return (
         <View>
         <Button
-          onPress={() => this.props.navigation.navigate('Notifications')}
+          onPress={() => this.props.navigation.navigate('Main')}
           title="Go to notifications"
         />
         </View>
@@ -25,7 +25,7 @@ class MyHomeScreen extends React.Component {
     }
   }
   
-  class MyNotificationsScreen extends React.Component {
+class MyNotificationsScreen extends React.Component {
     static navigationOptions = {
       drawerLabel: 'Notifications',
       drawerIcon: ({ tintColor }) => (
@@ -39,13 +39,33 @@ class MyHomeScreen extends React.Component {
     render() {
       return (
         <Button
-          onPress={() => this.props.navigation.goBack()}
-          title="Go back home"
+        onPress={() => this.props.navigation.navigate('Notifications')}
+        title="Notifications"
         />
       );
     }
   }
+class Settings extends React.Component {
+    static navigationOptions = {
+      drawerLabel: 'Settings',
+      drawerIcon: ({ tintColor }) => (
+        <Image
+          source={require('../img/bg.jpg')}
+          style={[styles.icon, { tintColor: tintColor }]}
+        />
+      ),
+    };
   
+    render() {
+      return (
+        <Button
+          onPress={() => this.props.navigation.navigate('Settings')}
+
+          title="Settings"
+        />
+      );
+    }
+  }  
   const styles = StyleSheet.create({
     icon: {
       width: 24,
@@ -60,6 +80,9 @@ class MyHomeScreen extends React.Component {
     Notifications: {
       screen: MyNotificationsScreen,
     },
+    Settings:{
+      screen:Settings
+    }
   });
   
   const MyApp = createAppContainer(MyDrawerNavigator);

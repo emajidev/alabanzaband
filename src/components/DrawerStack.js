@@ -6,7 +6,7 @@ import Sidebar from './Sidebar.js'
 
 class MyHomeScreen extends React.Component {
   static navigationOptions = {
-    drawerLabel: 'Home',
+    drawerLabel: 'Inicio',
     drawerIcon: ({ tintColor }) => (
       <Text>holaaa</Text>
     ),
@@ -19,7 +19,7 @@ class MyHomeScreen extends React.Component {
     <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
       <Button
       onPress={() => this.props.navigation.openDrawer()}
-      title="Open drawer"
+      title="Inicio"
     />
     </View>
     );
@@ -39,7 +39,7 @@ class MyNotificationsScreen extends React.Component {
     <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
       <Button
       onPress={() => this.props.navigation.goBack()}
-      title="Go back home"
+      title="Notificaciones"
     />
     </View>
     );

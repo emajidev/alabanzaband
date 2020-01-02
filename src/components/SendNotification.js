@@ -4,7 +4,6 @@ import { withNavigation } from 'react-navigation'
 import MusicIcon from 'react-native-vector-icons/Entypo'
 import ContactsComponent from './ContactsComponent';
 import Icon from 'react-native-vector-icons/Ionicons';
-
 import { db } from './firebase.js';
 
 
@@ -138,14 +137,15 @@ class Select extends React.Component {
             >
                <Text style={styles.buttonText}>Enviar</Text>
             </TouchableHighlight>
+      
+            
       </View>
     );
   }
 }
 
 class SendNotification extends React.Component {
-      
-    
+
     
 
     render() {
@@ -154,6 +154,7 @@ class SendNotification extends React.Component {
       return (
         <View style={styles.container}>
           <Select ItemNotification={ItemNotification} />
+          
         </View>
         
       )

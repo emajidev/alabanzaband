@@ -1,6 +1,30 @@
-import { StyleSheet, StatusBar } from 'react-native';
+import { StyleSheet,AsyncStorage,StatusBar } from 'react-native';
+import React from 'react'
+export default class StylesApp extends React.Component {
 
-export default StyleSheet.create({
+  state = {
+     
+    colorTheme: '#39f6'
+
+ }
+ async componentDidMount(){
+  await this.getData()
+} 
+getData = async () => {
+  try {
+     const data = await AsyncStorage.getItem('@storage_Key')
+     let newData = JSON.parse(data);
+   
+     this.setState({colorTheme:newData.colorTheme})
+     console.log(" color",dataStorage)
+  } catch(e) {
+     // error reading value
+     console.log(e)
+  }
+}
+}
+const styles = StyleSheet.create({
+    
     header:{
       flex: 1,
       marginTop: StatusBar.currentHeight,
@@ -93,3 +117,48 @@ export default StyleSheet.create({
 
       },
 });
+const navbarStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+    marginTop:StatusBar.currentHeight,
+    backgroundColor: '#fff',
+
+
+   
+  },
+  header:{
+    flex: .5,
+    flexDirection:'row',
+    backgroundColor: '#f43',
+    justifyContent:'space-around',
+    alignItems:'center' , 
+   
+  }, 
+  btn_nav:{
+    margin:8
+  },
+ 
+  iconMenu:{
+    width: 50, 
+    height: 50,
+    justifyContent:'center',
+    alignItems:'center'
+  },
+
+  iconnavbar:{
+    flexDirection:'row',
+    justifyContent:'center',
+    alignItems:'center'
+  },
+  body:{
+    flex: 5,
+    backgroundColor: '#fff',
+  },
+ 
+  title: {
+    color: '#777',
+    fontSize:20,
+   
+  },
+});
+export {styles,navbarStyles}

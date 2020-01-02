@@ -2,6 +2,11 @@ import React, { Component } from 'react';
 import { View, Text, StyleSheet,TouchableOpacity,TextInput } from 'react-native';
 import PropTypes from 'prop-types';
 import {withNavigation} from 'react-navigation';
+import {Container,Songs, Header} from './conext/themes/styled'
+
+import {ThemeContext, themes} from './conext/theme-context';
+import {ThemeProvider} from 'styled-components/native'
+
 class ItemComponent extends React.Component{
   static propTypes = {
     items: PropTypes.array.isRequired
@@ -87,7 +92,9 @@ render() {
       }
  
     return (
+      
       <View style={styles.itemsList}>
+
          <TextInput
             style={{ height: 40, backgroundColor:'#e3e3e3', paddingLeft:10 }}
             onChangeText={search =>this.setState({search})}
@@ -139,15 +146,25 @@ render() {
        
         {filtered.map((item, index) => {
           return (
-            <TouchableOpacity 
-            key={index}
-            style = {styles.TouchableOpacity}
-            onPress={() => this.props.navigation.navigate('ContentItem',{item})}
-            >
-              <Text style={styles.itemtext}>{item.name}</Text>
-            </TouchableOpacity>
+            <View  key={index}>
+            <ThemeContext.Consumer>
+               {data =>
+             <ThemeProvider theme={data}>
+                <Songs
+                 
+                  onPress={() => this.props.navigation.navigate('ContentItem',{item})}
+                  >
+                  <Text style={styles.itemtext}>{item.name}</Text>
+                </Songs>
+             </ThemeProvider>
+          }
+            </ThemeContext.Consumer>
+           </View>
+         
+    
           );
         })}
+    
       </View>
     );
   }
