@@ -45,9 +45,17 @@ class Content extends React.Component {
       theme: themes.light,
     };
  }
+ componentDidMount() {
+  setTimeout(() => {
+    console.log("temp")
+    this.getData()
+    }, 1000);
+}
+
+
 
   componentWillMount(){
-   this.getData()
+  /*  this.getData() */
     
 
   }     
@@ -58,6 +66,7 @@ class Content extends React.Component {
     try {
       user = await AsyncStorage.getItem('@storage_Key')
       newData = JSON.parse(user);
+      /* console.log("obteniendo datos",newData) */
       /* console.log(" storage ",newData.theme) */
       const valueDefault = themes.light
       if ( this.state.theme !=newData.theme){
@@ -71,7 +80,9 @@ class Content extends React.Component {
          console.log(e)
       }
    }
- 
+   cosa(){
+     this.getData()
+   }
 
    render() {
       const dataTheme = this.state.theme
@@ -82,7 +93,13 @@ class Content extends React.Component {
            <View style={styles.container}>
                <Text>Alertar notificaciones</Text>
                <Text style={{backgroundColor:this.state.theme.bg}}>tema</Text>
-              
+                <TouchableOpacity 
+                title="tema"
+                onPress={ () => this.cosa()}
+
+                >
+                  <Text>btn</Text>
+                </TouchableOpacity>
               <View>
                  <Child />
               </View>

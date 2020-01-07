@@ -20,7 +20,7 @@ class ItemComponent extends React.Component{
 render() {
     /*  filter search coro  */
     if (this.state.typeOfSearch == 'temas'){
-      console.log("category")
+     /*  console.log("category") */
       let coros = this.props.items.filter(
         (item) => {
           return item.category.toLowerCase().indexOf(this.state.typeOfSearch.toLowerCase())!==-1;
@@ -29,14 +29,14 @@ render() {
       var filtered = coros.filter(
         (item) => {
           /* console.log(item) */
-          console.log("temas")
+          /* console.log("temas") */
          return item.name.toLowerCase().indexOf(this.state.search.toLowerCase() )!==-1;
         }
       );  
       
     }
     if (this.state.typeOfSearch == 'notas'){
-      console.log("category")
+      /* console.log("category") */
       let coros = this.props.items.filter(
         (item) => {
           return item.category.toLowerCase().indexOf(this.state.typeOfSearch.toLowerCase() )!==-1;
@@ -45,14 +45,14 @@ render() {
       var filtered = coros.filter(
         (item) => {
           /* console.log(item) */
-          console.log("notas")
+         /*  console.log("notas") */
          return item.name.toLowerCase().indexOf(this.state.search.toLowerCase() )!==-1;
         }
       );  
       
     }
     if (this.state.typeOfSearch == 'coros'){
-      console.log("category")
+     /*  console.log("category") */
       let coros = this.props.items.filter(
         (item) => {
           return item.category.toLowerCase().indexOf(this.state.typeOfSearch.toLowerCase() )!==-1;
@@ -61,14 +61,14 @@ render() {
       var filtered = coros.filter(
         (item) => {
           /* console.log(item) */
-          console.log("coros")
+          /* console.log("coros") */
          return item.name.toLowerCase().indexOf(this.state.search.toLowerCase() )!==-1;
         }
       );  
       
     }
     if (this.state.typeOfSearch == 'titulo'){
-      console.log("category")
+      /* console.log("category") */
       let coros = this.props.items.filter(
         (item) => {
           return item.category.toLowerCase().indexOf(this.state.typeOfSearch.toLowerCase() )!==-1;
@@ -77,7 +77,7 @@ render() {
       var filtered = coros.filter(
         (item) => {
           /* console.log(item) */
-          console.log("titulo")
+          /* console.log("titulo") */
          return item.name.toLowerCase().indexOf(this.state.search.toLowerCase() )!==-1;
         }
       );  

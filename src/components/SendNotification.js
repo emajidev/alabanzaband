@@ -1,14 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Text, View, AsyncStorage,TouchableOpacity, StyleSheet,ScrollView,StatusBar,TextInput,TouchableHighlight} from 'react-native'
 import { withNavigation } from 'react-navigation'
-import MusicIcon from 'react-native-vector-icons/Entypo'
-import ContactsComponent from './ContactsComponent';
-import Icon from 'react-native-vector-icons/Ionicons';
+
 import { db } from './firebase.js';
-
-
-
-
 
 class Option extends React.Component {
   render() {
@@ -123,7 +117,8 @@ class Select extends React.Component {
                        name:ItemNotification.item.name,
                        category:ItemNotification.item.category,
                        lyrics:ItemNotification.item.lyrics,
-                       coment:ItemNotification.coment
+                       coment:ItemNotification.coment,
+                       time:ItemNotification.date
                      }) 
                    })
                   

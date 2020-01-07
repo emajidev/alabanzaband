@@ -7,14 +7,17 @@ import DatePicker from 'react-native-datepicker'
 class AddNotification extends React.Component {
    constructor(props){
       super(props)
-      this.state = {date:"",
-      dateCurrent:''}
+      this.state = {
+         date:'',
+         dateCurrent:'',
+         timestamp:'' 
+      }
     }      
   
       state = {
          coment: ''
       };
-   
+
    handleChange = e => {
          this.setState({
          coment: e.nativeEvent.text
@@ -38,14 +41,25 @@ class AddNotification extends React.Component {
            dateCurrent:
            date + '/' + month + '/' + year + ' ',
          });
+         
        }
+
     render() {
+      let inputTIme = this.state.date
+      const dateParams = inputTIme.split(/[\s-:]/)
+      dateParams[1] = (parseInt(dateParams[1], 10) - 1).toString()
+      let newformatUTC = [dateParams[2],dateParams[1],dateParams[0],dateParams[3],dateParams[4]]
+      let dateFormat = new Date(Date.UTC(...newformatUTC))
+      let timestamp = (dateFormat.getTime())
+      console.log("fechaaaa en milisegundos",timestamp)
+    
       const item = this.props.navigation.state.params.item;
       const ItemNotification = {
          item,
          coment:this.state.coment,
-         date:this.state.date
+         date:timestamp
       }
+      
       console.log("item notifiction",JSON.stringify(ItemNotification))
        return (
     

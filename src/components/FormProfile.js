@@ -4,29 +4,33 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import styles from '../styles/Styles'
 import * as firebase from "firebase/app";
 import { db } from './firebase.js';
+import {themes} from './conext/theme-context';
 
-storeData = async (phone,user) => {
+storeData = async (phone,user,theme) => {
+ 
   data={
+    theme:themes.red,
     phone:phone,
     user:user
   }
   try {
     await AsyncStorage.setItem('@storage_Key',JSON.stringify(data))
-    
+    console.log('storage enviado',data)
   } catch (e) {
     // saving error
   }
 }
 
-let addUser = (user,numberPhone) => {
+let addUser = (user,numberPhone,theme) => {
     var currentUser = firebase.auth().currentUser;
     currentUser.updateProfile({
         displayName:numberPhone.toString()
     }).then(function(){
         //update succesful
         let userlogger = 'user'+currentUser.displayName
-        this.storeData(userlogger,user)
-        console.log("displayName",numberPhone)
+        
+        this.storeData(userlogger,user,theme)
+       
         db.ref('/users/'+userlogger).update({
             uid :currentUser.uid,
             user: currentUser.email,
@@ -50,7 +54,7 @@ export default class FormProfile extends React.Component {
         
       }
     }
-    state = { name: '',numberPhone:'', errorMessage: null }
+    state = { name: '',numberPhone:'', theme:themes.red, errorMessage: null }
     
     numberPhoneHandle = e => {
       this.setState({
@@ -63,8 +67,9 @@ export default class FormProfile extends React.Component {
     }
     
     handleSignUp = () => {
-        addUser(this.state.name , this.state.numberPhone);
+        addUser(this.state.name , this.state.numberPhone,this.state.theme);
         this.props.navigation.navigate('Main')
+     
         
     }
  

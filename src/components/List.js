@@ -36,8 +36,8 @@ nofiticationsBd = async () => {
     const data = await AsyncStorage.getItem('@storage_Key')
     let newData = JSON.parse(data);
     if(newData.phone !== null) {
-      // value previously stored
         /* console.log("llego data",newData.phone) */
+         // notificaiones que estan en la bd
         let notifRef = db.ref('/users/'+newData.phone+'/'+'notifications' );
         try{
           notifRef.on('value', snapshot => {
@@ -46,13 +46,38 @@ nofiticationsBd = async () => {
               let notiitems = Object.values(notidata);
               this.setState({ notiitems });
               /* console.log("tamaño de notificaiones",notiitems.length) */
+              // itera la lista de notificaciones extraidas de la bd firebase //
+              var currentDate = new Date()
+              var day = currentDate.getDate() <10 ? '0'+currentDate.getDate():currentDate.getDate();
+              var month = (currentDate.getMonth() + 1 ) < 10 ? ('0'+(currentDate.getMonth() + 1)) :currentDate.getMonth() + 1;
+              var year = currentDate.getFullYear()
+              var hours=currentDate.getHours() < 10? '0'+currentDate.getHours():currentDate.getHours();
+              var min = currentDate.getMinutes() <10 ? '0'+currentDate.getMinutes():currentDate.getMinutes();
+              var today = ((year+'-'+month+'-'+day+'T'+hours+':'+min).toString());
+              var todayNewDate =  new Date(today)
+              let fechaInicio= new Date(todayNewDate).getTime()
+
               notiitems.map((item, index) => {
-              console.log("id",index)
-              this.sendNotificationImmediately(item.sender, item.coment);
-              this.scheduleNotification(this.state.date);
+                  
+                
+                let fechaFin = item.time
+                let dif = fechaFin - fechaInicio
+/*                 this.sendNotificationImmediately(item.sender, item.coment);
+ */                
+                console.log("diferencia",dif );
+                if(dif >= 300000){
+                  /* send notification  */
+                  console.log("Enviado mayor a 5min")
+                  this.scheduleNotification( item.sender, item.coment,dif);
+                }else{
+                  console.log("no se envio por el tiempo")
+                }
+       
               })
             }else{
               console.log("no hay notificaciones")
+              
+
             }
           });
         }catch(e){
@@ -76,11 +101,18 @@ songsBd(){
   });
 }
 /* notificaciones programadas  */
-scheduleNotification = async (datecurrent) => {
-  let notificationId = Notifications.scheduleLocalNotificationAsync(
+scheduleNotification = async (sender,comment,dif) => {
+  /* let fechaInicio = new Date('2020-01-06T20:20').getTime() */
+/*    1578356779815       1578356933562
+      1578356779815       1578342000000 */
+
+
+ 
+
+ notificationId = Notifications.scheduleLocalNotificationAsync(
     {
-      title: "notificacion programada",
-      body: 'Wow, I can show up even when app is closed',
+      title: "Enviado por :" +sender,
+      body: comment,
       android: {
         channelId: 'notifications-messages',
         vibrate: [0, 250, 250, 250],
@@ -88,11 +120,12 @@ scheduleNotification = async (datecurrent) => {
       }
     },
     {
-      repeat: 'minute',
-      time: new Date().getTime() + 10000,
+     
+      time:new Date().getTime()+ dif ,
     },
   );
-  /* console.log(notificationId); */
+  
+
 };
 /* notificaciones inmediatas  */
 sendNotificationImmediately = async (username,coment) => {
@@ -131,7 +164,6 @@ getData = async () => {
   }
 }
 componentDidMount() {
-
     this.songsBd()
     this.nofiticationsBd();
 
