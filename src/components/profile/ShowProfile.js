@@ -8,9 +8,9 @@ import * as firebase from "firebase/app";
 import { db } from '../firebase';
 
 let userAdminState = () => {
-   db.ref('/moduser').push({
-    user:'emanuel',
-    mode:'Admin'
+   db.ref('/moduser').set({
+
+    mode:'admin'
   })
 };
 

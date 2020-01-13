@@ -15,8 +15,7 @@ import {ThemeContext, themes} from './conext/theme-context';
 
 import {ThemeProvider} from 'styled-components/native'
 import {Container} from './conext/themes/styled'
-
-import { db } from './firebase.js';
+import { db } from './firebase';
 
 let user;
 let newData
@@ -44,16 +43,16 @@ class Content extends React.Component {
     super(props);
     this.state = {
       theme: themes.light,
-      modUser: [],
+      moduser:[],
 
     };
  }
  getModUser(){
   modUser.on('value', snapshot => {
     let data = snapshot.val();
-    let modUser = Object.values(data);
-    this.setState({ modUser });
-    console.log("modo de usuario", this.state.modUser) 
+    let moduser = Object.values(data);
+    this.setState({ moduser });
+    console.log("modo de usuario", this.state.moduser) 
   });
 }
  componentDidMount() {
@@ -90,6 +89,7 @@ class Content extends React.Component {
 
    render() {
       const dataTheme = this.state.theme
+      let modUser =  this.state.moduser
 /*       console.log("state despues del renderizado",dataTheme)
  */      return (
         <ThemeContext.Provider value={{...this.state.theme}}>
@@ -105,7 +105,14 @@ class Content extends React.Component {
                   <Text>btn</Text>
                 </TouchableOpacity>
               <View>
-                 <Child />
+                {
+                  modUser =='admin' ? (
+                    <Text>Modo Administrador</Text>
+                
+                  ):(
+                    <Child />
+                )}
+                
               </View>
             
            </View>
@@ -144,24 +151,10 @@ class Main extends React.Component {
 
     render() {
         const { currentUser } = this.state
+       
         return (
-          
-   /*        <View style={styles.container}>
-            <Text>pantalla principal</Text>
-            <Button
-              onPress={() => this.props.navigation.openDrawer()}
-              title="Go to notifications"
-            />
-            
-          </View> */
-          
        
-          <Content/>
-    
-   
-         
-            
-       
+            <Content/>   
         )
       
     }}
