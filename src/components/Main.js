@@ -9,19 +9,20 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import {createDrawerNavigator } from 'react-navigation-drawer';
 import {createAppContainer} from 'react-navigation';
 import Settings from './Settings'
-
+import ShowProfile from './profile/ShowProfile'
 
 import {ThemeContext, themes} from './conext/theme-context';
 
 import {ThemeProvider} from 'styled-components/native'
 import {Container} from './conext/themes/styled'
 
+import { db } from './firebase.js';
+
 let user;
 let newData
+let modUser = db.ref('/moduser');
+
 class Child  extends React.Component {
-  
-
-
   render(){
      return(
        <View>
@@ -43,22 +44,25 @@ class Content extends React.Component {
     super(props);
     this.state = {
       theme: themes.light,
+      modUser: [],
+
     };
  }
+ getModUser(){
+  modUser.on('value', snapshot => {
+    let data = snapshot.val();
+    let modUser = Object.values(data);
+    this.setState({ modUser });
+    console.log("modo de usuario", this.state.modUser) 
+  });
+}
  componentDidMount() {
+   this.getModUser();
   setTimeout(() => {
     console.log("temp")
     this.getData()
     }, 1000);
 }
-
-
-
-  componentWillMount(){
-  /*  this.getData() */
-    
-
-  }     
   componentWillUpdate(){
     this.getData()
   }
@@ -227,6 +231,25 @@ class Page1 extends React.Component {
     );
   }
 }
+class Page2 extends React.Component {
+  static navigationOptions = {
+    drawerLabel: 'Perfil',
+ /*    drawerIcon: ({ tintColor }) => (
+      <Image
+        source={require('./notif-icon.png')}
+        style={[styles.icon, { tintColor: tintColor }]}
+      />
+    ), */
+  };
+
+  render() {
+    return (
+      
+        <ShowProfile/>
+    
+    );
+  }
+}
 const MyDrawerNavigator = createDrawerNavigator({
   Inicio: {
     screen: Main,
@@ -236,6 +259,9 @@ const MyDrawerNavigator = createDrawerNavigator({
   },
   Ajustes:{
     screen:Page1,
+  },
+  Perfil:{
+    screen:Page2,
   }
 
 },{

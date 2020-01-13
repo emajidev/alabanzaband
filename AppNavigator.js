@@ -19,7 +19,7 @@ import ListContacts from './src/components/ListContacts.js'
 import Contacts from './src/components/Contacts.js'
 import LocalNotifications from './src/components/LocalNotifications.js'
 import Settings from './src/components/Settings.js'
-
+import ShowProfile from './src/components/profile/ShowProfile.js'
 
 const AppNavigator = createStackNavigator(
 {
@@ -42,7 +42,8 @@ const AppNavigator = createStackNavigator(
 
   LocalNotifications:{screen:LocalNotifications},
 
-  Settings:{screen:Settings}
+  Settings:{screen:Settings},
+  ShowProfile:{screen:ShowProfile}
 },
 {headerMode: 'none',
   initialRouteName: 'Main',
