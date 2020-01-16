@@ -10,6 +10,7 @@ import {createDrawerNavigator } from 'react-navigation-drawer';
 import {createAppContainer} from 'react-navigation';
 import Settings from './Settings'
 import ShowProfile from './profile/ShowProfile'
+import AdminDashboard from './admin/AdminDashboard'
 
 import {ThemeContext, themes} from './conext/theme-context';
 
@@ -107,7 +108,7 @@ class Content extends React.Component {
               <View>
                 {
                   modUser =='admin' ? (
-                    <Text>Modo Administrador</Text>
+                    <AdminDashboard />
                 
                   ):(
                     <Child />

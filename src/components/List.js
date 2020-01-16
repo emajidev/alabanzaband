@@ -18,9 +18,7 @@ class List extends Component {
   };
   constructor(props){
     super(props);
-    console.log("variable global",AppColors.componentDidMount)
 
-    this.getNavigationParams = this.getNavigationParams.bind(this)
     this.state={
       search: '',
       items: [],
@@ -178,13 +176,7 @@ componentDidMount() {
     })
    ;
   }
-getNavigationParams=() => {
-  const {navegar} =this.props.navigation.getParam('name', 'Peter');
 
-
-    
-    return console.log("parametros de nav",navegar)
-  }
 componentWillUnmount() {
     BackHandler.removeEventListener('hardwareBackPress', this.handleBackButton);
 }

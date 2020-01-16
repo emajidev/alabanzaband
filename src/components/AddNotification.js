@@ -12,37 +12,34 @@ class AddNotification extends React.Component {
          dateCurrent:'',
          timestamp:'' 
       }
-    }      
-  
-      state = {
-         coment: ''
-      };
+   }      
+   state = {
+      coment: ''
+   };
 
    handleChange = e => {
-         this.setState({
-         coment: e.nativeEvent.text
-         });
-      };
-      handleSubmit = () => {
-         addItem(this.state.coment);
-         alert('Notification saved successfully');
-      };
+      this.setState({
+      coment: e.nativeEvent.text
+      });
+   };
+   handleSubmit = () => {
+      addItem(this.state.coment);
+      alert('Notification saved successfully');
+   };
 
-      componentDidMount() {
-        
-         var date = new Date().getDate(); //Current Date
-         var month = new Date().getMonth() + 1; //Current Month
-         var year = new Date().getFullYear(); //Current Year
-         var hours = new Date().getHours(); //Current Hours
-         var min = new Date().getMinutes(); //Current Minutes
-         var sec = new Date().getSeconds(); //Current Seconds
-         this.setState({
-           //Setting the value of the date time
-           dateCurrent:
-           date + '/' + month + '/' + year + ' ',
-         });
-         
-       }
+   componentDidMount() {
+      var date = new Date().getDate(); //Current Date
+      var month = new Date().getMonth() + 1; //Current Month
+      var year = new Date().getFullYear(); //Current Year
+      var hours = new Date().getHours(); //Current Hours
+      var min = new Date().getMinutes(); //Current Minutes
+      var sec = new Date().getSeconds(); //Current Seconds
+      this.setState({
+         //Setting the value of the date time
+         dateCurrent:
+         date + '/' + month + '/' + year + ' ',
+      });
+   }
 
     render() {
       let inputTIme = this.state.date

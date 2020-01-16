@@ -1,10 +1,9 @@
 import React from 'react'
 import { Modal,Text, Alert,TextInput, View, TouchableOpacity,AsyncStorage,TouchableHighlight,StatusBar,StyleSheet, PanResponder } from 'react-native'
 import Icon from 'react-native-vector-icons/Feather';
+import { withNavigation } from 'react-navigation'
 
 import * as firebase from "firebase/app";
-
-
 import { db } from '../firebase';
 
 let userAdminState = () => {
@@ -14,7 +13,7 @@ let userAdminState = () => {
   })
 };
 
-export default class ShowProfile extends React.Component {
+class ShowProfile extends React.Component {
 
   constructor(props){
     super(props);
@@ -161,7 +160,7 @@ export default class ShowProfile extends React.Component {
   
   }
   closeModal(){
-    Alert.alert('Modal has been closed.');
+    Alert.alert('Saliendo del menu admin.');
     this.setState({modalVisible: false});
     clearInterval(this.clockCall);
     
@@ -169,7 +168,9 @@ export default class ShowProfile extends React.Component {
   }
   singInAdmin(){
     this.setState({modalInactive:false});
+    this.setState({modalVisible: false});
     userAdminState()
+    this.props.navigation.goBack()
   }
     render() {
         
@@ -238,6 +239,7 @@ export default class ShowProfile extends React.Component {
         )
       }
     }
+    export default withNavigation(ShowProfile)
   
     const styles = StyleSheet.create({
       container:{
