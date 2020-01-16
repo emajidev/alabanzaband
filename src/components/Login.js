@@ -45,14 +45,34 @@ export default class Login extends React.Component {
       this.setState({ showPassword: !this.state.showPassword });
     }
     handleLoginFacebook = () =>{
-      const provider = new firebase.auth.FacebookAuthProvider();
+      const cred = firebase.auth.FacebookAuthProvider.credential(facebookIdToken, facebookAccessToken);
+      firebase.auth().signInWithCredential(cred)
+        .then((result) => {
+          // User signed in.
+          var token = result.credential.accessToken;
+          console.log("token",token)
+        })
+        .catch((error) => {
+          // Error occurred.
+        });
+      /* const provider = new firebase.auth.FacebookAuthProvider();
       firebase
       .auth()
       .signInWithRedirect(provider)
       .then(() => this.props.navigation.navigate('Main'))
-      .catch(error => this.setState({ errorMessage: error.message }))
-      console.log('handleLogin')
+      .catch(error => this.setState({ errorMessage: error.message }),console.log(error))
+      console.log('handleLogin') */
       }
+    emailHandle(email){
+        this.setState({
+            email: email.replace(/\s/g, '')
+        })
+    }
+    passwordHandle(password){
+      this.setState({
+        password: password.replace(/\s/g, '')
+      })
+    }
 
     render() {
         return (
@@ -66,6 +86,7 @@ export default class Login extends React.Component {
             {this.state.errorMessage &&
               <Text style={{ color: 'red' , marginBottom:20}}>
                 datos invalidos{/*  {this.state.errorMessage} */}
+                
               </Text>}
             <View style={styles.borderBox}>
               <View style={styles.TextInput}>
@@ -77,8 +98,8 @@ export default class Login extends React.Component {
               <TextInput
                 autoCapitalize="none"
                 placeholder="Correo electrónico"
-                onChangeText={email => this.setState({ email })}
-                value={this.state.email}
+                onChangeText={(email)=>this.emailHandle(email)}
+                value={this.state.email }
                 style={{ color:'#808080',fontSize:18,paddingLeft:5}}
                 
               />
@@ -96,7 +117,7 @@ export default class Login extends React.Component {
                 secureTextEntry={this.state.showPassword}
                 autoCapitalize="none"
                 placeholder="Password"
-                onChangeText={password => this.setState({ password })}
+                onChangeText={(password)=>this.passwordHandle(password)}
                 value={this.state.password}
                 style={{ color:'#808080', width:'90%', fontSize:18, paddingLeft:5,}}
               />

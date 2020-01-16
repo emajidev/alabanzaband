@@ -38,6 +38,7 @@ export default class Login extends React.Component {
      this.getData()
     }
     handleLoginFacebook = () =>{
+<<<<<<< HEAD
       this.loginWithFacebook()
       }
 
@@ -69,6 +70,19 @@ export default class Login extends React.Component {
         }
       }
 
+=======
+      const credential = firebase.auth.FacebookAuthProvider.credential();
+      firebase.auth().signInWithCredential(credential)
+        .then((result) => {
+          // User signed in.
+          var token = result.credential.accessToken;
+          console.log("token",token)
+        })
+        .catch((error) => {
+          // Error occurred.
+        });
+    }
+>>>>>>> 21d5c106b2043fa9c294ad1f97d962b7d015e032
     render() {
         return (
         
@@ -85,7 +99,8 @@ export default class Login extends React.Component {
             <Text style={{color:'white', width:'80%',marginBottom:40, fontSize:14, fontWeight:'bold', letterSpacing:2,fontStyle:'italic', textAlign:'center'}}>Ingresa tu cuenta y disfruta de tu repertorio</Text>
             {this.state.errorMessage &&
               <Text style={{ color: '#fff' }}>
-                datos invalidos{/*  {this.state.errorMessage} */}
+                datos invalidos{ this.state.errorMessage}
+               { console.log(this.state.errorMessage)}
               </Text>}
      
 

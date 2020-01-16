@@ -1,9 +1,6 @@
-import React from 'react';
-import { StyleSheet, Platform, Image, Text, View } from 'react-native'
 import {createAppContainer} from 'react-navigation';
 import {createStackNavigator} from 'react-navigation-stack';
 import Loading from './src/components/Loading.js'
-
 import Main from './src/components/Main.js'// create our app's navigation stack
 import List from './src/components/List.js'
 import AddItem from './src/components/AddItem.js'
@@ -20,6 +17,7 @@ import Contacts from './src/components/Contacts.js'
 import LocalNotifications from './src/components/LocalNotifications.js'
 import Settings from './src/components/Settings.js'
 import ShowProfile from './src/components/profile/ShowProfile.js'
+import AdminDashboard from './src/components/admin/AdminDashboard.js'
 
 const AppNavigator = createStackNavigator(
 {
@@ -43,7 +41,8 @@ const AppNavigator = createStackNavigator(
   LocalNotifications:{screen:LocalNotifications},
 
   Settings:{screen:Settings},
-  ShowProfile:{screen:ShowProfile}
+  ShowProfile:{screen:ShowProfile},
+  AdminDashboard:{screen:AdminDashboard}
 },
 {headerMode: 'none',
   initialRouteName: 'Main',
