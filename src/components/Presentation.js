@@ -1,11 +1,12 @@
 import React from 'react'
-import { StyleSheet,ImageBackground, Text, AsyncStorage, View, TouchableOpacity } from 'react-native'
+import { StyleSheet,ImageBackground, Text, AsyncStorage, View, TouchableOpacity,Alert } from 'react-native'
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {styles} from '../styles/Styles'
 import * as firebase from "firebase/app";
 import { create } from 'uuid-js';
-
-
+import { AccessToken, LoginManager } from 'react-native-fbsdk';
+import Expo from 'expo'
+import * as Facebook from 'expo-facebook';
 export default class Login extends React.Component {
     constructor(props) {
       super(props);
@@ -29,16 +30,43 @@ export default class Login extends React.Component {
       }
     }
     componentDidMount() {
+      firebase.auth().onAuthStateChanged((user)=>{
+        if(user !=null){
+          console.log(user)
+        }
+      })
      this.getData()
     }
     handleLoginFacebook = () =>{
-      const provider = new firebase.auth.FacebookAuthProvider();
-      firebase
-      .auth()
-      .signInWithRedirect(provider)
-      .then(() => this.props.navigation.navigate('Main'))
-      .catch(error => this.setState({ errorMessage: error.message }))
-      console.log('handleLogin')
+      this.loginWithFacebook()
+      }
+
+      async loginWithFacebook() {
+        try {
+          const {
+            type,
+            token,
+            expires,
+            permissions,
+            declinedPermissions,
+          } = await Facebook.logInWithReadPermissionsAsync('2487421368013795',{
+            permissions: ['public_profile'],
+          });
+          if (type === 'success') {
+            // Get the user's name using Facebook's Graph API
+            const response = await fetch(`https://graph.facebook.com/me?access_token=${token}`);
+            const credential = firebase.auth.FacebookAuthProvider.credential(token)
+          
+            firebase.auth().signInWithCredential(credential).catch((error) => {
+            console.log(error)})
+            Alert.alert('Logged in!', `Hi ${(await response.json()).name}!`);
+            console.log(await response);
+          } else {
+            // type === 'cancel'
+          }
+        } catch ({ message }) {
+          alert(`Facebook Login Error: ${message}`);
+        }
       }
 
     render() {
