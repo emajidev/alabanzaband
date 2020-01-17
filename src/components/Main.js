@@ -244,6 +244,7 @@ class Page2 extends React.Component {
     );
   }
 }
+
 const MyDrawerNavigator = createDrawerNavigator({
   Inicio: {
     screen: Main,

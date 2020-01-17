@@ -177,15 +177,15 @@ componentDidMount() {
    ;
   }
 
-componentWillUnmount() {
+/* componentWillUnmount() {
     BackHandler.removeEventListener('hardwareBackPress', this.handleBackButton);
-}
+} */
 
-handleBackButton() {
+/* handleBackButton() {
     ToastAndroid.show('Back button is pressed', ToastAndroid.SHORT);
 
     return true;
-}
+} */
   filterSearch(text){
     const filterItem = items.filter(function(item){
     const itemdata=  item.name.toUpperCase()

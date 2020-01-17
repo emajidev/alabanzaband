@@ -101,7 +101,7 @@ class Navbar extends React.Component{
               />
             </TouchableOpacity>
             <TouchableOpacity style={navbarStyles.btn_nav}
-            onPress={() => this.props.navigation.navigate('AddItem')}>
+            onPress={() => this.props.navigation.navigate('Suggestion')}>
               <Icon 
                 name='music'
                 color='#5f25fe'

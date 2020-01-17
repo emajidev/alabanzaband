@@ -3,6 +3,8 @@ import { Modal,Text, Alert,TextInput, View, TouchableOpacity,AsyncStorage,Toucha
 import Icon from 'react-native-vector-icons/Feather';
 import { withNavigation } from 'react-navigation'
 
+
+import {navbarStyles} from '../../styles/Styles'
 import * as firebase from "firebase/app";
 import { db } from '../firebase';
 
@@ -62,11 +64,26 @@ class AdminDashboard extends React.Component {
         
         return (
         
-        <View  style={[styles.modalAdminActive, this.state.inactive ? styles.inactive:styles.modalAdminInactive]}  {...this._panResponder.panHandlers}>
-          <Text>Bienvenido Admin aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</Text>
+        <View  /* style={[styles.modalAdminActive, this.state.inactive ? styles.inactive:styles.modalAdminInactive]}  */ {...this._panResponder.panHandlers}>
           <TouchableOpacity onPress={()=>this.closeAdmin()}>
             <Text>Salir</Text>
           </TouchableOpacity>
+          <View style={{ flex:1, justifyContent:'flex-start'}}>
+        <Text style={navbarStyles.title}> Bienvenido Admin</Text>
+        <TouchableOpacity style={navbarStyles.btn_nav}
+          onPress={() => this.props.navigation.navigate('AddItem')}>
+            <Text>Agregar cancion</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={navbarStyles.btn_nav}
+          onPress={() => this.props.navigation.navigate('Navbar')}>
+            <Text>visualizar</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={navbarStyles.btn_nav}
+          onPress={() => this.props.navigation.navigate('ShowSuggestion')}>
+            <Text>ver recomendaciones</Text>
+        </TouchableOpacity>
+      </View>
+  
         </View> 
         )
       }

@@ -18,7 +18,8 @@ import LocalNotifications from './src/components/LocalNotifications.js'
 import Settings from './src/components/Settings.js'
 import ShowProfile from './src/components/profile/ShowProfile.js'
 import AdminDashboard from './src/components/admin/AdminDashboard.js'
-
+import Suggestion from './src/components/Suggestion.js'
+import ShowSuggestion from './src/components/admin/ShowSuggestion.js'
 const AppNavigator = createStackNavigator(
 {
   Loading:{screen:Loading},
@@ -42,7 +43,10 @@ const AppNavigator = createStackNavigator(
 
   Settings:{screen:Settings},
   ShowProfile:{screen:ShowProfile},
-  AdminDashboard:{screen:AdminDashboard}
+  AdminDashboard:{screen:AdminDashboard},
+
+  Suggestion:{screen:Suggestion},
+  ShowSuggestion:{screen:ShowSuggestion}
 },
 {headerMode: 'none',
   initialRouteName: 'Main',
