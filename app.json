@@ -10,6 +10,7 @@
       "web"
     ],
     "version": "1.0.0",
+    "facebookScheme":"fb2487421368013795",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "splash": {
