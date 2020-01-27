@@ -61,8 +61,10 @@ nofiticationsBd = async () => {
                 let fechaFin = item.time
                 let dif = fechaFin - fechaInicio
 /*                 this.sendNotificationImmediately(item.sender, item.coment);
- */                
+ */             this.sendNotificationImmediately( item.sender, item.coment)
+  
                 console.log("diferencia",dif );
+                
                 if(dif >= 300000){
                   /* send notification  */
                   console.log("Enviado mayor a 5min")
@@ -100,13 +102,6 @@ songsBd(){
 }
 /* notificaciones programadas  */
 scheduleNotification = async (sender,comment,dif) => {
-  /* let fechaInicio = new Date('2020-01-06T20:20').getTime() */
-/*    1578356779815       1578356933562
-      1578356779815       1578342000000 */
-
-
- 
-
  notificationId = Notifications.scheduleLocalNotificationAsync(
     {
       title: "Enviado por :" +sender,
@@ -126,16 +121,16 @@ scheduleNotification = async (sender,comment,dif) => {
 
 };
 /* notificaciones inmediatas  */
-sendNotificationImmediately = async (username,coment) => {
-  let notificationId = await Notifications.presentLocalNotificationAsync({
-    sound: 'default',
-    title: username,
-    body: coment,
-    android: {
-      channelId: 'notifications-messages',
-      vibrate: [0, 250, 250, 250],
-      color: '#FF0000'
-    },
+sendNotificationImmediately = async (sender,comment) => {
+   notificationId = await Notifications.presentLocalNotificationAsync(
+    {
+      title:sender+ " ha enviado",
+      body: comment,
+      android: {
+        channelId: 'notifications-messages',
+        vibrate: [0, 250, 250, 250],
+        color: '#FF0000'
+      },
   });
   /* console.log(notificationId); */ // can be saved in AsyncStorage or send to server
   };

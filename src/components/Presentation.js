@@ -38,7 +38,6 @@ export default class Login extends React.Component {
      this.getData()
     }
     handleLoginFacebook = () =>{
-<<<<<<< HEAD
       this.loginWithFacebook()
       }
 
@@ -70,19 +69,6 @@ export default class Login extends React.Component {
         }
       }
 
-=======
-      const credential = firebase.auth.FacebookAuthProvider.credential();
-      firebase.auth().signInWithCredential(credential)
-        .then((result) => {
-          // User signed in.
-          var token = result.credential.accessToken;
-          console.log("token",token)
-        })
-        .catch((error) => {
-          // Error occurred.
-        });
-    }
->>>>>>> 21d5c106b2043fa9c294ad1f97d962b7d015e032
     render() {
         return (
         
