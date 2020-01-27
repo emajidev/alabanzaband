@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet,TextInput ,ActivityIndicator,Platform,AsyncStorage, BackHandler,
-  ToastAndroid,} from 'react-native';
+  ToastAndroid,
+  Alert,} from 'react-native';
 import ItemComponent from '../components/ItemComponent';
 import { db } from './firebase.js';
 import { Notifications} from 'expo';
@@ -8,6 +9,8 @@ import { withNavigation } from 'react-navigation';
 import * as firebase from "firebase/app";
 import {AppColors}from './global'
 let itemsRef = db.ref('/items');
+
+import chordpro from './funtion/chordpro.js';
 
 
 class List extends Component {
@@ -162,6 +165,10 @@ getData = async () => {
   }
 }
 componentDidMount() {
+  var letra = "Its only to [Am7]test my [F]program to [C/E]see if it [F]worksI [Dm7]hope it [F]does or [Gsus4]else Ill [G]be [C]sad."
+  var output = chordpro.to_txt(letra.toString());
+  console.log(output);
+  Alert.alert(output)
     this.songsBd()
     this.nofiticationsBd();
 

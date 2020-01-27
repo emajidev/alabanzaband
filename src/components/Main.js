@@ -22,6 +22,8 @@ let user;
 let newData
 let modUser = db.ref('/moduser');
 
+
+
 class Child  extends React.Component {
   render(){
      return(
@@ -57,6 +59,9 @@ class Content extends React.Component {
   });
 }
  componentDidMount() {
+
+
+
    this.getModUser();
   setTimeout(() => {
     console.log("temp")
