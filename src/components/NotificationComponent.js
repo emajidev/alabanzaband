@@ -11,20 +11,58 @@ class NotificationComponent extends React.Component {
   state = {
     search:'',
     typeOfSearch:'name',
+    accepted:false
   };
+  constructor(props) {
+    super(props);
+    this.state = {
+      accepted:false
+    };
+  }
+  updateNotification = async(phoneSenderToRequest,status)=>{
+      try {
  
+        db.ref('/users/user'+phoneSenderToRequest+'/'+'notifications'+'/').update({
+          accepted: status,
+        }) 
+      }catch(e){
+      }               
+    
+  }
 
 render() {
   
- 
+    console.log("estado accepted notificacion es ",this.state.accepted )
     return (
       <View style={styles.itemsList}>
         {this.props.items.map((item, index) => {
         
           return (
               <View key={index}>
-                <Text style={styles.itemtext} >{item.name} </Text>
-                <Text style={styles.itemtext} >{item.coment} </Text>
+                 // confimation bewten users 
+                {item.accepted ==true ? (
+                  <View>
+                    <Text style={styles.itemtext} >{item.name} </Text>
+                   <Text style={styles.itemtext} >{item.coment} </Text>
+                  </View>
+                ): (
+                  <View>
+                    <Text>Acepta la invitacion ?</Text>
+                    <TouchableOpacity
+                    onPress={()=>this.updateNotification(item.sender,true) }
+                    ><Text>Si</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                    onPress={()=>this.updateNotification(item.sender,false)}
+                    >
+                      <Text>No</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity>
+                      <Text>Ver</Text>
+                    </TouchableOpacity>
+                  </View>
+                )}
+               
               </View>
          
           );

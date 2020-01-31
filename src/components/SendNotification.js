@@ -118,7 +118,8 @@ class Select extends React.Component {
                        category:ItemNotification.item.category,
                        lyrics:ItemNotification.item.lyrics,
                        coment:ItemNotification.coment,
-                       time:ItemNotification.date
+                       time:ItemNotification.date,
+                       accepted: false,
                      }) 
                    })
                   
