@@ -65,9 +65,7 @@ class AdminDashboard extends React.Component {
         return (
         
         <View  /* style={[styles.modalAdminActive, this.state.inactive ? styles.inactive:styles.modalAdminInactive]}  */ {...this._panResponder.panHandlers}>
-          <TouchableOpacity onPress={()=>this.closeAdmin()}>
-            <Text>Salir</Text>
-          </TouchableOpacity>
+     
           <View style={{ flex:1, justifyContent:'flex-start'}}>
         <Text style={navbarStyles.title}> Bienvenido Admin</Text>
         <TouchableOpacity style={navbarStyles.btn_nav}
@@ -81,6 +79,10 @@ class AdminDashboard extends React.Component {
         <TouchableOpacity style={navbarStyles.btn_nav}
           onPress={() => this.props.navigation.navigate('ShowSuggestion')}>
             <Text>ver recomendaciones</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={navbarStyles.btn_nav}
+          onPress={()=>this.closeAdmin()}>
+            <Text>salir</Text>
         </TouchableOpacity>
       </View>
   

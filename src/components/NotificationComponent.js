@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet,TouchableOpacity,TextInput } from 'react-native';
+import { View, Text, StyleSheet,TouchableOpacity,TextInput ,StatusBar} from 'react-native';
 import PropTypes from 'prop-types';
 import {withNavigation} from 'react-navigation';
-
+import { db } from './firebase.js';
 
 class NotificationComponent extends React.Component {
   static propTypes = {
@@ -19,12 +19,13 @@ class NotificationComponent extends React.Component {
       accepted:false
     };
   }
-  updateNotification = async(phoneSenderToRequest,status)=>{
+  updateNotification = async(phoneSenderToRequest,id,status)=>{
       try {
- 
-        db.ref('/users/user'+phoneSenderToRequest+'/'+'notifications'+'/').update({
-          accepted: status,
-        }) 
+        console.log("estado accepted" )
+        const ref = db.ref('/users/user'+phoneSenderToRequest+'/'+'notifications')
+        ref.child(id).update({accepted: status,})
+        
+        
       }catch(e){
       }               
     
@@ -32,34 +33,37 @@ class NotificationComponent extends React.Component {
 
 render() {
   
-    console.log("estado accepted notificacion es ",this.state.accepted )
+   
     return (
-      <View style={styles.itemsList}>
+      <View style={styles.content}>
         {this.props.items.map((item, index) => {
-        
+        console.log("notificaciones",item)
           return (
-              <View key={index}>
-                 // confimation bewten users 
+              <View key={index} style={styles.container}>
                 {item.accepted ==true ? (
-                  <View>
+                  <View style={styles.notifStyle}>
                     <Text style={styles.itemtext} >{item.name} </Text>
                    <Text style={styles.itemtext} >{item.coment} </Text>
                   </View>
                 ): (
-                  <View>
-                    <Text>Acepta la invitacion ?</Text>
-                    <TouchableOpacity
-                    onPress={()=>this.updateNotification(item.sender,true) }
-                    ><Text>Si</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                    onPress={()=>this.updateNotification(item.sender,false)}
-                    >
-                      <Text>No</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity>
-                      <Text>Ver</Text>
-                    </TouchableOpacity>
+                  <View style={styles.confirmation}>
+                    <Text style={{color:'#10cb42'}}>¿ Acepta la invitacion de {item.sender} ?</Text>
+                    <View style={{flexDirection:'row'}}>
+                      <TouchableOpacity
+                      onPress={()=>this.updateNotification(item.phoneSender,item.id,true)}
+                      style={styles.btn_accept}
+                      >
+                        <Text style={{color:'#fff'}}>si</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                      onPress={()=>this.updateNotification(item.phoneSender,item.id,false)}
+                      style={styles.btn_denied}
+                      >
+                        <Text style={{color:'#10cb42'}}>no</Text>
+                      </TouchableOpacity>
+                    </View>
+             
+                 
                   </View>
                 )}
                
@@ -73,37 +77,110 @@ render() {
 }
 export default withNavigation(NotificationComponent);
 
-const styles = StyleSheet.create ({
-    container:{
-       flex:1,
-       width: '100%',
-       backgroundColor: '#d8fff4',
-       
+const styles = StyleSheet.create({
+    
+  header:{
+    flex: 1,
+    marginTop: StatusBar.currentHeight,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  content:{
+    flex: 6,
+    width:'100%',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+  },
+  container: {
+      width:'100%',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+  notifStyle:{
+    borderColor:'#5f25fe',
+    borderBottomWidth:1,
+    borderRadius:10,
+    paddingLeft:20,
+    paddingBottom:30,
+    marginBottom:5,
+    width:'100%',
+  },
+  confirmation:{
+    borderColor:'#10cb42',
+    borderWidth:1,
+    borderRadius:10,
+
+    width:'100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+    TextInput: {
+      flexDirection: 'row',
+      
+     
+      marginTop:20,
+      marginBottom:20,
+      width:'80%'
+    },
+    bg:{
+      justifyContent: 'center',
+      alignItems: 'center',
+      width:250,
+      height:50,
+      marginBottom:100,
+    },
+    mg:{
+      marginTop:2
+    },
+   
+    borderBox:{
+     
+      justifyContent: 'center',
+      alignItems: 'center',
+      width:'80%',
+      borderRadius:10,
+      shadowColor: "#000", shadowOffset: { width: 2, height: 4, }, shadowOpacity: 0.2, shadowRadius: 10
      
     },
-   TouchableOpacity: {
-      padding: 10,
-      marginTop: 3,
-      backgroundColor: '#e3e3e3',
-      height:80,
+    btn_sesion:{
+      backgroundColor:'#10cb42',
+      marginTop:20,
+      width:'80%',
+      height:50,
+      justifyContent:"center",
+      alignItems:'center',
       
-   },
-
-   songs: {
-      color: '#4f2f3c',
-   },
-   btnfilter:{
-    width:80,
-    height:30,
-    margin:10,
-    borderRadius:20,
-   
-    backgroundColor:'#e3e3e3',
-    justifyContent:'center',
-    alignItems:'center'
-    
-   },
-   txtFilter:{
-    color:'#a8a8a8',
-   }
-})
+    },
+    btn_facebook:{
+      backgroundColor:'#235e86',
+      marginTop:40,
+      width:'80%',
+      height:50,
+      justifyContent:"center",
+      alignItems:'center',
+      flexDirection:'row'
+  
+    },
+    btn_accept:{
+      backgroundColor:'#10cb42',
+      width:30,
+      height:30,
+      borderRadius:5,
+      margin:10,
+      justifyContent:"center",
+      alignItems:'center',
+      
+    },
+    btn_denied:{
+      
+      borderColor:'#10cb42',
+      borderWidth:1,
+      borderRadius:50,
+      width:30,
+      height:30,
+      borderRadius:5,
+      margin:10,
+      justifyContent:"center",
+      alignItems:'center',
+    },
+});

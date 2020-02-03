@@ -63,7 +63,15 @@ class Select extends React.Component {
       // error reading value
     }
   }
-
+  generateID(){
+    var d = new Date().getDate();
+    var Id ='xxxxxxxxxxx4xxxxyxxxxxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+      var r =(d+Math.random()*16)%16 | 0;
+      d = Math.floor(d/16);
+      return ( c=='x'?r:(r&0x3 | 0x8)).toString(16);
+    });
+    return Id
+  }
   componentDidMount() {
     this.getData()
   }
@@ -104,23 +112,31 @@ class Select extends React.Component {
                underlayColor="#000"
                onPress={async () => {
                 try {
-               
                   const dataUser = await AsyncStorage.getItem('@storage_Key')
                   let newDataUser = JSON.parse(dataUser);
                   
                   if(newDataUser.phone !== null) {
                     // value previously stored
                     this.state.selected.map((phoneToSend, index) =>{
-                    let phoneSender= newDataUser.user
-                    db.ref('/users/user'+phoneToSend+'/'+'notifications'+'/').push({
-                       sender:phoneSender,
+                    let userName= newDataUser.user
+                    let idNotif = this.generateID()
+                    const ref = db.ref('/users/user'+phoneToSend+'/'+'notifications')
+
+                    let newNotif = ref.push({
+                       
+                       sender:userName,
+                       phoneSender:phoneToSend,
                        name:ItemNotification.item.name,
                        category:ItemNotification.item.category,
                        lyrics:ItemNotification.item.lyrics,
                        coment:ItemNotification.coment,
                        time:ItemNotification.date,
-                       accepted: false,
-                     }) 
+                       accepted: 'waiting',
+                     }).then((snapshot) => {
+                      ref.child(snapshot.key).update({"id": snapshot.key})
+                    }); 
+                     let postId = newNotif.key;
+                     console.log("id push",postId) 
                    })
                   
                   }

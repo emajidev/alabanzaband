@@ -1,7 +1,6 @@
 import React from 'react'
-import { Text, TextInput, View, TouchableOpacity,AsyncStorage } from 'react-native'
+import { Text, TextInput, View, TouchableOpacity,AsyncStorage, StyleSheet, StatusBar } from 'react-native'
 import Icon from 'react-native-vector-icons/FontAwesome';
-import styles from '../styles/Styles'
 import * as firebase from "firebase/app";
 import { db } from './firebase.js';
 import {themes} from './conext/theme-context';
@@ -81,7 +80,7 @@ export default class FormProfile extends React.Component {
          
           <View style={styles.content} >
           <Icon 
-              color ='#d9e3dd'
+              color ='#hsl(144, 15%, 87%)'
               name='user'
               size={100}
               />
@@ -141,3 +140,98 @@ export default class FormProfile extends React.Component {
       }
     }
   
+
+    const styles = StyleSheet.create({
+    
+      header:{
+        flex: 1,
+        marginTop: StatusBar.currentHeight,
+        justifyContent: 'center',
+        alignItems: 'center',
+      },
+      content:{
+        flex: 6,
+        width:'100%',
+        justifyContent: 'center',
+        alignItems: 'center',
+      },
+      container: {
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+        },
+        TextInput: {
+          flexDirection: 'row',
+          
+         
+          marginTop:20,
+          marginBottom:20,
+          width:'80%'
+        },
+        bg:{
+          justifyContent: 'center',
+          alignItems: 'center',
+          width:250,
+          height:50,
+          marginBottom:100,
+        },
+        mg:{
+          marginTop:2
+        },
+       
+        borderBox:{
+         
+          justifyContent: 'center',
+          alignItems: 'center',
+          width:'80%',
+          borderRadius:10,
+          shadowColor: "#000", shadowOffset: { width: 2, height: 4, }, shadowOpacity: 0.2, shadowRadius: 10
+         
+        },
+        btn_sesion:{
+          backgroundColor:'#10cb42',
+          marginTop:20,
+          width:'80%',
+          height:50,
+          justifyContent:"center",
+          alignItems:'center',
+          
+        },
+        btn_facebook:{
+          backgroundColor:'#235e86',
+          marginTop:40,
+          width:'80%',
+          height:50,
+          justifyContent:"center",
+          alignItems:'center',
+          flexDirection:'row'
+      
+        },
+        btn_accept:{
+          backgroundColor:'#5f25fe',
+          marginTop:40,
+          width:'80%',
+          height:50,
+          borderRadius:50,
+          justifyContent:"center",
+          alignItems:'center',
+          flexDirection:'row',
+          shadowColor: "#000", shadowOffset: { width: 2, height: 4, }, shadowOpacity: 0.2, shadowRadius: 10
+  
+        },
+        btn_primary_light:{
+          
+          borderColor:'#5f25fe',
+          borderWidth:2,
+          borderRadius:50,
+          marginTop:40,
+          width:'80%',
+          height:50,
+          borderRadius:50,
+          justifyContent:"center",
+          alignItems:'center',
+          flexDirection:'row',
+          shadowColor: "#000", shadowOffset: { width: 2, height: 4, }, shadowOpacity: 0.2, shadowRadius: 10
+  
+        },
+  });

@@ -27,7 +27,7 @@ let modUser = db.ref('/moduser');
 class Child  extends React.Component {
   render(){
      return(
-       <View>
+       <View >
           <ThemeContext.Consumer>
              {data =>
            <ThemeProvider theme={data}>
@@ -101,7 +101,7 @@ class Content extends React.Component {
         <ThemeContext.Provider value={{...this.state.theme}}>
            {this.props.children}
            <View style={styles.container}>
-               <Text>Alertar notificaciones</Text>
+               {/* <Text>Alertar notificaciones</Text>
                <Text style={{backgroundColor:this.state.theme.bg}}>tema</Text>
                 <TouchableOpacity 
                 title="tema"
@@ -109,17 +109,17 @@ class Content extends React.Component {
 
                 >
                   <Text>btn</Text>
-                </TouchableOpacity>
-              <View>
+                </TouchableOpacity> */}
+             
                 {
                   modUser =='admin' ? (
                     <AdminDashboard />
                 
                   ):(
-                    <Child />
+                    <Navbar />
                 )}
                 
-              </View>
+           
             
            </View>
      </ThemeContext.Provider>   
@@ -166,10 +166,14 @@ class Main extends React.Component {
     }}
 const styles = StyleSheet.create({
   container:{
+    backgroundColor:'#f4f',
     flex:1,
-    justifyContent:'flex-start',
+    width:'100%',
+    margin:0,
+    padding:0,
+    justifyContent:'center',
     alignItems:'center',
-    marginTop:StatusBar.currentHeight+15,  
+    
  },
  theme1:{
     width:50,

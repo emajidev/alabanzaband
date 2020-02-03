@@ -25,12 +25,15 @@ export default class ListNotification extends Component {
       if(newData.phone !== null) {
         // value previously stored
         let itemsRef = db.ref('/users/'+newData.phone+'/'+'notifications' );
-        itemsRef.on('value', snapshot => {
+        itemsRef.on('value', (snapshot,prevChildKey) => {
           let data = snapshot.val();
+          var id = snapshot.key;
           if(data !== null){  
             let items = Object.values(data);
             this.setState({ items });
             console.log("tamaño de notificaiones",items.length)
+            console.log("unique id " + id);
+
           }else[
             console.log("no hay notificaciones")
           ]
@@ -47,11 +50,11 @@ componentDidMount() {
 
 render() {
     
-   
+
     return (
      
       <View style={styles.container}>
-   
+        <Text>Notificaciones</Text>
         {this.state.items.length > 0 ? (
           
           <NotificationComponent items={this.state.items} />

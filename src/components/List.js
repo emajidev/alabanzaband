@@ -31,7 +31,44 @@ class List extends Component {
       date:new Date().getTime() + 10000,
     }
   }
-
+notifcationRequest = async () => {
+  try {
+    const data = await AsyncStorage.getItem('@storage_Key')
+    let newData = JSON.parse(data);
+    if(newData.phone !== null) {
+      // value previously stored
+      let itemsRef = db.ref('/users/'+newData.phone+'/'+'notifications' );
+      itemsRef.on('value', (snapshot,prevChildKey) => {
+        let data = snapshot.val();
+        var id = snapshot.key;
+        if(data !== null){  
+          let items = Object.values(data);
+          console.log("item for request",items)
+          items.map((item, index) => {
+            switch (item.accepted) {
+              case true:
+                console.log('solicitud aceptada');
+                this.sendNotificationRequest( item.sender, ' solicitud aceptada')
+                break;
+              case false:
+                console.log('solicitud denegada');
+                this.sendNotificationRequest( item.sender, ' solicitud denegada')
+                break;
+              case 'waiting':
+                console.log('solicitud en espera');
+                break;
+              }
+          })
+        }else{
+          console.log("no hay notificaciones")
+      }
+      });
+    }
+  } catch(e) {
+    // error reading value
+    console.log("error notification list",e)
+  }
+}
 nofiticationsBd = async () => {
   try {
     const data = await AsyncStorage.getItem('@storage_Key')
@@ -59,15 +96,11 @@ nofiticationsBd = async () => {
               let fechaInicio= new Date(todayNewDate).getTime()
 
               notiitems.map((item, index) => {
-                  
-                
                 let fechaFin = item.time
                 let dif = fechaFin - fechaInicio
-/*                 this.sendNotificationImmediately(item.sender, item.coment);
+/*              this.sendNotificationImmediately(item.sender, item.coment);
  */             this.sendNotificationImmediately( item.sender, item.coment)
-  
                 console.log("diferencia",dif );
-                
                 if(dif >= 300000){
                   /* send notification  */
                   console.log("Enviado mayor a 5min")
@@ -105,6 +138,7 @@ songsBd(){
 }
 /* notificaciones programadas  */
 scheduleNotification = async (sender,comment,dif) => {
+
  notificationId = Notifications.scheduleLocalNotificationAsync(
     {
       title: "Enviado por :" +sender,
@@ -116,14 +150,27 @@ scheduleNotification = async (sender,comment,dif) => {
       }
     },
     {
-     
       time:new Date().getTime()+ dif ,
     },
   );
   
 
 };
-/* notificaciones inmediatas  */
+/* notificaciones inmediatas   */
+sendNotificationRequest = async (sender,msg) => {
+  notificationId = await Notifications.presentLocalNotificationAsync(
+   {
+     title:sender + msg,
+     
+     android: {
+       channelId: 'notifications-messages',
+       vibrate: [0, 250, 250, 250],
+       color: '#FF0000'
+     },
+ });
+ /* console.log(notificationId); */ // can be saved in AsyncStorage or send to server
+};
+/* notificaciones inmediatas   */
 sendNotificationImmediately = async (sender,comment) => {
    notificationId = await Notifications.presentLocalNotificationAsync(
     {
@@ -136,7 +183,8 @@ sendNotificationImmediately = async (sender,comment) => {
       },
   });
   /* console.log(notificationId); */ // can be saved in AsyncStorage or send to server
-  };
+};
+
 chanelAndroid=() => {
   // ...
   if (Platform.OS === 'android') {
@@ -163,10 +211,9 @@ componentDidMount() {
   var letra = "Its only to [Am7]test my [F]program to [C/E]see if it [F]worksI [Dm7]hope it [F]does or [Gsus4]else Ill [G]be [C]sad."
   var output = chordpro.to_txt(letra.toString());
   console.log(output);
-  Alert.alert(output)
     this.songsBd()
     this.nofiticationsBd();
-
+    this.notifcationRequest();
     this.chanelAndroid();
     
     console.log("inicio session")
@@ -225,7 +272,8 @@ export default withNavigation(List);
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'flex-start',
+    justifyContent:'flex-start',
+    alignItems:'center'
   },
   cont:{
     height:'100%',

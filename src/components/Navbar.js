@@ -7,7 +7,6 @@ import {withNavigation} from 'react-navigation';
 import * as firebase from "firebase/app";
 import Menu, { MenuItem, MenuDivider } from 'react-native-material-menu';
 
-import {navbarStyles} from '../styles/Styles'
 import {ThemeContext, themes} from './conext/theme-context';
 
 import {ThemeProvider} from 'styled-components/native'
@@ -59,10 +58,11 @@ class Navbar extends React.Component{
   render() {
   return (
  
-    <View style={navbarStyles.container}>
+    <View style={navbarStyles.container} >
     <ThemeContext.Consumer>
         {data =>
       <ThemeProvider theme={data}>
+       
         <Header>
           <View style={navbarStyles.iconMenu}>
           <TouchableOpacity style={navbarStyles.btn_nav}
@@ -77,11 +77,11 @@ class Navbar extends React.Component{
               />
             </TouchableOpacity>
           </View>
-          <View style={{ flex:1, justifyContent:'flex-start'}}>
+          <View style={{ flex:1}}>
             <Text style={navbarStyles.title}> ALABANZABAND</Text>
           </View>
           <View style={navbarStyles.iconnavbar}>
-      
+{/*       
             <TouchableOpacity style={navbarStyles.btn_nav}>
               <ContactsIcon 
                 name='contacts'
@@ -90,7 +90,7 @@ class Navbar extends React.Component{
                 size={25}
             
               />
-            </TouchableOpacity>
+            </TouchableOpacity> */}
             <TouchableOpacity style={navbarStyles.btn_nav}>
               <Icon 
                 name='bell'
@@ -100,7 +100,7 @@ class Navbar extends React.Component{
             
               />
             </TouchableOpacity>
-            <TouchableOpacity style={navbarStyles.btn_nav}
+    {/*         <TouchableOpacity style={navbarStyles.btn_nav}
             onPress={() => this.props.navigation.navigate('Suggestion')}>
               <Icon 
                 name='music'
@@ -112,8 +112,8 @@ class Navbar extends React.Component{
                 color='#5f25fe'
                 size={10}
               />
-            </TouchableOpacity>
-            <Menu style={navbarStyles.btn_nav}
+            </TouchableOpacity> */}
+    {/*         <Menu style={navbarStyles.btn_nav}
               ref={this.setMenuRef}
               button={
               <TouchableOpacity onPress={this.showMenu}>
@@ -127,14 +127,14 @@ class Navbar extends React.Component{
               <MenuItem onPress={this.hideMenu}>Perfil</MenuItem>
               <MenuItem onPress={this.singOut}>Cerrar sesión </MenuItem>
               <MenuDivider />
-            </Menu>
+            </Menu> */}
           </View>
         </Header>
-        <View style={navbarStyles.body} >
+        <View >
           <List/>
         </View>
       
-      
+        
       </ThemeProvider>
     }
       
@@ -145,3 +145,49 @@ class Navbar extends React.Component{
 }
 export default withNavigation(Navbar);
 
+const navbarStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+    marginTop:StatusBar.currentHeight,
+    backgroundColor: '#fff',
+    justifyContent:'flex-start',
+    alignItems:'center'
+
+   
+  },
+  header:{
+    flex: .5,
+    flexDirection:'row',
+    backgroundColor: '#f43',
+    justifyContent:'space-around',
+    alignItems:'center' , 
+   
+  }, 
+  btn_nav:{
+    margin:8
+  },
+ 
+  iconMenu:{
+    width: 50, 
+    height: 50,
+    justifyContent:'center',
+    alignItems:'center'
+  },
+
+  iconnavbar:{
+    flexDirection:'row',
+    justifyContent:'center',
+    alignItems:'center'
+  },
+  body:{
+    flex: 5,
+    backgroundColor: '#fff',
+  },
+ 
+  title: {
+    color: '#777',
+    fontSize:20,
+    textAlign:'center'
+   
+  },
+});
