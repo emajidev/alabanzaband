@@ -187,7 +187,7 @@ const styles = StyleSheet.create ({
       alignItems:'flex-start'
    },
    buttonPress:{
-    width:80,
+    width:'20%',
     height:30,
     margin:10,
     borderColor:'#3e64ef',
@@ -201,7 +201,7 @@ const styles = StyleSheet.create ({
       color: '#4f2f3c',
    },
    btnfilter:{
-    width:80,
+    width:'20%',
     height:30,
     margin:10,
     borderRadius:20,

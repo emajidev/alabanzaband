@@ -252,7 +252,7 @@ render() {
    
     return (
      
-      <View style={styles.container}>
+      <View style={{flex:1,width:'100%',height:'100%',position:'relative'}}>
    
         {this.state.items.length > 0 ? (
           
@@ -272,8 +272,9 @@ export default withNavigation(List);
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent:'flex-start',
-    alignItems:'center'
+    
+    
+
   },
   cont:{
     height:'100%',

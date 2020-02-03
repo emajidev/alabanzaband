@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "alabanzaband",
-    "slug": "AwesomeProject",
+    "slug": "alabanzaband-app",
     "privacy": "public",
     "sdkVersion": "35.0.0",
     "platforms": [
@@ -26,6 +26,10 @@
     ],
     "ios": {
       "supportsTablet": true
+    },
+    "android": {
+      "package": "com.alabanzaban.alabanzaban",
+      "versionCode": 1
     }
   }
 }

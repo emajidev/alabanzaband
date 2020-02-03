@@ -22,10 +22,10 @@ export const Header = styled.View`
 `;
 export const Songs = styled.TouchableOpacity`
 	height:50px;
+	width:100%;
 	padding:5%;
 	margin-top: 3;
 	background-color: ${props => props.theme.bg};
-	height:80;
-	align-items:flex-start;
+	
     
 `;
