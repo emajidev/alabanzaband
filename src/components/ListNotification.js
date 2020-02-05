@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet,StatusBar ,ActivityIndicator,AsyncStorage} from 'react-native';
+import { View, Text, StyleSheet,StatusBar ,ActivityIndicator,AsyncStorage,ScrollView} from 'react-native';
 import NotificationComponent from './NotificationComponent';
 
 import { db } from './firebase.js';
@@ -56,8 +56,9 @@ render() {
       <View style={styles.container}>
         <Text>Notificaciones</Text>
         {this.state.items.length > 0 ? (
+            <NotificationComponent items={this.state.items} />
           
-          <NotificationComponent items={this.state.items} />
+          
         ) : (
           <View style={styles.cont}>
             <Text style={{margin:10}}>No hay notificationes</Text>

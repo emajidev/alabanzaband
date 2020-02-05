@@ -146,7 +146,9 @@ scheduleNotification = async (sender,comment,dif) => {
       android: {
         channelId: 'notifications-messages',
         vibrate: [0, 250, 250, 250],
-        color: '#FF0000'
+        color: '#FF3',
+       
+
       }
     },
     {
@@ -165,7 +167,7 @@ sendNotificationRequest = async (sender,msg) => {
      android: {
        channelId: 'notifications-messages',
        vibrate: [0, 250, 250, 250],
-       color: '#FF0000'
+       color: '#FF3',
      },
  });
  /* console.log(notificationId); */ // can be saved in AsyncStorage or send to server
@@ -179,7 +181,7 @@ sendNotificationImmediately = async (sender,comment) => {
       android: {
         channelId: 'notifications-messages',
         vibrate: [0, 250, 250, 250],
-        color: '#FF0000'
+        color: '#FF3',
       },
   });
   /* console.log(notificationId); */ // can be saved in AsyncStorage or send to server

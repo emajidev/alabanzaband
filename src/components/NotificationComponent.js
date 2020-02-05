@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet,TouchableOpacity,TextInput ,StatusBar} from 'react-native';
+import { View, Text, StyleSheet,TouchableOpacity,TextInput ,StatusBar,ScrollView} from 'react-native';
 import PropTypes from 'prop-types';
 import {withNavigation} from 'react-navigation';
 import { db } from './firebase.js';
@@ -35,7 +35,10 @@ render() {
   
    
     return (
+      <ScrollView contentContainerStyle={styles.contcontainer}>
       <View style={styles.content}>
+       
+        
         {this.props.items.map((item, index) => {
         console.log("notificaciones",item)
           return (
@@ -71,7 +74,9 @@ render() {
          
           );
         })}
+     
       </View>
+      </ScrollView>
     );
   }
 }
@@ -85,6 +90,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+
   content:{
     flex: 6,
     width:'100%',
@@ -92,6 +98,12 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
   },
   container: {
+      width:'100%',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    container: {
+      flex: 1,
       width:'100%',
       justifyContent: 'center',
       alignItems: 'center',
