@@ -9,7 +9,6 @@ import { withNavigation } from 'react-navigation';
 import * as firebase from "firebase/app";
 import {AppColors}from './global'
 let itemsRef = db.ref('/items');
-
 import chordpro from './funtion/chordpro.js';
 
 
@@ -98,8 +97,20 @@ nofiticationsBd = async () => {
               notiitems.map((item, index) => {
                 let fechaFin = item.time
                 let dif = fechaFin - fechaInicio
+                const ref = db.ref('/users/user'+item.phoneSender+'/'+'notifications')
+
 /*              this.sendNotificationImmediately(item.sender, item.coment);
- */             this.sendNotificationImmediately( item.sender, item.coment)
+ */             console.log("contacto",item.phoneSender, "id",item.id)
+                if (item.toSent=='yes'){
+                  try {
+          
+                    this.sendNotificationImmediately( item.sender, item.coment)
+                    ref.child(item.id).update({toSent: "no"})
+                  
+                  }catch(e){
+                    console.log(e)
+                  }   
+                }
                 console.log("diferencia",dif );
                 if(dif >= 300000){
                   /* send notification  */
@@ -213,7 +224,7 @@ componentDidMount() {
   console.log(output);
     this.songsBd()
     this.nofiticationsBd();
-    this.notifcationRequest();
+   /*  this.notifcationRequest(); */
     this.chanelAndroid();
     
     console.log("inicio session")

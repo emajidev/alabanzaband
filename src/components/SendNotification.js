@@ -132,6 +132,9 @@ class Select extends React.Component {
                        coment:ItemNotification.coment,
                        time:ItemNotification.date,
                        accepted: 'waiting',
+                       toSent:'yes',
+                       read:false
+
                      }).then((snapshot) => {
                       ref.child(snapshot.key).update({"id": snapshot.key})
                     }); 
