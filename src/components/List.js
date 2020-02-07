@@ -76,6 +76,7 @@ nofiticationsBd = async () => {
         /* console.log("llego data",newData.phone) */
          // notificaiones que estan en la bd
         let notifRef = db.ref('/users/'+newData.phone+'/'+'notifications' );
+        console.log("referencia",notifRef)
         try{
           notifRef.on('value', snapshot => {
             let notidata = snapshot.val();
@@ -97,19 +98,21 @@ nofiticationsBd = async () => {
               notiitems.map((item, index) => {
                 let fechaFin = item.time
                 let dif = fechaFin - fechaInicio
-                const ref = db.ref('/users/user'+item.phoneSender+'/'+'notifications')
+                
 
 /*              this.sendNotificationImmediately(item.sender, item.coment);
  */             console.log("contacto",item.phoneSender, "id",item.id)
+
                 if (item.toSent=='yes'){
-                  try {
-          
-                    this.sendNotificationImmediately( item.sender, item.coment)
-                    ref.child(item.id).update({toSent: "no"})
+                  if(item.id!=undefined){
+                    console.log("enxotifi")
+                    this.sendNotificationImmediately(item.sender,item.coment)
+
+                    this.updateNotification(item.phoneSender,item.id,"no")
+                  }
                   
-                  }catch(e){
-                    console.log(e)
-                  }   
+                  
+                 
                 }
                 console.log("diferencia",dif );
                 if(dif >= 300000){
@@ -138,6 +141,17 @@ nofiticationsBd = async () => {
     console.log("error",e)
   }
   
+}
+updateNotification = async(phoneSenderToRequest,id,status)=>{
+  try {
+    console.log("estado accepted" )
+    const ref = db.ref('/users/user'+phoneSenderToRequest+'/'+'notifications')
+    ref.child(id).update({toSent: status,})
+    
+    
+  }catch(e){
+  }               
+
 }
 songsBd(){
   itemsRef.on('value', snapshot => {
