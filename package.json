@@ -12,6 +12,7 @@
     "debug": "adb shell input keyevent 82 && adb shell input keyevent 61 && adb shell input keyevent 66 && adb shell input keyevent 66"
   },
   "dependencies": {
+    "buffer": "^5.4.3",
     "expo": "^35.0.0",
     "expo-facebook": "^7.0.0",
     "firebase": "^7.1.0",
@@ -30,7 +31,8 @@
     "react-navigation": "^4.0.10",
     "react-navigation-drawer": "^2.2.2",
     "react-navigation-stack": "^1.9.3",
-    "styled-components": "^4.4.1"
+    "styled-components": "^4.4.1",
+    "util": "^0.12.1"
   },
   "devDependencies": {
     "babel-preset-expo": "^7.0.0",

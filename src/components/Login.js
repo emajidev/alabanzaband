@@ -172,7 +172,7 @@ export default class Login extends React.Component {
       }
     }
   
-    const styles = StyleSheet.create({
+const styles = StyleSheet.create({
     
       header:{
         flex: 1,

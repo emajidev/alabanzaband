@@ -4,7 +4,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import * as firebase from "firebase/app";
 import { db } from './firebase.js';
 import {themes} from './conext/theme-context';
-
+import PouchDB from 'pouchdb-react-native'
 storeData = async (phone,user,theme) => {
  
   data={
@@ -71,7 +71,10 @@ export default class FormProfile extends React.Component {
      
         
     }
- 
+    componentDidMount(){
+      this.localDB = new PouchDB('songsDB');
+
+    }
 
     render() {
         return (

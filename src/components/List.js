@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet,TextInput ,ActivityIndicator,Platform,AsyncStorage, BackHandler,
-  ToastAndroid,
-  Alert,} from 'react-native';
+import { View, Text, StyleSheet,TextInput ,ActivityIndicator,Platform,AsyncStorage,NetInfo,Alert,} from 'react-native';
 import ItemComponent from '../components/ItemComponent';
 import { db } from './firebase.js';
 import { Notifications} from 'expo';
@@ -13,6 +11,7 @@ import chordpro from './funtion/chordpro.js';
 
 
 class List extends Component {
+  
   state = {
     text:'',
     
@@ -30,6 +29,38 @@ class List extends Component {
       date:new Date().getTime() + 10000,
     }
   }
+
+  CheckConnectivity = () => {
+    // For Android devices
+    if (Platform.OS === "android") {
+      NetInfo.isConnected.fetch().then(isConnected => {
+        if (isConnected) {
+          Alert.alert("You are online!");
+        } else {
+          Alert.alert("You are offline!");
+        }
+      });
+    } else {
+      // For iOS devices
+      NetInfo.isConnected.addEventListener(
+        "connectionChange",
+        this.handleFirstConnectivityChange
+      );
+    }
+  };
+
+  handleFirstConnectivityChange = isConnected => {
+    NetInfo.isConnected.removeEventListener(
+      "connectionChange",
+      this.handleFirstConnectivityChange
+    );
+
+    if (isConnected === false) {
+      Alert.alert("You are offline!");
+    } else {
+      Alert.alert("You are online!");
+    }
+  };
 notifcationRequest = async () => {
   try {
     const data = await AsyncStorage.getItem('@storage_Key')
@@ -68,7 +99,12 @@ notifcationRequest = async () => {
     console.log("error notification list",e)
   }
 }
+
+
 nofiticationsBd = async () => {
+
+ 
+ 
   try {
     const data = await AsyncStorage.getItem('@storage_Key')
     let newData = JSON.parse(data);
@@ -76,13 +112,16 @@ nofiticationsBd = async () => {
         /* console.log("llego data",newData.phone) */
          // notificaiones que estan en la bd
         let notifRef = db.ref('/users/'+newData.phone+'/'+'notifications' );
-        console.log("referencia",notifRef)
+        /* console.log("referencia",notifRef) */
         try{
           notifRef.on('value', snapshot => {
             let notidata = snapshot.val();
             if(notidata !== null){
               let notiitems = Object.values(notidata);
               this.setState({ notiitems });
+              
+              
+              
               /* console.log("tamaño de notificaiones",notiitems.length) */
               // itera la lista de notificaciones extraidas de la bd firebase //
               var currentDate = new Date()
@@ -101,26 +140,23 @@ nofiticationsBd = async () => {
                 
 
 /*              this.sendNotificationImmediately(item.sender, item.coment);
- */             console.log("contacto",item.phoneSender, "id",item.id)
-
+ */             /* console.log("contacto",item.phoneSender, "id",item.id) */
+                this.CheckConnectivity()
                 if (item.toSent=='yes'){
                   if(item.id!=undefined){
-                    console.log("enxotifi")
+                   
                     this.sendNotificationImmediately(item.sender,item.coment)
 
                     this.updateNotification(item.phoneSender,item.id,"no")
-                  }
-                  
-                  
-                 
+                  }      
                 }
-                console.log("diferencia",dif );
+                /* console.log("diferencia",dif ); */
                 if(dif >= 300000){
                   /* send notification  */
-                  console.log("Enviado mayor a 5min")
+                  /* console.log("Enviado mayor a 5min") */
                   this.scheduleNotification( item.sender, item.coment,dif);
                 }else{
-                  console.log("no se envio por el tiempo")
+                  /* console.log("no se envio por el tiempo") */
                 }
        
               })
@@ -171,9 +207,6 @@ scheduleNotification = async (sender,comment,dif) => {
       android: {
         channelId: 'notifications-messages',
         vibrate: [0, 250, 250, 250],
-        color: '#FF3',
-       
-
       }
     },
     {
@@ -184,7 +217,7 @@ scheduleNotification = async (sender,comment,dif) => {
 
 };
 /* notificaciones inmediatas   */
-sendNotificationRequest = async (sender,msg) => {
+sendNotificationRequest = async (sender,msg,toSent,read) => {
   notificationId = await Notifications.presentLocalNotificationAsync(
    {
      title:sender + msg,
@@ -234,7 +267,11 @@ getData = async () => {
     console.log("error",e)
   }
 }
+
 componentDidMount() {
+
+ 
+
   var letra = "Its only to [Am7]test my [F]program to [C/E]see if it [F]worksI [Dm7]hope it [F]does or [Gsus4]else Ill [G]be [C]sad."
   var output = chordpro.to_txt(letra.toString());
   console.log(output);

@@ -10,4 +10,4 @@ let config = {
     measurementId: "G-WWJHTYRF48"
   };
 let app = Firebase.initializeApp(config);
-export const db = app.database();
+export const  db = app.database();
