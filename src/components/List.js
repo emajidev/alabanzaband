@@ -8,7 +8,7 @@ import * as firebase from "firebase/app";
 import {AppColors}from './global'
 let itemsRef = db.ref('/items');
 import chordpro from './funtion/chordpro.js';
-
+import PouchDB from 'pouchdb-react-native'
 
 class List extends Component {
   
@@ -19,12 +19,13 @@ class List extends Component {
   };
   constructor(props){
     super(props);
-
+    this.song_DB = new PouchDB('songs')
     this.state={
       search: '',
       items: [],
       users:[],
       notiitems:[],
+      songsItems:[],
       navigation: this.props.navigation,
       date:new Date().getTime() + 10000,
     }
@@ -141,7 +142,7 @@ nofiticationsBd = async () => {
 
 /*              this.sendNotificationImmediately(item.sender, item.coment);
  */             /* console.log("contacto",item.phoneSender, "id",item.id) */
-                this.CheckConnectivity()
+               
                 if (item.toSent=='yes'){
                   if(item.id!=undefined){
                    
@@ -193,7 +194,15 @@ songsBd(){
   itemsRef.on('value', snapshot => {
     let data = snapshot.val();
     let items = Object.values(data);
+  
+    
+    console.log("tamaño de canciones online",items.length)
+    console.log("tamaño de canciones localdb",this.state.items.length)
+ 
     this.setState({ items });
+    this.update_localDB(this.state.items)
+   
+
     /* console.log("base de datos", this.state.items) */
   });
 }
@@ -267,19 +276,47 @@ getData = async () => {
     console.log("error",e)
   }
 }
+update_localDB=async(data)=>{
 
+
+  try {
+    let doc = await this.song_DB.get('songs');
+    let response = await this.song_DB.put({
+      _id: 'songs',
+      _rev: doc._rev,
+      data: data
+    });
+  } catch (err) {
+    console.log(err);
+  }
+  
+  
+}
+get_localdb=async(name)=>{
+
+
+  try {
+    var doc = await this.song_DB.get('songs');
+  } catch (err) {
+    console.log(err);
+  }
+  this.setState({songsItems:doc})
+  console.log("local db",this.state.songsItems);  
+  
+}
 componentDidMount() {
-
  
+  
 
-  var letra = "Its only to [Am7]test my [F]program to [C/E]see if it [F]worksI [Dm7]hope it [F]does or [Gsus4]else Ill [G]be [C]sad."
+/*   var letra = "Its only to [Am7]test my [F]program to [C/E]see if it [F]worksI [Dm7]hope it [F]does or [Gsus4]else Ill [G]be [C]sad."
   var output = chordpro.to_txt(letra.toString());
-  console.log(output);
+  console.log(output); */
     this.songsBd()
     this.nofiticationsBd();
    /*  this.notifcationRequest(); */
     this.chanelAndroid();
-    
+    this.get_localdb("songs")
+
     console.log("inicio session")
     firebase.auth().onAuthStateChanged(function(user){
       if(user){
@@ -288,6 +325,7 @@ componentDidMount() {
       }
     })
    ;
+   
   }
 
 /* componentWillUnmount() {
@@ -310,9 +348,10 @@ componentDidMount() {
    items : this.state.items.cloneWithRows(filterItem),
  })
 
+ 
   }
 render() {
-    
+  
    
     return (
      
@@ -320,7 +359,7 @@ render() {
    
         {this.state.items.length > 0 ? (
           
-          <ItemComponent items={this.state.items}  />
+          <ItemComponent items={this.state.songsItems.data}  />
         ) : (
           <View style={styles.cont}>
             <Text style={{margin:10}}>Buscando canciones...</Text>
