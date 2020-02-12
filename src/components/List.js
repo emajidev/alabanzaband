@@ -139,9 +139,15 @@ nofiticationsBd = async () => {
                 if (item.toSent=='yes'){
                   if(item.id!=undefined){
                    
-                    this.sendNotificationImmediately(item.sender,item.coment)
+                    let promese = this.sendNotificationImmediately(item.sender,item.coment)
+                    
+                    promese.then(()=>{
+                      this.updateNotification(item.phoneSender,item.id,"no")
+                    })
+                  
+                    
 
-                    this.updateNotification(item.phoneSender,item.id,"no")
+                   
                   }      
                 }
                 /* console.log("diferencia",dif ); */
@@ -176,7 +182,7 @@ updateNotification = async(phoneSenderToRequest,id,status)=>{
   try {
     console.log("estado accepted" )
     const ref = db.ref('/users/user'+phoneSenderToRequest+'/'+'notifications')
-    ref.child(id).update({toSent: status,})
+    ref.child(id).update({toSent: status})
     
     
   }catch(e){
