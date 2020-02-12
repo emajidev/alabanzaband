@@ -1,27 +1,105 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet,TouchableOpacity,TextInput } from 'react-native';
+import { View, Text, StyleSheet,TouchableOpacity,TextInput ,FlatList,  RefreshControl,
+ActivityIndicator} from 'react-native';
 import PropTypes from 'prop-types';
 import {withNavigation} from 'react-navigation';
 import {Container,Songs, Header} from './conext/themes/styled'
 
 import {ThemeContext, themes} from './conext/theme-context';
 import {ThemeProvider} from 'styled-components/native'
+import PouchDB from 'pouchdb-react-native'
 
 class ItemComponent extends React.Component{
   static propTypes = {
     items: PropTypes.array.isRequired
   };
-  state = {
-    search:'',
-    typeOfSearch:'name',
-    
+  constructor(props){
+    super(props)
+    this.song_DB = new PouchDB('songs')
+
+    this.state={
+      songsItems:[],
+      refreshing: true,
+      search:'',
+      typeOfSearch:'name',
+    }
+    this.GetData();
+
+  }
+  componentWillMount(){
+    this.update_localDB(this.props.items)
+  }
+  componentDidMount(){
+    console.log("props",this.props.items)
+    this.get_localdb("songs")
+  }
+  update_localDB=async(data)=>{
+    try {
+      console.log("actualizando data")
+      let doc = await this.song_DB.get('songs');
+      let response = await this.song_DB.put({
+        _id: 'songs',
+        _rev: doc._rev,
+        data: data
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  }
+  GetData = () => {
+    //Service to get the data from the server to render
+
+    return this.update_localDB(this.props.items)
+      .then(responseJson => {
+        this.update_localDB(this.props.items)
+        this.get_localdb("songs")
+        this.setState({
+          refreshing: false,
+          //Setting the data source for the list to render
+          dataSource: this.props.items
+        });
+      })
+      .catch(error => {
+        console.error(error);
+      });
   };
  
+
+  get_localdb=async(name)=>{
+
+
+    try {
+      var doc = await this.song_DB.get('songs');
+    } catch (err) {
+      console.log(err);
+    }
+    this.setState({songsItems:doc})
+    console.log("obtenindo datos")
+  }
+  onRefresh() {
+    //Clear old data of the list
+    this.setState({ dataSource: [] });
+    //Call the Service to get the latest data
+    let update_data = new Promise((resolve,reject)=>{
+      resolve(
+        this.update_localDB(this.props.items),
+      )
+    })
+    
+    update_data
+      .then(()=> this.get_localdb("songs"))
+      .catch(error => console.log("error en refresh",error))
+    
+
+   
+  }
 render() {
     /*  filter search coro  */
+  if(this.state.songsItems.data!=undefined){
+  
     if (this.state.typeOfSearch == 'temas'){
      /*  console.log("category") */
-      let coros = this.props.items.filter(
+      let coros = this.state.songsItems.data.filter(
         (item) => {
           return item.category.toLowerCase().indexOf(this.state.typeOfSearch.toLowerCase())!==-1;
         }
@@ -37,7 +115,7 @@ render() {
     }
     if (this.state.typeOfSearch == 'notas'){
       /* console.log("category") */
-      let coros = this.props.items.filter(
+      let coros = this.state.songsItems.data.filter(
         (item) => {
           return item.category.toLowerCase().indexOf(this.state.typeOfSearch.toLowerCase() )!==-1;
         }
@@ -53,7 +131,7 @@ render() {
     }
     if (this.state.typeOfSearch == 'coros'){
      /*  console.log("category") */
-      let coros = this.props.items.filter(
+      let coros = this.state.songsItems.data.filter(
         (item) => {
           return item.category.toLowerCase().indexOf(this.state.typeOfSearch.toLowerCase() )!==-1;
         }
@@ -69,7 +147,7 @@ render() {
     }
     if (this.state.typeOfSearch == 'titulo'){
       /* console.log("category") */
-      let coros = this.props.items.filter(
+      let coros = this.state.songsItems.data.filter(
         (item) => {
           return item.category.toLowerCase().indexOf(this.state.typeOfSearch.toLowerCase() )!==-1;
         }
@@ -84,13 +162,13 @@ render() {
       
     }
     if (this.state.typeOfSearch == 'name'){
-    var filtered = this.props.items.filter(
+    var filtered = this.state.songsItems.data.filter(
         (item) => {
          return item.name.toLowerCase().indexOf(this.state.search.toLowerCase() )!==-1;
         }
       );
       }
- 
+    }
     return (
       
       <View style={styles.itemsList}>
@@ -143,28 +221,29 @@ render() {
               <Text style={styles.txtFilter}>titulo</Text>
             </TouchableOpacity>
           </View>
-       
-        {filtered.map((item, index) => {
-          return (
-            <View  key={index}>
+    
+          <FlatList
+          data={filtered}
+          enableEmptySections={true}
+          renderItem={({item}) => (
             <ThemeContext.Consumer>
-               {data =>
-             <ThemeProvider theme={data}>
-                <Songs
-                 
-                  onPress={() => this.props.navigation.navigate('ContentItem',{item})}
-                  >
+              {data =>
+                <ThemeProvider theme={data}>
+                  <Songs onPress={() => this.props.navigation.navigate('ContentItem',{item})}>
                   <Text style={styles.itemtext}>{item.name}</Text>
-                </Songs>
-             </ThemeProvider>
-          }
+                  </Songs>   
+                </ThemeProvider>
+               }
             </ThemeContext.Consumer>
-           </View>
-         
-    
-          );
-        })}
-    
+          )}
+          refreshControl={
+            <RefreshControl
+              //refresh control used for the Pull to Refresh
+              refreshing={this.state.refreshing}
+              onRefresh={this.onRefresh.bind(this)}
+            />
+          }
+          /> 
       </View>
     );
   }

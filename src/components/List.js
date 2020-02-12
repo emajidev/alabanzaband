@@ -11,7 +11,8 @@ import chordpro from './funtion/chordpro.js';
 import PouchDB from 'pouchdb-react-native'
 
 class List extends Component {
-  
+  _isMounted = false;
+
   state = {
     text:'',
     
@@ -19,13 +20,11 @@ class List extends Component {
   };
   constructor(props){
     super(props);
-    this.song_DB = new PouchDB('songs')
     this.state={
       search: '',
       items: [],
       users:[],
       notiitems:[],
-      songsItems:[],
       navigation: this.props.navigation,
       date:new Date().getTime() + 10000,
     }
@@ -103,9 +102,6 @@ notifcationRequest = async () => {
 
 
 nofiticationsBd = async () => {
-
- 
- 
   try {
     const data = await AsyncStorage.getItem('@storage_Key')
     let newData = JSON.parse(data);
@@ -120,9 +116,6 @@ nofiticationsBd = async () => {
             if(notidata !== null){
               let notiitems = Object.values(notidata);
               this.setState({ notiitems });
-              
-              
-              
               /* console.log("tamaño de notificaiones",notiitems.length) */
               // itera la lista de notificaciones extraidas de la bd firebase //
               var currentDate = new Date()
@@ -194,16 +187,7 @@ songsBd(){
   itemsRef.on('value', snapshot => {
     let data = snapshot.val();
     let items = Object.values(data);
-  
-    
-    console.log("tamaño de canciones online",items.length)
-    console.log("tamaño de canciones localdb",this.state.items.length)
- 
     this.setState({ items });
-    this.update_localDB(this.state.items)
-   
-
-    /* console.log("base de datos", this.state.items) */
   });
 }
 /* notificaciones programadas  */
@@ -276,67 +260,31 @@ getData = async () => {
     console.log("error",e)
   }
 }
-update_localDB=async(data)=>{
 
-
-  try {
-    let doc = await this.song_DB.get('songs');
-    let response = await this.song_DB.put({
-      _id: 'songs',
-      _rev: doc._rev,
-      data: data
-    });
-  } catch (err) {
-    console.log(err);
-  }
-  
-  
-}
-get_localdb=async(name)=>{
-
-
-  try {
-    var doc = await this.song_DB.get('songs');
-  } catch (err) {
-    console.log(err);
-  }
-  this.setState({songsItems:doc})
-  console.log("local db",this.state.songsItems);  
-  
-}
 componentDidMount() {
- 
-  
+    this._isMounted = true;
 
 /*   var letra = "Its only to [Am7]test my [F]program to [C/E]see if it [F]worksI [Dm7]hope it [F]does or [Gsus4]else Ill [G]be [C]sad."
   var output = chordpro.to_txt(letra.toString());
   console.log(output); */
+    if(this._isMounted){
     this.songsBd()
     this.nofiticationsBd();
    /*  this.notifcationRequest(); */
     this.chanelAndroid();
-    this.get_localdb("songs")
 
     console.log("inicio session")
     firebase.auth().onAuthStateChanged(function(user){
       if(user){
         let email=user.email
         console.log("user conectado",email)
-      }
-    })
-   ;
-   
+        }
+      });
+    }
   }
-
-/* componentWillUnmount() {
-    BackHandler.removeEventListener('hardwareBackPress', this.handleBackButton);
-} */
-
-/* handleBackButton() {
-    ToastAndroid.show('Back button is pressed', ToastAndroid.SHORT);
-
-    return true;
-} */
+  componentWillUnmount(){
+    this._isMounted = false;
+  }
   filterSearch(text){
     const filterItem = items.filter(function(item){
     const itemdata=  item.name.toUpperCase()
@@ -359,7 +307,7 @@ render() {
    
         {this.state.items.length > 0 ? (
           
-          <ItemComponent items={this.state.songsItems.data}  />
+          <ItemComponent items={this.state.items}  />
         ) : (
           <View style={styles.cont}>
             <Text style={{margin:10}}>Buscando canciones...</Text>

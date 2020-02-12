@@ -16,6 +16,7 @@ let userAdminState = () => {
 };
 
 class AdminDashboard extends React.Component {
+  _isMounted = false;
 
   constructor(props){
     super(props);
@@ -24,37 +25,43 @@ class AdminDashboard extends React.Component {
     }
   }
    componentWillMount(){
+     this._isMounted = true;
+     if (this._isMounted){
      if(this.state.inactive){
-      this.timeout = setTimeout(()=>{
-        this.setState({
-          inactive:true
+        this.timeout = setTimeout(()=>{
+          this.setState({
+            inactive:true
+          })
+          console.log("inactivo")
+          userAdminState()
+
+        },180000)// en 3 minutos cierra la sesion d admin
+      }
+
+      this._panResponder = PanResponder.create({
+        onMoveShouldSetPanResponderCapture:()=>{
+        clearTimeout(this.timeout);
+        this.setState((state)=>{
+          if(state.inactive === false) return null;
+          return{
+            inactive:false
+          }
         })
-        console.log("inactivo")
-        userAdminState()
+        // temporizador 
+        this.timeout = setTimeout(()=>{
+          this.setState({
+            inactive:true, 
+          })
+          userAdminState()
 
-      },180000)// en 3 minutos cierra la sesion d admin
-     }
-
-    this._panResponder = PanResponder.create({
-      onMoveShouldSetPanResponderCapture:()=>{
-      clearTimeout(this.timeout);
-      this.setState((state)=>{
-        if(state.inactive === false) return null;
-        return{
-          inactive:false
-        }
+        },180000)
+        return false;
+        },
       })
-      // temporizador 
-       this.timeout = setTimeout(()=>{
-         this.setState({
-           inactive:true, 
-         })
-         userAdminState()
-
-       },180000)
-       return false;
-      },
-    })
+    }
+   }
+   componentWillUnmount(){
+     this._isMounted = false;
    }
    closeAdmin(){
       userAdminState()
