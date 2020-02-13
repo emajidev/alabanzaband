@@ -31,7 +31,7 @@ class List extends Component {
   }
 
   CheckConnectivity = () => {
-    // For Android devices
+      // For Android devices
     if (Platform.OS === "android") {
       NetInfo.isConnected.fetch().then(isConnected => {
         if (isConnected) {
@@ -40,8 +40,8 @@ class List extends Component {
           Alert.alert("You are offline!");
         }
       });
-    } else {
-      // For iOS devices
+    }else{
+        // For iOS devices
       NetInfo.isConnected.addEventListener(
         "connectionChange",
         this.handleFirstConnectivityChange
@@ -56,259 +56,241 @@ class List extends Component {
     );
 
     if (isConnected === false) {
-      Alert.alert("You are offline!");
+        Alert.alert("You are offline!");
     } else {
       Alert.alert("You are online!");
     }
   };
-notifcationRequest = async () => {
-  try {
-    const data = await AsyncStorage.getItem('@storage_Key')
-    let newData = JSON.parse(data);
-    if(newData.phone !== null) {
-      // value previously stored
-      let itemsRef = db.ref('/users/'+newData.phone+'/'+'notifications' );
-      itemsRef.on('value', (snapshot,prevChildKey) => {
-        let data = snapshot.val();
-        var id = snapshot.key;
-        if(data !== null){  
-          let items = Object.values(data);
-          console.log("item for request",items)
-          items.map((item, index) => {
-            switch (item.accepted) {
-              case true:
-                console.log('solicitud aceptada');
-                this.sendNotificationRequest( item.sender, ' solicitud aceptada')
-                break;
-              case false:
-                console.log('solicitud denegada');
-                this.sendNotificationRequest( item.sender, ' solicitud denegada')
-                break;
-              case 'waiting':
-                console.log('solicitud en espera');
-                break;
+
+  notifcationRequest = async () => {
+    try {
+      const data = await AsyncStorage.getItem('@storage_Key')
+      let newData = JSON.parse(data);
+      if(newData.phone !== null) {
+        // value previously stored
+        let itemsRef = db.ref('/users/'+newData.phone+'/'+'notifications' );
+        itemsRef.on('value', (snapshot,prevChildKey) => {
+          let data = snapshot.val();
+          var id = snapshot.key;
+          if(data !== null){  
+            let items = Object.values(data);
+            console.log("item for request",items)
+            items.map((item, index) => {
+              if(item.id!=undefined){
+              switch (item.accepted) {
+                case true:
+                  console.log('solicitud aceptada');
+                  let accepted =  this.sendNotificationRequest( item.sender, ' solicitud aceptada')
+                  accepted.then(()=>{
+                    this.updateNotificationRequest(item.phoneSender,item.id,"accepted")
+                  })
+                  break;
+                case false:
+                  let denied =  this.sendNotificationRequest( item.sender, ' solicitud denegada')
+
+                  denied.then(()=>{
+                    this.updateNotificationRequest(item.phoneSender,item.id,"denied")
+                  })
+                  break;
+                case 'waiting':
+                  console.log('solicitud en espera');
+                  break;
+                }
               }
-          })
-        }else{
-          console.log("no hay notificaciones")
-      }
-      });
-    }
-  } catch(e) {
-    // error reading value
-    console.log("error notification list",e)
-  }
-}
-
-
-nofiticationsBd = async () => {
-  try {
-    const data = await AsyncStorage.getItem('@storage_Key')
-    let newData = JSON.parse(data);
-    if(newData.phone !== null) {
-        /* console.log("llego data",newData.phone) */
-         // notificaiones que estan en la bd
-        let notifRef = db.ref('/users/'+newData.phone+'/'+'notifications' );
-        /* console.log("referencia",notifRef) */
-        try{
-          notifRef.on('value', snapshot => {
-            let notidata = snapshot.val();
-            if(notidata !== null){
-              let notiitems = Object.values(notidata);
-              this.setState({ notiitems });
-              /* console.log("tamaño de notificaiones",notiitems.length) */
-              // itera la lista de notificaciones extraidas de la bd firebase //
-              var currentDate = new Date()
-              var day = currentDate.getDate() <10 ? '0'+currentDate.getDate():currentDate.getDate();
-              var month = (currentDate.getMonth() + 1 ) < 10 ? ('0'+(currentDate.getMonth() + 1)) :currentDate.getMonth() + 1;
-              var year = currentDate.getFullYear()
-              var hours=currentDate.getHours() < 10? '0'+currentDate.getHours():currentDate.getHours();
-              var min = currentDate.getMinutes() <10 ? '0'+currentDate.getMinutes():currentDate.getMinutes();
-              var today = ((year+'-'+month+'-'+day+'T'+hours+':'+min).toString());
-              var todayNewDate =  new Date(today)
-              let fechaInicio= new Date(todayNewDate).getTime()
-
-              notiitems.map((item, index) => {
-                let fechaFin = item.time
-                let dif = fechaFin - fechaInicio
-                
-
-/*              this.sendNotificationImmediately(item.sender, item.coment);
- */             /* console.log("contacto",item.phoneSender, "id",item.id) */
-               
-                if (item.toSent=='yes'){
-                  if(item.id!=undefined){
-                   
-                    let promese = this.sendNotificationImmediately(item.sender,item.coment)
-                    
-                    promese.then(()=>{
-                      this.updateNotification(item.phoneSender,item.id,"no")
-                    })
-                  
-                    
-
-                   
-                  }      
-                }
-                /* console.log("diferencia",dif ); */
-                if(dif >= 300000){
-                  /* send notification  */
-                  /* console.log("Enviado mayor a 5min") */
-                  this.scheduleNotification( item.sender, item.coment,dif);
-                }else{
-                  /* console.log("no se envio por el tiempo") */
-                }
-       
-              })
-            }else{
-              console.log("no hay notificaciones")
-              
-
-            }
-          });
-        }catch(e){
-          console.log("notificacions error",e)
+            })
+          }else{
+            console.log("no hay notificaciones")
         }
-       
-    
-    }
-  } catch(e) {
-    // error reading value
-    console.log("error",e)
-  }
-  
-}
-updateNotification = async(phoneSenderToRequest,id,status)=>{
-  try {
-    console.log("estado accepted" )
-    const ref = db.ref('/users/user'+phoneSenderToRequest+'/'+'notifications')
-    ref.child(id).update({toSent: status})
-    
-    
-  }catch(e){
-  }               
-
-}
-songsBd(){
-  itemsRef.on('value', snapshot => {
-    let data = snapshot.val();
-    let items = Object.values(data);
-    this.setState({ items });
-  });
-}
-/* notificaciones programadas  */
-scheduleNotification = async (sender,comment,dif) => {
-
- notificationId = Notifications.scheduleLocalNotificationAsync(
-    {
-      title: "Enviado por :" +sender,
-      body: comment,
-      android: {
-        channelId: 'notifications-messages',
-        vibrate: [0, 250, 250, 250],
+        });
       }
-    },
-    {
-      time:new Date().getTime()+ dif ,
-    },
-  );
-  
+    } catch(e) {
+      console.log("error notification list",e)
+    }
+  }
+  updateNotificationRequest= async(phoneSenderToRequest,id,status)=>{
+    try {
+      console.log("respuesta enviada" )
+      const ref = db.ref('/users/user'+phoneSenderToRequest+'/'+'notifications')
+      ref.child(id).update({accepted: status})
+    }catch(e){
+    }                
+  }
 
-};
-/* notificaciones inmediatas   */
-sendNotificationRequest = async (sender,msg,toSent,read) => {
-  notificationId = await Notifications.presentLocalNotificationAsync(
-   {
-     title:sender + msg,
-     
-     android: {
-       channelId: 'notifications-messages',
-       vibrate: [0, 250, 250, 250],
-       color: '#FF3',
-     },
- });
- /* console.log(notificationId); */ // can be saved in AsyncStorage or send to server
-};
-/* notificaciones inmediatas   */
-sendNotificationImmediately = async (sender,comment) => {
-   notificationId = await Notifications.presentLocalNotificationAsync(
+  initialDate(){
+    let currentDate = new Date()
+    let day = currentDate.getDate() <10 ? '0'+currentDate.getDate():currentDate.getDate();
+    let month = (currentDate.getMonth() + 1 ) < 10 ? ('0'+(currentDate.getMonth() + 1)) :currentDate.getMonth() + 1;
+    let year = currentDate.getFullYear();
+    let hours = currentDate.getHours() < 10? '0'+currentDate.getHours():currentDate.getHours();
+    let min = currentDate.getMinutes() <10 ? '0'+currentDate.getMinutes():currentDate.getMinutes();
+    let today = ((year+'-'+month+'-'+day+'T'+hours+':'+min).toString());
+    let todayNewDate =  new Date(today);
+    let fechaInicio = new Date(todayNewDate).getTime();
+    return fechaInicio;
+  }
+
+  nofiticationsBd = async () => {
+    try {
+      const data = await AsyncStorage.getItem('@storage_Key')
+      let newData = JSON.parse(data);
+      if(newData.phone !== null) {
+          let notifRef = db.ref('/users/'+newData.phone+'/'+'notifications' );
+          try{
+            notifRef.on('value', snapshot => {
+              let notidata = snapshot.val();
+              if(notidata !== null){
+                let notiitems = Object.values(notidata);
+                this.setState({ notiitems });
+                let fechaInicio = this.initialDate()
+                notiitems.map((item, index) => {
+                  let fechaFin = item.time
+                  let dif = fechaFin - fechaInicio
+  /*              this.sendNotificationImmediately(item.sender, item.coment);
+  */             /* console.log("contacto",item.phoneSender, "id",item.id) */
+                  if(item.id!=undefined){
+                    if (item.toSent=='yes'){
+                      let senderNotification = this.sendNotificationImmediately(item.sender,item.coment);
+                      senderNotification.then(()=>{
+                        this.updateNotification(item.phoneSender,item.id,"no")
+                      })
+                    }
+                    if(item.accepted == "accepted"){
+                        /* console.log("diferencia",dif ); */
+                      if(dif >= 300000){
+                        /* send notification  */
+                        /* console.log("Enviado mayor a 5min") */
+                        let scheduleNotification = this.scheduleNotification( item.sender, item.coment,dif);
+                        scheduleNotification.then(()=>{
+                          this.updateNotificationRequest(item.phoneSender,item.id,"complete")
+                        })
+                      }else{
+                        /* console.log("no se envio por el tiempo") */
+                      }
+                    } 
+                  }
+                })
+              }else{
+                console.log("no hay notificaciones")
+              }
+            });
+          }catch(e){
+            console.log("notificacions error",e)
+          }
+      }
+    } catch(e) {
+      // error reading value
+      console.log("error",e)
+    }
+  }
+
+  updateNotification = async(phoneSenderToRequest,id,status)=>{
+    try {
+      console.log("estado accepted" )
+      const ref = db.ref('/users/user'+phoneSenderToRequest+'/'+'notifications')
+      ref.child(id).update({toSent: status})
+    }catch(e){
+    }               
+  }
+
+  songsBd(){
+    itemsRef.on('value', snapshot => {
+      let data = snapshot.val();
+      let items = Object.values(data);
+      this.setState({ items });
+    });
+  }
+
+  /* notificaciones programadas  */
+  scheduleNotification = async (sender,comment,dif) => {
+
+  notificationId = Notifications.scheduleLocalNotificationAsync(
+      {
+        title: "Enviado por :" +sender,
+        body: comment,
+        android: {
+          channelId: 'notifications-messages',
+          vibrate: [0, 250, 250, 250],
+        }
+      },
+      {
+        time:new Date().getTime()+ dif ,
+      },
+    );
+  };
+  /* notificaciones inmediatas   */
+  sendNotificationRequest = async (sender,msg,toSent,read) => {
+    notificationId = await Notifications.presentLocalNotificationAsync(
     {
-      title:sender+ " ha enviado",
-      body: comment,
+      title:sender + msg,
       android: {
         channelId: 'notifications-messages',
         vibrate: [0, 250, 250, 250],
         color: '#FF3',
       },
   });
-  /* console.log(notificationId); */ // can be saved in AsyncStorage or send to server
-};
+  };
+  /* notificaciones inmediatas   */
+  sendNotificationImmediately = async (sender,comment) => {
+    notificationId = await Notifications.presentLocalNotificationAsync(
+      {
+        title:sender+ " ha enviado",
+        body: comment,
+        android: {
+          channelId: 'notifications-messages',
+          vibrate: [0, 250, 250, 250],
+          color: '#FF3',
+        },
+    });
+  };
 
-chanelAndroid=() => {
-  // ...
-  if (Platform.OS === 'android') {
-      Notifications.createChannelAndroidAsync('notifications-messages', {
-        name: 'notifications messages',
-        sound: true,
-      });
-    }
-  
-}
-getData = async () => {
-  try {
-    const value = await AsyncStorage.getItem('@storage_Key')
-    if(value !== null) {
-      // value previously stored
-      /* console.log("llego data",value) */
-    }
-  } catch(e) {
-    // error reading value
-    console.log("error",e)
+  chanelAndroid=() => {
+    // ...
+    if (Platform.OS === 'android') {
+        Notifications.createChannelAndroidAsync('notifications-messages', {
+          name: 'notifications messages',
+          sound: true,
+        });
+      }
+    
   }
-}
 
-componentDidMount() {
+  componentDidMount() {
     this._isMounted = true;
 
-/*   var letra = "Its only to [Am7]test my [F]program to [C/E]see if it [F]worksI [Dm7]hope it [F]does or [Gsus4]else Ill [G]be [C]sad."
-  var output = chordpro.to_txt(letra.toString());
-  console.log(output); */
+  /*   var letra = "Its only to [Am7]test my [F]program to [C/E]see if it [F]worksI [Dm7]hope it [F]does or [Gsus4]else Ill [G]be [C]sad."
+    var output = chordpro.to_txt(letra.toString());
+    console.log(output); */
     if(this._isMounted){
-    this.songsBd()
-    this.nofiticationsBd();
-   /*  this.notifcationRequest(); */
-    this.chanelAndroid();
-
-    console.log("inicio session")
-    firebase.auth().onAuthStateChanged(function(user){
-      if(user){
-        let email=user.email
-        console.log("user conectado",email)
+      this.songsBd()
+      this.nofiticationsBd();
+      this.notifcationRequest();
+      this.chanelAndroid();
+      console.log("inicio session")
+      firebase.auth().onAuthStateChanged(function(user){
+        if(user){
+          let email=user.email
+          console.log("user conectado",email)
         }
       });
     }
   }
   componentWillUnmount(){
-    this._isMounted = false;
+      this._isMounted = false;
+    }
+    filterSearch(text){
+      const filterItem = items.filter(function(item){
+      const itemdata=  item.name.toUpperCase()
+      const textData =  text.toUpperCase()
+      return itemdata.indexOf(textData) > -1
+    });
+    this.setState({
+      text:text,
+      items : this.state.items.cloneWithRows(filterItem),
+    })
   }
-  filterSearch(text){
-    const filterItem = items.filter(function(item){
-    const itemdata=  item.name.toUpperCase()
-    const textData =  text.toUpperCase()
-    return itemdata.indexOf(textData) > -1
- });
- this.setState({
-   text:text,
-   items : this.state.items.cloneWithRows(filterItem),
- })
 
- 
-  }
 render() {
-  
-   
     return (
-     
       <View style={{flex:1,width:'100%',height:'100%',position:'relative'}}>
    
         {this.state.items.length > 0 ? (

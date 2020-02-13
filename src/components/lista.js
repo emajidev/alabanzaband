@@ -73,42 +73,8 @@ export default class Project extends Component {
     }
   };
 notifcationRequest = async () => {
-  try {
-    const data = await AsyncStorage.getItem('@storage_Key')
-    let newData = JSON.parse(data);
-    if(newData.phone !== null) {
-      // value previously stored
-      let itemsRef = db.ref('/users/'+newData.phone+'/'+'notifications' );
-      itemsRef.on('value', (snapshot,prevChildKey) => {
-        let data = snapshot.val();
-        var id = snapshot.key;
-        if(data !== null){  
-          let items = Object.values(data);
-          console.log("item for request",items)
-          items.map((item, index) => {
-            switch (item.accepted) {
-              case true:
-                console.log('solicitud aceptada');
-                this.sendNotificationRequest( item.sender, ' solicitud aceptada')
-                break;
-              case false:
-                console.log('solicitud denegada');
-                this.sendNotificationRequest( item.sender, ' solicitud denegada')
-                break;
-              case 'waiting':
-                console.log('solicitud en espera');
-                break;
-              }
-          })
-        }else{
-          console.log("no hay notificaciones")
-      }
-      });
-    }
-  } catch(e) {
-    // error reading value
-    console.log("error notification list",e)
-  }
+  console.log("respuesta de notificacion")
+  
 }
 
 
@@ -156,9 +122,10 @@ nofiticationsBd = async () => {
                 if (item.toSent=='yes'){
                   if(item.id!=undefined){
                    
-                    this.sendNotificationImmediately(item.sender,item.coment)
-
-                    this.updateNotification(item.phoneSender,item.id,"no")
+                    let promese = this.sendNotificationImmediately(item.sender,item.coment)
+                    promese.then(()=>{
+                      this.updateNotification(item.phoneSender,item.id,"no")
+                    })
                   }      
                 }
                 /* console.log("diferencia",dif ); */
@@ -237,6 +204,8 @@ scheduleNotification = async (sender,comment,dif) => {
 };
 /* notificaciones inmediatas   */
 sendNotificationRequest = async (sender,msg,toSent,read) => {
+  "respuesta de notificaciones"
+  /* 
   notificationId = await Notifications.presentLocalNotificationAsync(
    {
      title:sender + msg,
@@ -247,7 +216,7 @@ sendNotificationRequest = async (sender,msg,toSent,read) => {
        color: '#FF3',
      },
  });
- /* console.log(notificationId); */ // can be saved in AsyncStorage or send to server
+ /* console.log(notificationId); */ // can be saved in AsyncStorage or send to server */
 };
 /* notificaciones inmediatas   */
 sendNotificationImmediately = async (sender,comment) => {
@@ -326,11 +295,8 @@ componentDidMount() {
 /*   var letra = "Its only to [Am7]test my [F]program to [C/E]see if it [F]worksI [Dm7]hope it [F]does or [Gsus4]else Ill [G]be [C]sad."
   var output = chordpro.to_txt(letra.toString());
   console.log(output); */
-    this.songsBd()
-    this.nofiticationsBd();
-   /*  this.notifcationRequest(); */
-    this.chanelAndroid();
-    this.get_localdb("songs")
+  console.log("respuesta de notificaciones")
+
 
     console.log("inicio session")
     firebase.auth().onAuthStateChanged(function(user){
