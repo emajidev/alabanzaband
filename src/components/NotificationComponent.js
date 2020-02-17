@@ -43,7 +43,7 @@ render() {
         console.log("notificaciones",item)
           return (
               <View key={index} style={styles.container}>
-                {item.accepted =="accepted" ? (
+                {item.accepted =="complete" ? (
                   <View style={styles.notifStyle}>
                     <Text style={styles.itemtext} >{item.name} </Text>
                    <Text style={styles.itemtext} >{item.coment} </Text>

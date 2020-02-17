@@ -23,24 +23,6 @@ let newData
 let modUser = db.ref('/moduser');
 
 
-
-class Child  extends React.Component {
-  render(){
-     return(
-       <View >
-          <ThemeContext.Consumer>
-             {data =>
-           <ThemeProvider theme={data}>
-              <Navbar/>
-           </ThemeProvider>
-        }
-           
-          </ThemeContext.Consumer>
-       </View>
-       
-     )
-  }
-}
 class Content extends React.Component {
   constructor(props) {
     super(props);
@@ -59,9 +41,6 @@ class Content extends React.Component {
   });
 }
  componentDidMount() {
-
-
-
    this.getModUser();
   setTimeout(() => {
     console.log("temp")
@@ -75,8 +54,6 @@ class Content extends React.Component {
     try {
       user = await AsyncStorage.getItem('@storage_Key')
       newData = JSON.parse(user);
-      /* console.log("obteniendo datos",newData) */
-      /* console.log(" storage ",newData.theme) */
       const valueDefault = themes.light
       if ( this.state.theme !=newData.theme){
         this.setState({theme:newData.theme ? newData.theme:valueDefault})
@@ -96,21 +73,10 @@ class Content extends React.Component {
    render() {
       const dataTheme = this.state.theme
       let modUser =  this.state.moduser
-/*       console.log("state despues del renderizado",dataTheme)
- */      return (
+      return (
         <ThemeContext.Provider value={{...this.state.theme}}>
            {this.props.children}
            <View style={styles.container}>
-               {/* <Text>Alertar notificaciones</Text>
-               <Text style={{backgroundColor:this.state.theme.bg}}>tema</Text>
-                <TouchableOpacity 
-                title="tema"
-                onPress={ () => this.cosa()}
-
-                >
-                  <Text>btn</Text>
-                </TouchableOpacity> */}
-             
                 {
                   modUser =='admin' ? (
                     <AdminDashboard />
@@ -255,24 +221,12 @@ class Page2 extends React.Component {
 }
 
 const MyDrawerNavigator = createDrawerNavigator({
-  Inicio: {
-    screen: Main,
-  },
-  Notifications: {
-    screen: NotificationsScreen,
-  },
-  Ajustes:{
-    screen:Page1,
-  },
-  Perfil:{
-    screen:Page2,
-  }
+  Inicio:Main,
+  Notifications: NotificationsScreen,
+  Ajustes:Page1,
+  Perfil:Page2,
+  
 
-},{
-  initialRouteName:'Inicio',
-  drawerPosition:'left',
-  drawerType:'slide',
-  statusBarAnimation:'slide'
 }
 );
 
