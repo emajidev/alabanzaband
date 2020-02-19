@@ -1,5 +1,5 @@
 import React from 'react'
-import {StatusBar, StyleSheet, AsyncStorage, Image, Text, View, TouchableOpacity, Button } from 'react-native'
+import {StatusBar, StyleSheet, AsyncStorage, SafeAreaView, Text, View, TouchableOpacity, Button,Alert } from 'react-native'
 import * as firebase from "firebase/app";
 import Navbar from './Navbar.js';
 import List from './List.js';
@@ -11,6 +11,7 @@ import {createAppContainer} from 'react-navigation';
 import Settings from './Settings'
 import ShowProfile from './profile/ShowProfile'
 import AdminDashboard from './admin/AdminDashboard'
+import {withNavigation} from 'react-navigation';
 
 import {ThemeContext, themes} from './conext/theme-context';
 
@@ -18,29 +19,14 @@ import {ThemeProvider} from 'styled-components/native'
 import {Container} from './conext/themes/styled'
 import { db } from './firebase';
 
+import {DrawerItems} from 'react-navigation-drawer'
+
+
 let user;
 let newData
 let modUser = db.ref('/moduser');
 
 
-
-class Child  extends React.Component {
-  render(){
-     return(
-       <View >
-          <ThemeContext.Consumer>
-             {data =>
-           <ThemeProvider theme={data}>
-              <Navbar/>
-           </ThemeProvider>
-        }
-           
-          </ThemeContext.Consumer>
-       </View>
-       
-     )
-  }
-}
 class Content extends React.Component {
   constructor(props) {
     super(props);
@@ -59,9 +45,6 @@ class Content extends React.Component {
   });
 }
  componentDidMount() {
-
-
-
    this.getModUser();
   setTimeout(() => {
     console.log("temp")
@@ -75,8 +58,6 @@ class Content extends React.Component {
     try {
       user = await AsyncStorage.getItem('@storage_Key')
       newData = JSON.parse(user);
-      /* console.log("obteniendo datos",newData) */
-      /* console.log(" storage ",newData.theme) */
       const valueDefault = themes.light
       if ( this.state.theme !=newData.theme){
         this.setState({theme:newData.theme ? newData.theme:valueDefault})
@@ -96,21 +77,10 @@ class Content extends React.Component {
    render() {
       const dataTheme = this.state.theme
       let modUser =  this.state.moduser
-/*       console.log("state despues del renderizado",dataTheme)
- */      return (
+      return (
         <ThemeContext.Provider value={{...this.state.theme}}>
            {this.props.children}
            <View style={styles.container}>
-               {/* <Text>Alertar notificaciones</Text>
-               <Text style={{backgroundColor:this.state.theme.bg}}>tema</Text>
-                <TouchableOpacity 
-                title="tema"
-                onPress={ () => this.cosa()}
-
-                >
-                  <Text>btn</Text>
-                </TouchableOpacity> */}
-             
                 {
                   modUser =='admin' ? (
                     <AdminDashboard />
@@ -266,15 +236,44 @@ const MyDrawerNavigator = createDrawerNavigator({
   },
   Perfil:{
     screen:Page2,
-  }
+  },
 
-},{
-  initialRouteName:'Inicio',
-  drawerPosition:'left',
-  drawerType:'slide',
-  statusBarAnimation:'slide'
-}
+  },
+  {
+    contentComponent:(props) => (
+      <View style={{flex:1}}>
+          <SafeAreaView forceInset={{ top: 'always', horizontal: 'never' }}>
+            <DrawerItems {...props} />
+            <TouchableOpacity onPress={()=>
+              Alert.alert(
+                'Log out',
+                'Do you want to logout?',
+                [
+                  {text: 'Cancel', onPress: () => {this.props.navigation.dispatch(DrawerActions.closeDrawer()) }},
+                  {text: 'Confirm', onPress: () => {
+                    AsyncStorage.removeItem('@storage_Key')
+                    props.navigation.navigate('AuthLoading');
+                    firebase
+                    .auth()
+                    .signOut()
+                    .then(() => {this.removeStoreData();console.log('cerrar')})
+                    .catch(error =>console.log("error en cerrar sesion",error))
+                  }},
+                ],
+                { cancelable: false }
+              )  
+            }>
+              <Text style={{margin: 16,fontWeight: 'bold',color: '#f44'}}>Logout</Text>
+            </TouchableOpacity>
+          </SafeAreaView>
+      </View>
+    ),
+    drawerOpenRoute: 'DrawerOpen',
+    drawerCloseRoute: 'DrawerClose',
+    drawerToggleRoute: 'DrawerToggle'
+  }
 );
+
 
 const Drawer = createAppContainer(MyDrawerNavigator);
 export default Drawer

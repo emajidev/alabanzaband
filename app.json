@@ -10,7 +10,7 @@
       "web"
     ],
     "version": "1.0.0",
-    "facebookScheme":"fb2487421368013795",
+    "facebookScheme": "fb2487421368013795",
     "orientation": "portrait",
     "icon": "./assets/Bing-icon.png",
     "splash": {
@@ -22,8 +22,7 @@
       "icon": "./assets/icons/icon.png",
       "color": "#a649f2"
     },
-
-    "updates" : {
+    "updates": {
       "fallbackToCacheTimeout": 0
     },
     "assetBundlePatterns": [
@@ -31,11 +30,11 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.alabanzaban.alabanzaban" 
+      "bundleIdentifier": "com.alabanzaban.alabanzaban"
     },
     "android": {
       "package": "com.alabanzaban.alabanzaban",
-      "versionCode":1 , 
+      "versionCode": 1,
       "permissions": [
         "CAMERA",
         "RECORD_AUDIO",
@@ -44,8 +43,6 @@
         "ACCESS_COARSE_LOCATION",
         "ACCESS_FINE_LOCATION"
       ]
-
     }
-    
   }
 }

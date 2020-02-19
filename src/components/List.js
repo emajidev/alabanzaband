@@ -20,10 +20,14 @@ class List extends Component {
   };
   constructor(props){
     super(props);
+    this.song_DB = new PouchDB('songs')
+
     this.state={
       search: '',
       items: [],
       users:[],
+      songsItems:[],
+
       notiitems:[],
       navigation: this.props.navigation,
       date:new Date().getTime() + 10000,
@@ -74,8 +78,8 @@ class List extends Component {
           var id = snapshot.key;
           if(data !== null){  
             let items = Object.values(data);
-            console.log("item for request",items)
-            items.map((item, index) => {
+/*             console.log("item for request",items)
+ */            items.map((item, index) => {
               if(item.id!=undefined){
               switch (item.accepted) {
                 case true:
@@ -192,13 +196,7 @@ class List extends Component {
     }               
   }
 
-  songsBd(){
-    itemsRef.on('value', snapshot => {
-      let data = snapshot.val();
-      let items = Object.values(data);
-      this.setState({ items });
-    });
-  }
+
 
   /* notificaciones programadas  */
   scheduleNotification = async (sender,comment,dif) => {
@@ -253,8 +251,12 @@ class List extends Component {
       }
     
   }
+  componentWillMount(){
 
-  componentDidMount() {
+
+
+  }
+  componentDidMount=async()=>{
     this._isMounted = true;
 
   /*   var letra = "Its only to [Am7]test my [F]program to [C/E]see if it [F]worksI [Dm7]hope it [F]does or [Gsus4]else Ill [G]be [C]sad."
@@ -262,9 +264,14 @@ class List extends Component {
     console.log(output); */
     if(this._isMounted){
       this.songsBd()
+
+ 
       this.nofiticationsBd();
       this.notifcationRequest();
       this.chanelAndroid();
+     
+
+    
       console.log("inicio session")
       firebase.auth().onAuthStateChanged(function(user){
         if(user){
@@ -273,6 +280,31 @@ class List extends Component {
         }
       });
     }
+  }
+  songsBd(){
+    itemsRef.on('value', snapshot => {
+      let data = snapshot.val();
+      let items = Object.values(data);
+      this.setState({ items });
+      console.log("datos de cancaciones", items)
+      if(items!=undefined){
+        let create_local_DB = new Promise((resolve,reject)=>{
+          resolve(
+            this.Initial_db(),
+            this.creacte_db(items)
+          )
+        })
+        create_local_DB.then(()=>{
+          this.get_localdb()
+        }
+        ).catch((error)=>{
+          console.log("error en localdb",error)
+        })
+        
+      }
+      
+      
+    });
   }
   componentWillUnmount(){
       this._isMounted = false;
@@ -288,14 +320,62 @@ class List extends Component {
       items : this.state.items.cloneWithRows(filterItem),
     })
   }
+  Initial_db=async(data)=>{
+    try {
+      console.log("initial db")
+      var response = await  this.song_DB.put({
+        _id: 'songs',
+        data: data
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  }
+  creacte_db=async(data)=>{
+    try {
+      console.log("actualizando datos en local db")
+      var doc = await  this.song_DB.get('songs');
+      var response = await  this.song_DB.put({
+        _id: 'songs',
+        _rev: doc._rev,
+        data: data
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  }
+  update_localDB=async(data)=>{
+    try {
+      console.log("actualizando data")
+      let doc = await this.song_DB.get('songs');
+      let response = await this.song_DB.put({
+        _id: 'songs',
+        _rev: doc._rev,
+        data: "hola"
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  }
 
+ 
+
+  get_localdb=async(name)=>{
+    try {
+      var doc = await this.song_DB.get('songs');
+    } catch (err) {
+      console.log(err);
+    }
+    console.log("obtenindo datos",doc)
+  }
 render() {
     return (
       <View style={{flex:1,width:'100%',height:'100%',position:'relative'}}>
    
         {this.state.items.length > 0 ? (
           
-          <ItemComponent items={this.state.items}  />
+
+          <ItemComponent />
         ) : (
           <View style={styles.cont}>
             <Text style={{margin:10}}>Buscando canciones...</Text>

@@ -43,24 +43,20 @@ export default class Login extends React.Component {
 
       async loginWithFacebook() {
         try {
+          await Facebook.initializeAsync('2487421368013795');
           const {
             type,
             token,
             expires,
             permissions,
             declinedPermissions,
-          } = await Facebook.logInWithReadPermissionsAsync('2487421368013795',{
+          } = await Facebook.logInWithReadPermissionsAsync({
             permissions: ['public_profile'],
           });
           if (type === 'success') {
             // Get the user's name using Facebook's Graph API
             const response = await fetch(`https://graph.facebook.com/me?access_token=${token}`);
-            const credential = firebase.auth.FacebookAuthProvider.credential(token)
-          
-            firebase.auth().signInWithCredential(credential).catch((error) => {
-            console.log(error)})
             Alert.alert('Logged in!', `Hi ${(await response.json()).name}!`);
-            console.log(await response);
           } else {
             // type === 'cancel'
           }

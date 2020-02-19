@@ -1,9 +1,12 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet,StatusBar ,ActivityIndicator,AsyncStorage,ScrollView} from 'react-native';
 import NotificationComponent from './NotificationComponent';
-
+import HeaderFunction from './Header.js'
 import { db } from './firebase.js';
+import {ThemeContext, themes} from './conext/theme-context';
 
+import {ThemeProvider} from 'styled-components/native'
+import {Header} from './conext/themes/styled'
 
 export default class ListNotification extends Component {
   state = {
@@ -54,8 +57,17 @@ render() {
     return (
      
       <View style={styles.container}>
-        <Text>Notificaciones</Text>
-        {this.state.items.length > 0 ? (
+        
+       
+       <Header>
+         <View style={{ flex:1}}>
+           <Text > Notificaciones</Text>
+         </View>
+       </Header>
+
+    }
+      
+      {this.state.items.length > 0 ? (
             <NotificationComponent items={this.state.items} />
           
           

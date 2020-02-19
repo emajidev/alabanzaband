@@ -10,9 +10,7 @@ import {ThemeProvider} from 'styled-components/native'
 import PouchDB from 'pouchdb-react-native'
 
 class ItemComponent extends React.Component{
-  static propTypes = {
-    items: PropTypes.array.isRequired
-  };
+
   constructor(props){
     super(props)
     this.song_DB = new PouchDB('songs')
@@ -27,36 +25,20 @@ class ItemComponent extends React.Component{
 
   }
   componentWillMount(){
-    this.update_localDB(this.props.items)
   }
   componentDidMount(){
-    console.log("props",this.props.items)
     this.get_localdb("songs")
   }
-  update_localDB=async(data)=>{
-    try {
-      console.log("actualizando data")
-      let doc = await this.song_DB.get('songs');
-      let response = await this.song_DB.put({
-        _id: 'songs',
-        _rev: doc._rev,
-        data: data
-      });
-    } catch (err) {
-      console.log(err);
-    }
-  }
+  
   GetData = () => {
     //Service to get the data from the server to render
 
-    return this.update_localDB(this.props.items)
+    return  this.get_localdb("songs")
       .then(responseJson => {
-        this.update_localDB(this.props.items)
-        this.get_localdb("songs")
         this.setState({
           refreshing: false,
           //Setting the data source for the list to render
-          dataSource: this.props.items
+          dataSource: this.state.songsItems
         });
       })
       .catch(error => {
@@ -67,28 +49,21 @@ class ItemComponent extends React.Component{
 
   get_localdb=async(name)=>{
 
-
     try {
       var doc = await this.song_DB.get('songs');
     } catch (err) {
       console.log(err);
     }
+    console.log("obtenindo datos en component",doc)
     this.setState({songsItems:doc})
-    console.log("obtenindo datos")
   }
   onRefresh() {
     //Clear old data of the list
     this.setState({ dataSource: [] });
+    this.get_localdb("songs")
+
     //Call the Service to get the latest data
-    let update_data = new Promise((resolve,reject)=>{
-      resolve(
-        this.update_localDB(this.props.items),
-      )
-    })
-    
-    update_data
-      .then(()=> this.get_localdb("songs"))
-      .catch(error => console.log("error en refresh",error))
+   
     
 
    
