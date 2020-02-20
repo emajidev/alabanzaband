@@ -81,7 +81,7 @@ class Navbar extends React.Component{
             <Text style={navbarStyles.title}> ALABANZABAND</Text>
           </View>
           <View >
-{/*       
+     
             <TouchableOpacity style={navbarStyles.btn_nav}>
               <ContactsIcon 
                 name='contacts'
@@ -90,7 +90,7 @@ class Navbar extends React.Component{
                 size={25}
             
               />
-            </TouchableOpacity> */}
+            </TouchableOpacity> 
             <TouchableOpacity >
               <Icon 
                 name='bell'
@@ -130,19 +130,10 @@ class Navbar extends React.Component{
             </Menu> */}
             
           </View>
-          
         </Header>
- 
           <List/>
-     
-       
-      
-       
-      
-        
       </ThemeProvider>
     }
-      
       </ThemeContext.Consumer>
   </View>
   );
@@ -165,7 +156,7 @@ const navbarStyles = StyleSheet.create({
   header:{
     flex: .5,
     flexDirection:'row',
-    backgroundColor: '#f43',
+    /* backgroundColor: '#f43', */
     justifyContent:'space-around',
     alignItems:'center' , 
    

@@ -72,7 +72,7 @@ class List extends Component {
       let newData = JSON.parse(data);
       if(newData.phone !== null) {
         // value previously stored
-        let itemsRef = db.ref('/users/'+newData.phone+'/'+'notifications' );
+        let itemsRef = db.ref('/users/'+newData.phone+'/'+'notificationsReceived' );
         itemsRef.on('value', (snapshot,prevChildKey) => {
           let data = snapshot.val();
           var id = snapshot.key;
@@ -114,7 +114,7 @@ class List extends Component {
   updateNotificationRequest= async(phoneSenderToRequest,id,status)=>{
     try {
       console.log("respuesta enviada" )
-      const ref = db.ref('/users/user'+phoneSenderToRequest+'/'+'notifications')
+      const ref = db.ref('/users/user'+phoneSenderToRequest+'/'+'notificationsReceived')
       ref.child(id).update({accepted: status})
     }catch(e){
     }                
@@ -138,7 +138,7 @@ class List extends Component {
       const data = await AsyncStorage.getItem('@storage_Key')
       let newData = JSON.parse(data);
       if(newData.phone !== null) {
-          let notifRef = db.ref('/users/'+newData.phone+'/'+'notifications' );
+          let notifRef = db.ref('/users/'+newData.phone+'/'+'notificationsReceived' );
           try{
             notifRef.on('value', snapshot => {
               let notidata = snapshot.val();
@@ -190,7 +190,7 @@ class List extends Component {
   updateNotification = async(phoneSenderToRequest,id,status)=>{
     try {
       console.log("estado accepted" )
-      const ref = db.ref('/users/user'+phoneSenderToRequest+'/'+'notifications')
+      const ref = db.ref('/users/user'+phoneSenderToRequest+'/'+'notificationsReceived')
       ref.child(id).update({toSent: status})
     }catch(e){
     }               

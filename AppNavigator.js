@@ -20,6 +20,8 @@ import ShowProfile from './src/components/profile/ShowProfile.js'
 import AdminDashboard from './src/components/admin/AdminDashboard.js'
 import Suggestion from './src/components/Suggestion.js'
 import ShowSuggestion from './src/components/admin/ShowSuggestion.js'
+import Categories from './src/components/Categories.js'
+
 const AppNavigator = createStackNavigator(
 {
   Loading:{screen:Loading},
@@ -28,6 +30,7 @@ const AppNavigator = createStackNavigator(
   Navbar:{screen:Navbar},
   AddItem:{screen:AddItem},
   ContentItem:{screen:ContentItem},
+  Categories:{screen:Categories},
   
   AddNotification:{screen:AddNotification},
   NotificationComponent:{screen:NotificationComponent},

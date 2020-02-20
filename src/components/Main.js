@@ -8,6 +8,7 @@ import NavDrawer from './NavDrawer'
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {createDrawerNavigator } from 'react-navigation-drawer';
 import {createAppContainer} from 'react-navigation';
+import Categories from './Categories'
 import Settings from './Settings'
 import ShowProfile from './profile/ShowProfile'
 import AdminDashboard from './admin/AdminDashboard'
@@ -224,6 +225,27 @@ class Page2 extends React.Component {
   }
 }
 
+class Page3 extends React.Component {
+  static navigationOptions = {
+    drawerLabel: 'Categorias',
+ /*    drawerIcon: ({ tintColor }) => (
+      <Image
+        source={require('./notif-icon.png')}
+        style={[styles.icon, { tintColor: tintColor }]}
+      />
+    ), */
+  };
+
+  render() {
+    return (
+      
+        <Categories/>
+    
+    );
+  }
+}
+
+
 const MyDrawerNavigator = createDrawerNavigator({
   Inicio: {
     screen: Main,
@@ -236,6 +258,9 @@ const MyDrawerNavigator = createDrawerNavigator({
   },
   Perfil:{
     screen:Page2,
+  },
+  Categorias:{
+    screen:Page3,
   },
 
   },

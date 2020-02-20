@@ -120,25 +120,45 @@ class Select extends React.Component {
                     this.state.selected.map((phoneToSend, index) =>{
                     let userName= newDataUser.user
                     let idNotif = this.generateID()
-                    const ref = db.ref('/users/user'+phoneToSend+'/'+'notifications')
+                   
+                    const received = db.ref('/users/user'+phoneToSend+'/'+'notificationsReceived')
 
-                    let newNotif = ref.push({
-                       
-                       sender:userName,
-                       phoneSender:phoneToSend,
-                       name:ItemNotification.item.name,
-                       category:ItemNotification.item.category,
-                       lyrics:ItemNotification.item.lyrics,
-                       coment:ItemNotification.coment,
-                       time:ItemNotification.date,
-                       accepted: 'waiting',
-                       toSent:'yes',
-                       read:false
+                    let newNotifReceived = received.push({
+                      sender:userName,
+                      phoneUser:newDataUser.phone,
+                      phoneSender:phoneToSend,
+                      name:ItemNotification.item.name,
+                      category:ItemNotification.item.category,
+                      lyrics:ItemNotification.item.lyrics,
+                      coment:ItemNotification.coment,
+                      time:ItemNotification.date,
+                      accepted: 'waiting',
+                      toSent:'yes',
+                      read:false
 
                      }).then((snapshot) => {
-                      ref.child(snapshot.key).update({"id": snapshot.key})
+                      received.child(snapshot.key).update({"id": snapshot.key})
                     }); 
-                     let postId = newNotif.key;
+
+                    const sent = db.ref('/users/'+newDataUser.phone+'/'+'notificationsSent')
+
+                    let newNotifSent = sent.push({
+                      sender:userName,
+                      phoneUser:newDataUser.phone,
+                      phoneSender:phoneToSend,
+                      name:ItemNotification.item.name,
+                      category:ItemNotification.item.category,
+                      lyrics:ItemNotification.item.lyrics,
+                      coment:ItemNotification.coment,
+                      time:ItemNotification.date,
+                      accepted: 'waiting',
+                      toSent:'yes',
+                      read:false
+
+                     }).then((snapshot) => {
+                      sent.child(snapshot.key).update({"id": snapshot.key})
+                    }); 
+                     let postId = newNotifReceived.key;
                      console.log("id push",postId) 
                    })
                   
