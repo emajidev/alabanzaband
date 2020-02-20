@@ -57,6 +57,18 @@ export default class Login extends React.Component {
             // Get the user's name using Facebook's Graph API
             const response = await fetch(`https://graph.facebook.com/me?access_token=${token}`);
             Alert.alert('Logged in!', `Hi ${(await response.json()).name}!`);
+            const cred = firebase.auth.FacebookAuthProvider.credential(token);
+            firebase.auth().signInWithCredential(cred)
+              .then((result) => {
+                // User signed in.
+                var token = result.credential.accessToken;
+                this.props.navigation.navigate('FormProfile')
+              })    
+              .catch((error) => {
+                // Error occurred.
+                console("error al iniciar facebook",error)
+              });
+
           } else {
             // type === 'cancel'
           }
