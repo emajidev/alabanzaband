@@ -70,8 +70,13 @@ class ItemComponent extends React.Component{
   }
 render() {
     /*  filter search coro  */
-  if(this.state.songsItems.data!=undefined){
-  
+  if(this.state.songsItems.data==undefined){
+  return(
+    <View>
+      <Text>Cargando canciones</Text>
+    </View>
+  )
+  }
     if (this.state.typeOfSearch == 'temas'){
      /*  console.log("category") */
       let coros = this.state.songsItems.data.filter(
@@ -143,7 +148,7 @@ render() {
         }
       );
       }
-    }
+  
     return (
       
       <View style={styles.itemsList}>

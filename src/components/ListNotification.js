@@ -115,15 +115,15 @@ function Out_Notifications(props) {
   const notifications = props.notifications;
   return(
     <View style={styles.notifications}> 
-    <Text>Enviados</Text>
-   {/*  {notifications.length > 0 ? (
+  
+    {notifications.length > 0 ? (
     <NotificationComponent items={notifications} />
     ) : (
       <View style={styles.cont}>
         <Text style={{margin:10}}>No hay notificationes</Text>
         <ActivityIndicator size="large" />
       </View>
-    )} */}
+    )}
     </View>
   )
 }
@@ -137,7 +137,9 @@ export default class ListNotification extends Component {
     super(props);
     this.state={
       search: '',
-      items: [],
+      notifications_recived: [],
+      notifications_sent:[],
+
       option:'input'
 
     }
@@ -148,15 +150,27 @@ export default class ListNotification extends Component {
       let newData = JSON.parse(data);
       if(newData.phone !== null) {
         // value previously stored
-        let itemsRef = db.ref('/users/'+newData.phone+'/'+'notificationsReceived' );
-        itemsRef.on('value', (snapshot,prevChildKey) => {
+        let recive = db.ref('/users/'+newData.phone+'/'+'notificationsReceived' );
+        recive.on('value', (snapshot,prevChildKey) => {
           let data = snapshot.val();
           var id = snapshot.key;
           if(data !== null){  
             let items = Object.values(data);
-            this.setState({ items });
+            this.setState({ notifications_recived:items });
             console.log("tamaño de notificaiones",items.length)
-            console.log("unique id " + id);
+
+          }else[
+            console.log("no hay notificaciones")
+          ]
+        });
+        let sent = db.ref('/users/'+newData.phone+'/'+'notificationsSent' );
+        sent.on('value', (snapshot,prevChildKey) => {
+          let data = snapshot.val();
+          var id = snapshot.key;
+          if(data !== null){  
+            let items = Object.values(data);
+            this.setState({ notifications_sent:items });
+            console.log("tamaño de notificaiones",items.length)
 
           }else[
             console.log("no hay notificaciones")
@@ -201,9 +215,9 @@ render() {
           </View>
         </View>
         {(this.state.option =='input')?(
-          <In_Notifications notifications={this.state.items}/>
+          <In_Notifications notifications={this.state.notifications_recived}/>
         ):(
-          <Out_Notifications notifications={this.state.items}/>
+          <Out_Notifications notifications={this.state.notifications_sent}/>
         )}
         </View>
     );
