@@ -48,14 +48,15 @@ class Select extends React.Component {
     try {
       const data = await AsyncStorage.getItem('@storage_Key')
       let newData = JSON.parse(data);
-      let itemsRef = db.ref('/users/'+newData.phone+'/contacts' );
+      let itemsRef = db.ref('/users/user'+newData.phone+'/contacts' );
 
       if(newData.phone !== null) {
         // value previously stored
         itemsRef.on('value', snapshot => {
           let data = snapshot.val();
-          let items = Object.values(data);
-          this.setState({ items });
+          let contact = Object.values(data);
+          console.log("contactos",contact)
+          this.setState({ items:contact });
           
         });
       }
@@ -75,15 +76,6 @@ class Select extends React.Component {
   componentDidMount() {
     this.getData()
   }
-  SendNotification=(item)=>{
-   
-    console.log("enviar notificacion"+item)
-
-    this.state.selected.map((item, index) =>{
-      
-      })
-   
-   }
  
   render() {
     const {ItemNotification} = this.props;
@@ -118,12 +110,11 @@ class Select extends React.Component {
                   if(newDataUser.phone !== null) {
                     // value previously stored
                     this.state.selected.map((phoneToSend, index) =>{
-                    let userName= newDataUser.user
-                    let idNotif = this.generateID()
+                    let userName= newDataUser.nick
                    
                     const received = db.ref('/users/user'+phoneToSend+'/'+'notificationsReceived')
 
-                    let newNotifReceived = received.push({
+                    received.push({
                       sender:userName,
                       phoneUser:newDataUser.phone,
                       phoneSender:phoneToSend,
@@ -140,9 +131,9 @@ class Select extends React.Component {
                       received.child(snapshot.key).update({"id": snapshot.key})
                     }); 
 
-                    const sent = db.ref('/users/'+newDataUser.phone+'/'+'notificationsSent')
+                    const sent = db.ref('/users/user'+newDataUser.phone+'/'+'notificationsSent')
 
-                    let newNotifSent = sent.push({
+                    sent.push({
                       sender:userName,
                       phoneUser:newDataUser.phone,
                       phoneSender:phoneToSend,

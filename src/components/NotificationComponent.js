@@ -6,7 +6,8 @@ import { db } from './firebase.js';
 
 class NotificationComponent extends React.Component {
   static propTypes = {
-    items: PropTypes.array.isRequired
+    items: PropTypes.array.isRequired,
+    type_notification:PropTypes.string.isRequired
   };
   state = {
     search:'',
@@ -43,7 +44,8 @@ render() {
 /*         console.log("notificaciones",item)
  */          return (
               <View key={index} style={styles.container}>
-                {item.accepted =="complete" ? (
+                
+                {item.accepted =="complete" || this.props.type_notification=='sent'? (
                   <View style={styles.notifStyle}>
                     <Text style={styles.itemtext} >{item.name} </Text>
                    <Text style={styles.itemtext} >{item.coment} </Text>

@@ -8,7 +8,7 @@ let addItem = async (name,phoneContact) => {
       let newData = JSON.parse(data);
       if(newData.phone !== null) {
         // value previously stored
-        db.ref('/users/'+newData.phone+'/'+'contacts').push({
+        db.ref('/users/user'+newData.phone+'/'+'contacts').push({
          name: name,
          phoneContact:phoneContact
        })

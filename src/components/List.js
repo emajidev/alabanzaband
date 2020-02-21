@@ -72,7 +72,7 @@ class List extends Component {
       let newData = JSON.parse(data);
       if(newData.phone !== null) {
         // value previously stored
-        let itemsRef = db.ref('/users/'+newData.phone+'/'+'notificationsReceived' );
+        let itemsRef = db.ref('/users/user'+newData.phone+'/'+'notificationsReceived' );
         itemsRef.on('value', (snapshot,prevChildKey) => {
           let data = snapshot.val();
           var id = snapshot.key;
@@ -138,7 +138,7 @@ class List extends Component {
       const data = await AsyncStorage.getItem('@storage_Key')
       let newData = JSON.parse(data);
       if(newData.phone !== null) {
-          let notifRef = db.ref('/users/'+newData.phone+'/'+'notificationsReceived' );
+          let notifRef = db.ref('/users/user'+newData.phone+'/'+'notificationsReceived' );
           try{
             notifRef.on('value', snapshot => {
               let notidata = snapshot.val();

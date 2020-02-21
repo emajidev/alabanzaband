@@ -33,7 +33,7 @@ componentDidMount() {
       let newData = JSON.parse(data);
       if(newData.phone !== null) {
         // value previously stored
-        let itemsRef = db.ref('/users/'+newData.phone+'/contacts' );
+        let itemsRef = db.ref('/users/user'+newData.phone+'/contacts' );
         itemsRef.on('value', snapshot => {
           try{
             let data = snapshot.val();

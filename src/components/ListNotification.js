@@ -101,7 +101,7 @@ function In_Notifications(props) {
   return(
     <View style={styles.notifications}> 
     {notifications.length > 0 ? (
-    <NotificationComponent items={notifications} />
+    <NotificationComponent items={notifications} type_notification={'resive'} />
     ) : (
       <View style={styles.cont}>
         <Text style={{margin:10}}>No hay notificationes</Text>
@@ -117,7 +117,7 @@ function Out_Notifications(props) {
     <View style={styles.notifications}> 
   
     {notifications.length > 0 ? (
-    <NotificationComponent items={notifications} />
+    <NotificationComponent items={notifications} type_notification={'sent'}/>
     ) : (
       <View style={styles.cont}>
         <Text style={{margin:10}}>No hay notificationes</Text>
@@ -150,7 +150,7 @@ export default class ListNotification extends Component {
       let newData = JSON.parse(data);
       if(newData.phone !== null) {
         // value previously stored
-        let recive = db.ref('/users/'+newData.phone+'/'+'notificationsReceived' );
+        let recive = db.ref('/users/user'+newData.phone+'/'+'notificationsReceived' );
         recive.on('value', (snapshot,prevChildKey) => {
           let data = snapshot.val();
           var id = snapshot.key;
@@ -163,7 +163,7 @@ export default class ListNotification extends Component {
             console.log("no hay notificaciones")
           ]
         });
-        let sent = db.ref('/users/'+newData.phone+'/'+'notificationsSent' );
+        let sent = db.ref('/users/user'+newData.phone+'/'+'notificationsSent' );
         sent.on('value', (snapshot,prevChildKey) => {
           let data = snapshot.val();
           var id = snapshot.key;

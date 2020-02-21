@@ -5,43 +5,7 @@ import * as firebase from "firebase/app";
 import { db } from './firebase.js';
 import {themes} from './conext/theme-context';
 import PouchDB from 'pouchdb-react-native'
-storeData = async (phone,user,theme) => {
- 
-  data={
-    theme:themes.red,
-    phone:phone,
-    user:user
-  }
-  try {
-    await AsyncStorage.setItem('@storage_Key',JSON.stringify(data))
-    console.log('storage enviado',data)
-  } catch (e) {
-    // saving error
-  }
-}
 
-let addUser = (user,numberPhone,theme) => {
-    var currentUser = firebase.auth().currentUser;
-    currentUser.updateProfile({
-        displayName:numberPhone.toString()
-    }).then(function(){
-        //update succesful
-        let userlogger = 'user'+currentUser.displayName
-        
-        this.storeData(userlogger,user,theme)
-       
-        db.ref('/users/'+userlogger).update({
-            uid :currentUser.uid,
-            user: currentUser.email,
-            numberPhone:numberPhone
-            })
-     
-        
-    }).catch(function(error){
-        //error 
-    })
-    
-};
 
 export default class FormProfile extends React.Component {
     constructor(props) {
@@ -54,6 +18,36 @@ export default class FormProfile extends React.Component {
       }
     }
     state = { name: '',numberPhone:'', theme:themes.red, errorMessage: null }
+
+    storeData = async (phone,nick,theme,user) => {
+ 
+      data={
+        theme:themes.red,
+        phone:phone,
+        user:user,
+        nick:nick
+      }
+      try {
+        await AsyncStorage.setItem('@storage_Key',JSON.stringify(data))
+        console.log('storage enviado',data)
+      } catch (e) {
+        // saving error
+      }
+    }
+    
+    addUser = (user,numberPhone,theme) => {
+            
+      this.storeData(numberPhone,user,theme,currentUser)
+      var currentUser = firebase.auth().currentUser;
+
+      db.ref('/users/user'+numberPhone+'/profile').push({
+          user:currentUser.email,
+          nick: user,
+          numberPhone:numberPhone
+          })
+    
+        
+    };
     
     numberPhoneHandle = e => {
       this.setState({
@@ -66,7 +60,7 @@ export default class FormProfile extends React.Component {
     }
     
     handleSignUp = () => {
-        addUser(this.state.name , this.state.numberPhone,this.state.theme);
+        this.addUser(this.state.name , this.state.numberPhone,this.state.theme);
         this.props.navigation.navigate('Main')
      
         
