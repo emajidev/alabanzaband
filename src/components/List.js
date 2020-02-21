@@ -84,16 +84,16 @@ class List extends Component {
               switch (item.accepted) {
                 case true:
                   console.log('solicitud aceptada');
-                  let accepted =  this.sendNotificationRequest( item.sender, ' solicitud aceptada')
+                  let accepted =  this.sendNotificationRequest( item.phoneReceiver, ' solicitud aceptada')
                   accepted.then(()=>{
-                    this.updateNotificationRequest(item.phoneSender,item.id,"accepted")
+                    this.updateNotificationRequest(item.phoneReceiver,item.id,"accepted")
                   })
                   break;
                 case false:
-                  let denied =  this.sendNotificationRequest( item.sender, ' solicitud denegada')
+                  let denied =  this.sendNotificationRequest( item.phoneReceiver, ' solicitud denegada')
 
                   denied.then(()=>{
-                    this.updateNotificationRequest(item.phoneSender,item.id,"denied")
+                    this.updateNotificationRequest(item.phoneReceiver,item.id,"denied")
                   })
                   break;
                 case 'waiting':
@@ -111,10 +111,10 @@ class List extends Component {
       console.log("error notification list",e)
     }
   }
-  updateNotificationRequest= async(phoneSenderToRequest,id,status)=>{
+  updateNotificationRequest= async(phoneReceiver,id,status)=>{
     try {
       console.log("respuesta enviada" )
-      const ref = db.ref('/users/user'+phoneSenderToRequest+'/'+'notificationsReceived')
+      const ref = db.ref('/users/user'+phoneReceiver+'/'+'notificationsReceived')
       ref.child(id).update({accepted: status})
     }catch(e){
     }                
@@ -153,9 +153,9 @@ class List extends Component {
   */             /* console.log("contacto",item.phoneSender, "id",item.id) */
                   if(item.id!=undefined){
                     if (item.toSent=='yes'){
-                      let senderNotification = this.sendNotificationImmediately(item.sender,item.coment);
+                      let senderNotification = this.sendNotificationImmediately(item.phoneTransmitter,item.coment);
                       senderNotification.then(()=>{
-                        this.updateNotification(item.phoneSender,item.id,"no")
+                        this.updateNotification(item.phoneReceiver,item.id,"no")
                       })
                     }
                     if(item.accepted == "accepted"){
@@ -165,7 +165,7 @@ class List extends Component {
                         /* console.log("Enviado mayor a 5min") */
                         let scheduleNotification = this.scheduleNotification( item.sender, item.coment,dif);
                         scheduleNotification.then(()=>{
-                          this.updateNotificationRequest(item.phoneSender,item.id,"complete")
+                          this.updateNotificationRequest(item.phoneReceiver,item.id,"complete")
                         })
                       }else{
                         /* console.log("no se envio por el tiempo") */
@@ -187,11 +187,14 @@ class List extends Component {
     }
   }
 
-  updateNotification = async(phoneSenderToRequest,id,status)=>{
+  updateNotification = async(phoneReceiver,phoneTransmitter,id,status)=>{
     try {
       console.log("estado accepted" )
-      const ref = db.ref('/users/user'+phoneSenderToRequest+'/'+'notificationsReceived')
+      const ref = db.ref('/users/user'+phoneReceiver+'/'+'notificationsReceived')
       ref.child(id).update({toSent: status})
+
+
+  
     }catch(e){
     }               
   }
@@ -216,7 +219,7 @@ class List extends Component {
     );
   };
   /* notificaciones inmediatas   */
-  sendNotificationRequest = async (sender,msg,toSent,read) => {
+  sendNotificationRequest = async (sender,msg) => {
     notificationId = await Notifications.presentLocalNotificationAsync(
     {
       title:sender + msg,

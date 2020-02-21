@@ -89,7 +89,7 @@ class Select extends React.Component {
             name={item.name}
             key={index}
             onPress={() => this.isSelected(item.phoneContact)}
-            selected={this.toggleStyles("item", item.phoneContact)}
+            selected={this.toggleStyles( item.phoneContact)}
           />
           
         ))}
@@ -112,12 +112,13 @@ class Select extends React.Component {
                     this.state.selected.map((phoneToSend, index) =>{
                     let userName= newDataUser.nick
                    
-                    const received = db.ref('/users/user'+phoneToSend+'/'+'notificationsReceived')
+                    const arrival = db.ref('/users/user'+phoneToSend+'/'+'notificationsReceived')
 
-                    received.push({
+                    arrival.push({
                       sender:userName,
-                      phoneUser:newDataUser.phone,
-                      phoneSender:phoneToSend,
+                      
+                      phoneTransmitter:newDataUser.phone,
+                      phoneReceiver:phoneToSend,
                       name:ItemNotification.item.name,
                       category:ItemNotification.item.category,
                       lyrics:ItemNotification.item.lyrics,
@@ -128,7 +129,7 @@ class Select extends React.Component {
                       read:false
 
                      }).then((snapshot) => {
-                      received.child(snapshot.key).update({"id": snapshot.key})
+                      arrival.child(snapshot.key).update({"id": snapshot.key})
                     }); 
 
                     const sent = db.ref('/users/user'+newDataUser.phone+'/'+'notificationsSent')

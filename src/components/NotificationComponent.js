@@ -20,11 +20,12 @@ class NotificationComponent extends React.Component {
       accepted:false
     };
   }
-  updateNotification = async(phoneSenderToRequest,id,status)=>{
+  updateNotification = async(phoneReceive,id,status)=>{
       try {
         console.log("estado accepted" )
-        const ref = db.ref('/users/user'+phoneSenderToRequest+'/'+'notificationsReceived')
-        ref.child(id).update({accepted: status,})
+        const received = db.ref('/users/user'+phoneReceive+'/'+'notificationsReceived')
+        received.child(id).update({accepted: status,})
+
         
         
       }catch(e){
@@ -45,7 +46,7 @@ render() {
  */          return (
               <View key={index} style={styles.container}>
                 
-                {item.accepted =="complete" || this.props.type_notification=='sent'? (
+                {item.accepted =="complete" || item.accepted =="accepted"  || this.props.type_notification=='sent'? (
                   <View style={styles.notifStyle}>
                     <Text style={styles.itemtext} >{item.name} </Text>
                    <Text style={styles.itemtext} >{item.coment} </Text>
@@ -55,13 +56,13 @@ render() {
                     <Text style={{color:'#10cb42'}}>¿ Acepta la invitacion de {item.sender} ?</Text>
                     <View style={{flexDirection:'row'}}>
                       <TouchableOpacity
-                      onPress={()=>this.updateNotification(item.phoneSender,item.id,true)}
+                      onPress={()=>this.updateNotification(item.phoneReceiver,item.id,true)}
                       style={styles.btn_accept}
                       >
                         <Text style={{color:'#fff'}}>si</Text>
                       </TouchableOpacity>
                       <TouchableOpacity
-                      onPress={()=>this.updateNotification(item.phoneSender,item.id,false)}
+                      onPress={()=>this.updateNotification(item.phoneReceiver,item.id,false)}
                       style={styles.btn_denied}
                       >
                         <Text style={{color:'#10cb42'}}>no</Text>
