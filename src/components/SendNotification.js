@@ -130,28 +130,27 @@ class Select extends React.Component {
 
                      }).then((snapshot) => {
                       arrival.child(snapshot.key).update({"id": snapshot.key})
+
+                      const sent = db.ref('/users/user'+newDataUser.phone+'/'+'notificationsSent')
+                      sent.push({
+                        id:snapshot.key,
+                        sender:userName,
+                        phoneTransmitter:newDataUser.phone,
+                        phoneReceiver:phoneToSend,
+                        name:ItemNotification.item.name,
+                        category:ItemNotification.item.category,
+                        lyrics:ItemNotification.item.lyrics,
+                        coment:ItemNotification.coment,
+                        time:ItemNotification.date,
+                        accepted: 'waiting',
+                        toSent:'yes',
+                        read:false
+  
+                       })
                     }); 
 
-                    const sent = db.ref('/users/user'+newDataUser.phone+'/'+'notificationsSent')
-
-                    sent.push({
-                      sender:userName,
-                      phoneUser:newDataUser.phone,
-                      phoneSender:phoneToSend,
-                      name:ItemNotification.item.name,
-                      category:ItemNotification.item.category,
-                      lyrics:ItemNotification.item.lyrics,
-                      coment:ItemNotification.coment,
-                      time:ItemNotification.date,
-                      accepted: 'waiting',
-                      toSent:'yes',
-                      read:false
-
-                     }).then((snapshot) => {
-                      sent.child(snapshot.key).update({"id": snapshot.key})
-                    }); 
-                     let postId = newNotifReceived.key;
-                     console.log("id push",postId) 
+                   
+                    
                    })
                   
                   }
@@ -170,6 +169,7 @@ class Select extends React.Component {
     );
   }
 }
+
 
 class SendNotification extends React.Component {
 

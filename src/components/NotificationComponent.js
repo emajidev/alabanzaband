@@ -1,9 +1,9 @@
-import React, { Component } from 'react';
+import React, { Component,useState } from 'react';
 import { View, Text, StyleSheet,TouchableOpacity,TextInput ,StatusBar,ScrollView} from 'react-native';
 import PropTypes from 'prop-types';
 import {withNavigation} from 'react-navigation';
 import { db } from './firebase.js';
-
+import {query_key} from './functions/QueryKey.js'
 class NotificationComponent extends React.Component {
   static propTypes = {
     items: PropTypes.array.isRequired,
@@ -17,20 +17,30 @@ class NotificationComponent extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      accepted:false
+      accepted:false,
+      query_key:''
     };
   }
-  updateNotification = async(phoneReceive,id,status)=>{
+ 
+  updateNotification = async(phoneTransmitter,id,status)=>{
       try {
         console.log("estado accepted" )
-        const received = db.ref('/users/user'+phoneReceive+'/'+'notificationsReceived')
-        received.child(id).update({accepted: status,})
-
-        
-        
+        const transmitter = db.ref('/users/user'+phoneTransmitter+'/'+'notificationsSent')
+        transmitter.child(id).update({accepted: status});
       }catch(e){
       }               
     
+  }
+  change_status= (phoneTransmitter,id,status)=>{
+    const itemsRef = db.ref('/users/user'+phoneTransmitter+'/'+'notificationsSent/' );
+    let query = itemsRef.orderByChild('id').equalTo(id).once('value')
+    query.then((snapshot)=> {
+      let query_key = Object.keys(snapshot.val())[0];
+      console.log("key",query_key,phoneTransmitter)
+      this.updateNotification(phoneTransmitter,query_key,status)
+      }).catch((e)=>{
+      console.log("valor no encontrado",e)
+    })
   }
 
 render() {
@@ -50,19 +60,20 @@ render() {
                   <View style={styles.notifStyle}>
                     <Text style={styles.itemtext} >{item.name} </Text>
                    <Text style={styles.itemtext} >{item.coment} </Text>
+                   <Text style={styles.itemtext} >{item.accepted} </Text>
                   </View>
                 ): (
                   <View style={styles.confirmation}>
                     <Text style={{color:'#10cb42'}}>¿ Acepta la invitacion de {item.sender} ?</Text>
                     <View style={{flexDirection:'row'}}>
                       <TouchableOpacity
-                      onPress={()=>this.updateNotification(item.phoneReceiver,item.id,true)}
+                      onPress={()=>this.change_status(item.phoneTransmitter,item.id,true)}
                       style={styles.btn_accept}
                       >
                         <Text style={{color:'#fff'}}>si</Text>
                       </TouchableOpacity>
                       <TouchableOpacity
-                      onPress={()=>this.updateNotification(item.phoneReceiver,item.id,false)}
+                      onPress={()=>this.change_status(item.phoneTransmitter,item.id,false)}
                       style={styles.btn_denied}
                       >
                         <Text style={{color:'#10cb42'}}>no</Text>

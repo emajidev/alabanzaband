@@ -27,7 +27,7 @@ class List extends Component {
       items: [],
       users:[],
       songsItems:[],
-
+      query_key:'',
       notiitems:[],
       navigation: this.props.navigation,
       date:new Date().getTime() + 10000,
@@ -72,33 +72,24 @@ class List extends Component {
       let newData = JSON.parse(data);
       if(newData.phone !== null) {
         // value previously stored
-        let itemsRef = db.ref('/users/user'+newData.phone+'/'+'notificationsReceived' );
-        itemsRef.on('value', (snapshot,prevChildKey) => {
+        let itemsRef = db.ref('/users/user'+newData.phone+'/'+'notificationsSent' );
+        itemsRef.on('value', (snapshot) => {
           let data = snapshot.val();
-          var id = snapshot.key;
           if(data !== null){  
             let items = Object.values(data);
-/*             console.log("item for request",items)
- */            items.map((item, index) => {
+            items.map((item, index) => {
               if(item.id!=undefined){
-              switch (item.accepted) {
-                case true:
-                  console.log('solicitud aceptada');
-                  let accepted =  this.sendNotificationRequest( item.phoneReceiver, ' solicitud aceptada')
-                  accepted.then(()=>{
-                    this.updateNotificationRequest(item.phoneReceiver,item.id,"accepted")
-                  })
-                  break;
-                case false:
-                  let denied =  this.sendNotificationRequest( item.phoneReceiver, ' solicitud denegada')
-
-                  denied.then(()=>{
-                    this.updateNotificationRequest(item.phoneReceiver,item.id,"denied")
-                  })
-                  break;
-                case 'waiting':
-                  console.log('solicitud en espera');
-                  break;
+/*                 console.log(item.accepted)
+ */                if(item.accepted == true){
+                  let phoneTransmitter= item.phoneTransmitter;
+                  let phoneReceiver = item.phoneReceiver;
+                  let id = item.id;
+    
+                  this.sendNotificationRequest( phoneReceiver, ' solicitud aceptada')
+                  const received = db.ref('/users/user'+phoneReceiver+'/'+'notificationsReceived/' );
+                  received.child(id).update({accepted: 'accepted'});
+                  this.query_key(phoneTransmitter,phoneReceiver,id,'accepted')
+                   
                 }
               }
             })
@@ -111,11 +102,23 @@ class List extends Component {
       console.log("error notification list",e)
     }
   }
-  updateNotificationRequest= async(phoneReceiver,id,status)=>{
+  query_key= (phoneTransmitter,phoneReceive,id,status)=>{
+    const itemsRef = db.ref('/users/user'+phoneTransmitter+'/'+'notificationsSent/' );
+    let query = itemsRef.orderByChild('id').equalTo(id).once('value')
+    query.then((snapshot)=> {
+       let query_key = Object.keys(snapshot.val())[0];
+
+       this.updateNotificationRequest(phoneTransmitter,query_key,status)
+      }).catch((e)=>{
+      console.log("valor no encontrado",e)
+    })
+  }
+
+  updateNotificationRequest= async(phoneTransmitter,key,status)=>{
     try {
-      console.log("respuesta enviada" )
-      const ref = db.ref('/users/user'+phoneReceiver+'/'+'notificationsReceived')
-      ref.child(id).update({accepted: status})
+      const transmitter = db.ref('/users/user'+phoneTransmitter+'/'+'notificationsSent')
+      transmitter.child(key).update({accepted: status});    
+  
     }catch(e){
     }                
   }
@@ -152,11 +155,15 @@ class List extends Component {
   /*              this.sendNotificationImmediately(item.sender, item.coment);
   */             /* console.log("contacto",item.phoneSender, "id",item.id) */
                   if(item.id!=undefined){
+                    console.log("to sent",item.toSent)
+
                     if (item.toSent=='yes'){
-                      let senderNotification = this.sendNotificationImmediately(item.phoneTransmitter,item.coment);
-                      senderNotification.then(()=>{
-                        this.updateNotification(item.phoneReceiver,item.id,"no")
-                      })
+                      let phoneReceiver= item.phoneReceiver;
+                      let id = item.id
+                      console.log(index)
+                      this.sendNotificationImmediately(item.phoneTransmitter,item.coment);
+                      const received = db.ref('/users/user'+phoneReceiver+'/'+'notificationsReceived')
+                      received.child(id).update({toSent: 'sended'})
                     }
                     if(item.accepted == "accepted"){
                         /* console.log("diferencia",dif ); */
@@ -165,8 +172,8 @@ class List extends Component {
                         /* console.log("Enviado mayor a 5min") */
                         let scheduleNotification = this.scheduleNotification( item.sender, item.coment,dif);
                         scheduleNotification.then(()=>{
-                          this.updateNotificationRequest(item.phoneReceiver,item.id,"complete")
-                        })
+/*                           this.updateNotificationRequest(item.phoneReceiver,item.id,"complete")
+ */                        })
                       }else{
                         /* console.log("no se envio por el tiempo") */
                       }
@@ -187,16 +194,10 @@ class List extends Component {
     }
   }
 
-  updateNotification = async(phoneReceiver,phoneTransmitter,id,status)=>{
-    try {
+  updateNotification = (phoneReceiver,phoneTransmitter,id,status)=>{
       console.log("estado accepted" )
       const ref = db.ref('/users/user'+phoneReceiver+'/'+'notificationsReceived')
-      ref.child(id).update({toSent: status})
-
-
-  
-    }catch(e){
-    }               
+      ref.child(id).update({toSent: status})      
   }
 
 
@@ -204,22 +205,12 @@ class List extends Component {
   /* notificaciones programadas  */
   scheduleNotification = async (sender,comment,dif) => {
 
-  notificationId = Notifications.scheduleLocalNotificationAsync(
-      {
-        title: "Enviado por :" +sender,
-        body: comment,
-        android: {
-          channelId: 'notifications-messages',
-          vibrate: [0, 250, 250, 250],
-        }
-      },
-      {
-        time:new Date().getTime()+ dif ,
-      },
-    );
+console.log("notificacion request")
   };
   /* notificaciones inmediatas   */
   sendNotificationRequest = async (sender,msg) => {
+    console.log('solicitud aceptada');
+
     notificationId = await Notifications.presentLocalNotificationAsync(
     {
       title:sender + msg,
@@ -232,6 +223,8 @@ class List extends Component {
   };
   /* notificaciones inmediatas   */
   sendNotificationImmediately = async (sender,comment) => {
+    console.log("llege")
+
     notificationId = await Notifications.presentLocalNotificationAsync(
       {
         title:sender+ " ha enviado",
@@ -254,11 +247,7 @@ class List extends Component {
       }
     
   }
-  componentWillMount(){
 
-
-
-  }
   componentDidMount=async()=>{
     this._isMounted = true;
 
@@ -272,8 +261,7 @@ class List extends Component {
       this.nofiticationsBd();
       this.notifcationRequest();
       this.chanelAndroid();
-     
-
+   
     
       console.log("inicio session")
       firebase.auth().onAuthStateChanged(function(user){
@@ -289,8 +277,8 @@ class List extends Component {
       let data = snapshot.val();
       let items = Object.values(data);
       this.setState({ items });
-      console.log("datos de cancaciones", items)
-      if(items!=undefined){
+/*       console.log("datos de cancaciones", items)
+ */      if(items!=undefined){
         let create_local_DB = new Promise((resolve,reject)=>{
           resolve(
             this.Initial_db(),
@@ -369,8 +357,8 @@ class List extends Component {
     } catch (err) {
       console.log(err);
     }
-    console.log("obtenindo datos",doc)
-  }
+/*     console.log("obtenindo datos",doc)
+ */  }
 render() {
     return (
       <View style={{flex:1,width:'100%',height:'100%',position:'relative'}}>

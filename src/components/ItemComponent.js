@@ -54,8 +54,8 @@ class ItemComponent extends React.Component{
     } catch (err) {
       console.log(err);
     }
-    console.log("obtenindo datos en component",doc)
-    this.setState({songsItems:doc})
+/*     console.log("obtenindo datos en component",doc)
+ */    this.setState({songsItems:doc})
   }
   onRefresh() {
     //Clear old data of the list
