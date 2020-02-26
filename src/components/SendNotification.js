@@ -17,7 +17,7 @@ class Option extends React.Component {
     )
   }
 }
-class Select extends React.Component {
+class SelectIndependentContacts extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -169,19 +169,131 @@ class Select extends React.Component {
     );
   }
 }
+class SelectGroups extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      open: false,
+      selected: [],
+      items: [],
+    };
 
+    this.isSelected = this.isSelected.bind(this);
+  }
+
+  toggleStyles(el, index) {
+    const { selected } = this.state;
+    return selected.indexOf(index) !== -1;
+  }
+
+  isSelected(i) {
+    let { selected } = this.state;
+    if (selected.indexOf(i) === -1) {
+      selected.push(i);
+    } else {
+      selected = selected.filter(index => index !== i);
+    }
+    this.setState({ selected });
+    
+  }
+  getData = async () => {
+    try {
+      const data = await AsyncStorage.getItem('@storage_Key')
+      let newData = JSON.parse(data);
+      let groups = db.ref('/users/user'+newData.phone+'/groups' );
+      groups.on('value', snapshot => {
+          let data = snapshot.val();
+          let groups = Object.values(data);
+          console.log("groups",groups)
+          this.setState({ items:groups });
+          
+        });
+      
+    } catch(e) {
+      // error reading value
+    }
+  }
+  componentDidMount() {
+    this.getData()
+  }
+  CreateGroup = async (key_group,ItemNotification) => {
+    try {
+      const groups = db.ref('/users/groups/'+key_group+'/notifications')
+      groups.push({
+        key_group:key_group,
+        name:ItemNotification.item.name,
+        category:ItemNotification.item.category,
+        lyrics:ItemNotification.item.lyrics,
+        coment:ItemNotification.coment,
+        time:ItemNotification.date,
+      })
+    }catch(e){
+      console.log(e)
+    }
+}
+  render() {
+    const {ItemNotification} = this.props;
+    let notif = ItemNotification
+    console.log("pasando notif",notif)
+  /*   console.log(this.state.items) */
+    return (
+      <View style={{flex:1,justifyContent:'flex-start',alignItems:'center',width:'100%'}}>
+        {this.state.items.map((item, index) => (
+          <Option
+            name={item.group_name}
+            key={index}
+            onPress={() => this.isSelected(item.key_group)}
+            selected={this.toggleStyles( item.key_group)}
+          />
+          
+        ))}
+        <View style={{flexWrap:'wrap',flexDirection:'row',width:'80%'}}> 
+        {this.state.selected.map((phone,index) =>(
+          <Text key={index} style={styles.selectPhone}>{phone}</Text>
+        ))}
+
+        </View>
+        <TouchableHighlight
+        style={styles.btn_primary_light}
+        underlayColor="#000"
+        onPress={()=>this.CreateGroup(this.state.selected,ItemNotification)}
+        >
+          <Text style={styles.buttonText}>Enviar a grupos</Text>
+        </TouchableHighlight>
+      
+            
+      </View>
+    );
+  }
+}
 
 class SendNotification extends React.Component {
-
+  constructor(props) {
+    super(props);
+    this.state = {
+      select: 'individual',
     
+    };
+  }
 
     render() {
       const ItemNotification = this.props.navigation.state.params.ItemNotification;
       console.log("item pasado",ItemNotification)
       return (
         <View style={styles.container}>
-          <Select ItemNotification={ItemNotification} />
-          
+          <TouchableHighlight
+          onPress={()=>this.setState({select:'individual'})}
+          ><Text>Independientes</Text></TouchableHighlight>
+          <TouchableHighlight
+          onPress={()=>this.setState({select:'groups'})}
+          ><Text>Grupos</Text></TouchableHighlight>
+          {this.state.select=='groups' ?(
+            <SelectGroups ItemNotification={ItemNotification} />
+
+          ) :(
+            <SelectIndependentContacts ItemNotification={ItemNotification} />
+          )}
+
         </View>
         
       )

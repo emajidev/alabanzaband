@@ -65,13 +65,8 @@ class CreateGroups extends React.Component {
       return (
         <View style={styles.container}>
             <Text>{selected}</Text>
-            <TouchableOpacity
-            onPress={()=>{
-                this.CreateGroup(selected)
-            }}
-            >
-        <TextInput style={styles.itemInput} onChange={this.Group_Name} placeholder={'Titulo'}/>
-
+            <TextInput style={styles.itemInput} onChange={this.Group_Name} placeholder={'Titulo'}/>
+            <TouchableOpacity onPress={()=>{this.CreateGroup(selected)}}>
                 <Text style={styles.textContact}>crear</Text>
             </TouchableOpacity>
         </View>
