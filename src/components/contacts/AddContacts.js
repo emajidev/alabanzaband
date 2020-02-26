@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { Text, View, TouchableOpacity, StyleSheet,ScrollView,AsyncStorage,TextInput,TouchableHighlight} from 'react-native'
-import { db } from './firebase.js';
+import { db } from '../firebase.js';
 
 let addItem = async (name,phoneContact) => {
    try {

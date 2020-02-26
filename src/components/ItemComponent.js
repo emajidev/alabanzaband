@@ -16,25 +16,29 @@ class ItemComponent extends React.Component{
     this.song_DB = new PouchDB('songs')
 
     this.state={
-      songsItems:[],
+      songsItems:'',
       refreshing: true,
       search:'',
       typeOfSearch:'name',
     }
-    this.GetData();
+    this.GetData()
 
   }
+  
   componentWillMount(){
+    
   }
   componentDidMount(){
     this.get_localdb("songs")
+    console.log("songs items",this.state.songsItems)
+
   }
   
-  GetData = () => {
+  GetData = async() => {
     //Service to get the data from the server to render
 
-    return  this.get_localdb("songs")
-      .then(responseJson => {
+    return  await this.get_localdb("songs")
+      .then(() => {
         this.setState({
           refreshing: false,
           //Setting the data source for the list to render
@@ -51,11 +55,15 @@ class ItemComponent extends React.Component{
 
     try {
       var doc = await this.song_DB.get('songs');
+      console.log("doc",doc.item)
+      if(doc.data !=undefined){
+        console.log("cargando datos")
+        this.setState({songsItems:doc.data})
+      }
     } catch (err) {
       console.log(err);
     }
-/*     console.log("obtenindo datos en component",doc)
- */    this.setState({songsItems:doc})
+ 
   }
   onRefresh() {
     //Clear old data of the list
@@ -70,85 +78,88 @@ class ItemComponent extends React.Component{
   }
 render() {
     /*  filter search coro  */
-  if(this.state.songsItems.data==undefined){
+  if(this.state.songsItems==''){
+    this.GetData()
   return(
     <View>
       <Text>Cargando canciones</Text>
     </View>
   )
-  }
+  }else{
     if (this.state.typeOfSearch == 'temas'){
-     /*  console.log("category") */
-      let coros = this.state.songsItems.data.filter(
-        (item) => {
-          return item.category.toLowerCase().indexOf(this.state.typeOfSearch.toLowerCase())!==-1;
-        }
-      );
-      var filtered = coros.filter(
-        (item) => {
-          /* console.log(item) */
-          /* console.log("temas") */
-         return item.name.toLowerCase().indexOf(this.state.search.toLowerCase() )!==-1;
-        }
-      );  
-      
-    }
-    if (this.state.typeOfSearch == 'notas'){
-      /* console.log("category") */
-      let coros = this.state.songsItems.data.filter(
-        (item) => {
-          return item.category.toLowerCase().indexOf(this.state.typeOfSearch.toLowerCase() )!==-1;
-        }
-      );
-      var filtered = coros.filter(
-        (item) => {
-          /* console.log(item) */
-         /*  console.log("notas") */
-         return item.name.toLowerCase().indexOf(this.state.search.toLowerCase() )!==-1;
-        }
-      );  
-      
-    }
-    if (this.state.typeOfSearch == 'coros'){
-     /*  console.log("category") */
-      let coros = this.state.songsItems.data.filter(
-        (item) => {
-          return item.category.toLowerCase().indexOf(this.state.typeOfSearch.toLowerCase() )!==-1;
-        }
-      );
-      var filtered = coros.filter(
-        (item) => {
-          /* console.log(item) */
-          /* console.log("coros") */
-         return item.name.toLowerCase().indexOf(this.state.search.toLowerCase() )!==-1;
-        }
-      );  
-      
-    }
-    if (this.state.typeOfSearch == 'titulo'){
-      /* console.log("category") */
-      let coros = this.state.songsItems.data.filter(
-        (item) => {
-          return item.category.toLowerCase().indexOf(this.state.typeOfSearch.toLowerCase() )!==-1;
-        }
-      );
-      var filtered = coros.filter(
-        (item) => {
-          /* console.log(item) */
-          /* console.log("titulo") */
-         return item.name.toLowerCase().indexOf(this.state.search.toLowerCase() )!==-1;
-        }
-      );  
-      
-    }
-    if (this.state.typeOfSearch == 'name'){
-    var filtered = this.state.songsItems.data.filter(
-        (item) => {
-         return item.name.toLowerCase().indexOf(this.state.search.toLowerCase() )!==-1;
-        }
-      );
-      }
-  
+      /*  console.log("category") */
+       let coros = this.state.songsItems.filter(
+         (item) => {
+           return item.category.toLowerCase().indexOf(this.state.typeOfSearch.toLowerCase())!==-1;
+         }
+       );
+       var filtered = coros.filter(
+         (item) => {
+           /* console.log(item) */
+           /* console.log("temas") */
+          return item.name.toLowerCase().indexOf(this.state.search.toLowerCase() )!==-1;
+         }
+       );  
+       
+     }
+     if (this.state.typeOfSearch == 'notas'){
+       /* console.log("category") */
+       let coros = this.state.songsItems.filter(
+         (item) => {
+           return item.category.toLowerCase().indexOf(this.state.typeOfSearch.toLowerCase() )!==-1;
+         }
+       );
+       var filtered = coros.filter(
+         (item) => {
+           /* console.log(item) */
+          /*  console.log("notas") */
+          return item.name.toLowerCase().indexOf(this.state.search.toLowerCase() )!==-1;
+         }
+       );  
+       
+     }
+     if (this.state.typeOfSearch == 'coros'){
+      /*  console.log("category") */
+       let coros = this.state.songsItems.filter(
+         (item) => {
+           return item.category.toLowerCase().indexOf(this.state.typeOfSearch.toLowerCase() )!==-1;
+         }
+       );
+       var filtered = coros.filter(
+         (item) => {
+           /* console.log(item) */
+           /* console.log("coros") */
+          return item.name.toLowerCase().indexOf(this.state.search.toLowerCase() )!==-1;
+         }
+       );  
+       
+     }
+     if (this.state.typeOfSearch == 'titulo'){
+       /* console.log("category") */
+       let coros = this.state.songsItems.filter(
+         (item) => {
+           return item.category.toLowerCase().indexOf(this.state.typeOfSearch.toLowerCase() )!==-1;
+         }
+       );
+       var filtered = coros.filter(
+         (item) => {
+           /* console.log(item) */
+           /* console.log("titulo") */
+          return item.name.toLowerCase().indexOf(this.state.search.toLowerCase() )!==-1;
+         }
+       );  
+       
+     }
+     if (this.state.typeOfSearch == 'name'){
+     var filtered = this.state.songsItems.filter(
+         (item) => {
+          return item.name.toLowerCase().indexOf(this.state.search.toLowerCase() )!==-1;
+         }
+       );
+       }
+   
+  }
+    
     return (
       
       <View style={styles.itemsList}>

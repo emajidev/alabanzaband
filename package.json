@@ -12,6 +12,7 @@
     "debug": "adb shell input keyevent 82 && adb shell input keyevent 61 && adb shell input keyevent 66 && adb shell input keyevent 66"
   },
   "dependencies": {
+    "@react-navigation/native": "^5.0.7",
     "braces": "^3.0.2",
     "buffer": "^5.4.3",
     "expo": "^36.0.0",
@@ -34,6 +35,7 @@
     "react-navigation": "^4.0.10",
     "react-navigation-drawer": "^2.2.2",
     "react-navigation-stack": "^1.9.3",
+    "react-navigation-tabs": "^2.7.0",
     "styled-components": "^4.4.1",
     "util": "^0.12.1"
   },

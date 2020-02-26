@@ -32,9 +32,8 @@ class ShowProfile extends React.Component {
    componentDidMount(){
     var user = firebase.auth().currentUser;
     var name, email, photoUrl, uid, emailVerified;
-
+    this.getAsyncStorage()
     if (user != null) {
-      phone = user.displayName;
       email = user.email;
       photoUrl = user.photoURL;
       emailVerified = user.emailVerified;
@@ -42,14 +41,21 @@ class ShowProfile extends React.Component {
                       // this value to authenticate with your backend server, if
                       // you have one. Use User.getToken() instead.
       this.setState({
-        email: email,
-        phone: phone,
-        
+        email: email
       })  
                           
     }
 
  
+   }
+   async getAsyncStorage(){
+    try {
+      const data = await AsyncStorage.getItem('@storage_Key')
+      let newData = JSON.parse(data);
+      this.setState({phone:newData.phone})
+    }catch(e){
+      console.log("error en obtener datos async storage",e)
+    }
    }
    handleBackButton = () => {
 

@@ -2,17 +2,12 @@ import React from 'react'
 import {StatusBar, StyleSheet, AsyncStorage, SafeAreaView, Text, View, TouchableOpacity, Button,Alert } from 'react-native'
 import * as firebase from "firebase/app";
 import Navbar from './Navbar.js';
-import List from './List.js';
-import DrawerStack from './DrawerStack'
-import NavDrawer from './NavDrawer'
-import Icon from 'react-native-vector-icons/FontAwesome';
 import {createDrawerNavigator } from 'react-navigation-drawer';
 import {createAppContainer} from 'react-navigation';
 import Categories from './Categories'
 import Settings from './Settings'
 import ShowProfile from './profile/ShowProfile'
 import AdminDashboard from './admin/AdminDashboard'
-import {withNavigation} from 'react-navigation';
 
 import {ThemeContext, themes} from './conext/theme-context';
 
@@ -118,13 +113,7 @@ class Main extends React.Component {
         const { currentUser } = firebase.auth()
         this.setState({ currentUser })
     }
-    Logout = () =>{
-      firebase
-        .auth()
-        .signOut()
-        .then(() => this.props.navigation.navigate('Login'))
-        .catch(error => this.setState({ errorMessage: error.message }))
-    }
+  
 
     render() {
         const { currentUser } = this.state
@@ -281,7 +270,11 @@ const MyDrawerNavigator = createDrawerNavigator({
                     firebase
                     .auth()
                     .signOut()
-                    .then(() => {this.removeStoreData();console.log('cerrar')})
+                    .then(() => {
+                      console.log('cerrar')
+                      AsyncStorage.clear().then(() => console.log('Cleared'))
+                    }
+                      )
                     .catch(error =>console.log("error en cerrar sesion",error))
                   }},
                 ],

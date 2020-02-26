@@ -140,6 +140,7 @@ class List extends Component {
     try {
       const data = await AsyncStorage.getItem('@storage_Key')
       let newData = JSON.parse(data);
+      console.log("este es mi telefono",newData.phone)
       if(newData.phone !== null) {
           let notifRef = db.ref('/users/user'+newData.phone+'/'+'notificationsReceived' );
           try{
@@ -147,7 +148,6 @@ class List extends Component {
               let notidata = snapshot.val();
               if(notidata !== null){
                 let notiitems = Object.values(notidata);
-                this.setState({ notiitems });
                 let fechaInicio = this.initialDate()
                 notiitems.map((item, index) => {
                   let fechaFin = item.time
@@ -159,6 +159,7 @@ class List extends Component {
 
                     if (item.toSent=='yes'){
                       let phoneReceiver= item.phoneReceiver;
+                      console.log("el que rescive", item.phoneReceiver)
                       let id = item.id
                       console.log(index)
                       this.sendNotificationImmediately(item.phoneTransmitter,item.coment);

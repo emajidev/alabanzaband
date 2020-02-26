@@ -27,6 +27,15 @@ class Contacts extends React.Component{
              
               />
             </TouchableOpacity>
+            <TouchableOpacity style={styles.btn_nav}>
+              <Icon 
+                name='circle-with-plus'
+                color='#5f25fe'
+                onPress={() => this.props.navigation.navigate('AddGroups')}
+                size={40}
+             
+              />
+            </TouchableOpacity>
            
           </View>
         </View>

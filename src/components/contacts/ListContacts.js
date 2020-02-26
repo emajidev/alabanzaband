@@ -3,7 +3,7 @@ import { View, Text, StyleSheet,StatusBar ,AsyncStorage} from 'react-native';
 import ContactsComponent from './ContactsComponent';
 import { withNavigation } from 'react-navigation';
 
-import { db } from './firebase.js';
+import { db } from '../firebase.js';
 
 
 class ListContacts extends Component {

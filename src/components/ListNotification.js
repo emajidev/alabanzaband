@@ -1,15 +1,12 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet,StatusBar ,ActivityIndicator,AsyncStorage,ScrollView} from 'react-native';
 import NotificationComponent from './NotificationComponent';
-import HeaderFunction from './Header.js'
+import GroupComponent from './GroupComponent'
 import { db } from './firebase.js';
 import HeaderStandar from './HeaderStandar.js';
-
 import {ThemeContext, themes} from './conext/theme-context';
-
 import {ThemeProvider} from 'styled-components/native'
-import {Container,Header} from './conext/themes/styled'
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import {TouchableOpacity} from 'react-native-gesture-handler';
 
 
 
@@ -127,6 +124,22 @@ function Out_Notifications(props) {
     </View>
   )
 }
+function Groups(props) {
+  const notifications = props.notifications;
+  return(
+    <View style={styles.notifications}> 
+  
+    {notifications.length > 0 ? (
+    <GroupComponent items={notifications} type_notification={'groups'}/>
+    ) : (
+      <View style={styles.cont}>
+        <Text style={{margin:10}}>No hay notificationes</Text>
+        <ActivityIndicator size="large" />
+      </View>
+    )}
+    </View>
+  )
+}
 export default class ListNotification extends Component {
   state = {
     text:'',
@@ -137,10 +150,11 @@ export default class ListNotification extends Component {
     super(props);
     this.state={
       search: '',
+      groups:[],
       notifications_recived: [],
       notifications_sent:[],
 
-      option:'input'
+      option:'recived'
 
     }
   }
@@ -153,7 +167,6 @@ export default class ListNotification extends Component {
         let recive = db.ref('/users/user'+newData.phone+'/'+'notificationsReceived' );
         recive.on('value', (snapshot,prevChildKey) => {
           let data = snapshot.val();
-          var id = snapshot.key;
           if(data !== null){  
             let items = Object.values(data);
             this.setState({ notifications_recived:items });
@@ -163,10 +176,21 @@ export default class ListNotification extends Component {
             console.log("no hay notificaciones")
           ]
         });
+        let groups = db.ref('/users/user'+newData.phone+'/'+'groups' );
+        groups.on('value', (snapshot,prevChildKey) => {
+          let data = snapshot.val();
+          if(data !== null){  
+            let items = Object.values(data);
+            this.setState({ groups:items });
+            console.log("tamaño de notificaiones",items.length)
+
+          }else[
+            console.log("no hay notificaciones")
+          ]
+        });
         let sent = db.ref('/users/user'+newData.phone+'/'+'notificationsSent' );
         sent.on('value', (snapshot,prevChildKey) => {
           let data = snapshot.val();
-          var id = snapshot.key;
           if(data !== null){  
             let items = Object.values(data);
             this.setState({ notifications_sent:items });
@@ -182,7 +206,24 @@ export default class ListNotification extends Component {
       console.log("error notification list",e)
     }
   }
+  Groups_query = async(key_group)=>{
+    try {
+      const group_data  = db.ref('/users/groups/-M0uIA4zTKv2faeIEW0H')
+      group_data.on('value',(snapshot) =>{
+        let data = snapshot.val();
+        if(data !== null){ 
+            let group_query = Object.values(data);
+            console.log("data groups",data.director)
+/*             this.props.navigation.navigate('GroupNotifications',{DataGroup:group_query})
+ */        }else{
+            console.log("no hay grupos")
+          }
+      })
+    }catch(e){
+  }               
+  }
 componentDidMount() {
+   this.Groups_query()
    this.getData()
    console.log("estado",this.state.option)
   }
@@ -197,28 +238,38 @@ render() {
           <Content/>   
         </View>
         <View style={styles.navbar}>
-          <View style={{width:'50%'}}>
+          <View style={{width:'33%'}}>
           <TouchableOpacity  
           style={styles.button}
-          onPress={()=>this.setState({option:'input'})}
+          onPress={()=>this.setState({option:'recived'})}
           >
             <Text>Recibidos</Text>
           </TouchableOpacity>
           </View>
-          <View style={{width:'50%'}}>
+          <View style={{width:'33%'}}>
           <TouchableOpacity  
           style={styles.button}
-          onPress={()=>this.setState({option:'output'})}
+          onPress={()=>this.setState({option:'groups'})}
+          >
+            <Text>Bandas</Text>
+          </TouchableOpacity>
+          </View>
+          <View style={{width:'33%'}}>
+          <TouchableOpacity  
+          style={styles.button}
+          onPress={()=>this.setState({option:'sent'})}
           >
             <Text>Enviados</Text>
           </TouchableOpacity>
           </View>
         </View>
-        {(this.state.option =='input')?(
+        {(this.state.option =='recived')?(
           <In_Notifications notifications={this.state.notifications_recived}/>
-        ):(
+        ):(this.state.option =='sent')?(
           <Out_Notifications notifications={this.state.notifications_sent}/>
-        )}
+        ):
+        (<Groups notifications={this.state.groups}/>)
+        }
         </View>
     );
   }

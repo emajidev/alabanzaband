@@ -1,9 +1,8 @@
 import React, { Component,useState } from 'react';
-import { View, Text, StyleSheet,TouchableOpacity,TextInput ,StatusBar,ScrollView} from 'react-native';
+import { View, Text, StyleSheet,TouchableOpacity,AsyncStorage ,StatusBar,ScrollView} from 'react-native';
 import PropTypes from 'prop-types';
 import {withNavigation} from 'react-navigation';
 import { db } from './firebase.js';
-import {query_key} from './functions/QueryKey.js'
 class NotificationComponent extends React.Component {
   static propTypes = {
     items: PropTypes.array.isRequired,
@@ -28,9 +27,17 @@ class NotificationComponent extends React.Component {
         const transmitter = db.ref('/users/user'+phoneTransmitter+'/'+'notificationsSent')
         transmitter.child(id).update({accepted: status});
       }catch(e){
-      }               
-    
+    }               
   }
+  updateNotificationReceiver = async(idCurrenUserNotif,status)=>{
+    try {
+      const data = await AsyncStorage.getItem('@storage_Key')
+      let newData = JSON.parse(data);
+      const receiver  = db.ref('/users/user'+newData.phone+'/'+'notificationsReceived')
+      receiver.child(idCurrenUserNotif).update({accepted: status});
+    }catch(e){
+  }               
+}
   change_status= (phoneTransmitter,id,status)=>{
     const itemsRef = db.ref('/users/user'+phoneTransmitter+'/'+'notificationsSent/' );
     let query = itemsRef.orderByChild('id').equalTo(id).once('value')
@@ -38,7 +45,8 @@ class NotificationComponent extends React.Component {
       let query_key = Object.keys(snapshot.val())[0];
       console.log("key",query_key,phoneTransmitter)
       this.updateNotification(phoneTransmitter,query_key,status)
-      }).catch((e)=>{
+      this.updateNotificationReceiver(id,status)
+    }).catch((e)=>{
       console.log("valor no encontrado",e)
     })
   }
@@ -56,7 +64,7 @@ render() {
  */          return (
               <View key={index} style={styles.container}>
                 
-                {item.accepted =="complete" || item.accepted =="accepted"  || this.props.type_notification=='sent'? (
+                {item.accepted =="complete" ||  item.accepted =="accepted" ||item.accepted ==true   || this.props.type_notification=='sent'? (
                   <View style={styles.notifStyle}>
                     <Text style={styles.itemtext} >{item.name} </Text>
                    <Text style={styles.itemtext} >{item.coment} </Text>
