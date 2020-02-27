@@ -22,10 +22,10 @@ Groups_query = async(key_group)=>{
       group_data.on('value',(snapshot) =>{
         let data = snapshot.val();
         if(data !== null){ 
-          let items = Object.values(data);
+          let items =JSON.stringify(data);
 
             console.log("data groups",data)
-            this.props.navigation.navigate('GroupNotifications',{DataGroup:items})
+            this.props.navigation.navigate('GroupNotifications',{DataGroup:data})
         }else{
             console.log("no hay grupos")
           }
@@ -48,7 +48,7 @@ render() {
                     >
                         <Text style={styles.itemtext}>{item.director}</Text>
                         <Text style={styles.itemtext}>{item.key_group}</Text>
-                  <Text>infor group{this.state.Group_data}</Text>
+                        <Text>Banda: {item.group_name}</Text>
                     </TouchableOpacity>
                
                     

@@ -187,13 +187,7 @@ class SelectGroups extends React.Component {
   }
 
   isSelected(i) {
-    let { selected } = this.state;
-    if (selected.indexOf(i) === -1) {
-      selected.push(i);
-    } else {
-      selected = selected.filter(index => index !== i);
-    }
-    this.setState({ selected });
+    this.setState({ selected:i });
     
   }
   getData = async () => {
@@ -248,9 +242,8 @@ class SelectGroups extends React.Component {
           
         ))}
         <View style={{flexWrap:'wrap',flexDirection:'row',width:'80%'}}> 
-        {this.state.selected.map((phone,index) =>(
-          <Text key={index} style={styles.selectPhone}>{phone}</Text>
-        ))}
+          <Text style={styles.selectPhone}>{this.state.selected}</Text>
+        
 
         </View>
         <TouchableHighlight

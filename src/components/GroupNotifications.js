@@ -18,8 +18,11 @@ class GroupNotifications extends React.Component {
   }
 
 render() {
-  const DataGroup = this.props.navigation.state.params.DataGroup.notifications;
-  
+  let DataGroup =this.props.navigation.state.params.DataGroup;
+  console.log("grupt notifi",DataGroup)
+  {console.log("informacion del grupo", DataGroup.notifications)}
+  let data = JSON.parse(DataGroup.notifications)
+  data.forEach(iteme =>console.log("notificaciones",iteme))
   return (
   <View style={styles.content}>
     <View style={styles.container}>
@@ -29,15 +32,8 @@ render() {
       ):(
          <View>
          <Text style={styles.itemtext}>Notificaciones del grupo</Text>
-           <FlatList
-           data={DataGroup}
-           enableEmptySections={true}
-           renderItem={({item,index}) => (
-           <View >
-             <Text style={styles.itemtext}>notificacion{index}</Text>
-             </View>
-             )}
-             />
+         <Text style={styles.itemtext}>{DataGroup.director}</Text>
+
          </View>
      
       )}

@@ -208,7 +208,7 @@ export default class ListNotification extends Component {
   }
   Groups_query = async(key_group)=>{
     try {
-      const group_data  = db.ref('/users/groups/-M0uIA4zTKv2faeIEW0H')
+      const group_data  = db.ref('/users/groups/'+key_group)
       group_data.on('value',(snapshot) =>{
         let data = snapshot.val();
         if(data !== null){ 
