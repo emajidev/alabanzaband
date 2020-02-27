@@ -19,10 +19,12 @@ class GroupNotifications extends React.Component {
 
 render() {
   let DataGroup =this.props.navigation.state.params.DataGroup;
-  console.log("grupt notifi",DataGroup)
-  {console.log("informacion del grupo", DataGroup.notifications)}
-  let data = JSON.parse(DataGroup.notifications)
-  data.forEach(iteme =>console.log("notificaciones",iteme))
+  let data =  Object.values(DataGroup)
+  let info = Object.values(data)
+  data.map((item)=>console.log("item de notificacion",item.name))
+  console.log("grupo notifi", info)
+
+  
   return (
   <View style={styles.content}>
     <View style={styles.container}>
@@ -31,9 +33,21 @@ render() {
 
       ):(
          <View>
-         <Text style={styles.itemtext}>Notificaciones del grupo</Text>
-         <Text style={styles.itemtext}>{DataGroup.director}</Text>
+            <FlatList
+           data={data}
+           enableEmptySections={true}
+           renderItem={({item,index}) => (
+           <View >
+             <Text style={styles.itemtext}>Titulo: {item.name}</Text>
+             <Text style={styles.itemtext}>Categoria: {item.category}</Text>
+             <Text style={styles.itemtext}>Comentario: {item.coment}</Text>
+             <Text style={styles.itemtext}>Letra: {item.lyrics}</Text>
 
+
+
+             </View>
+             )}
+             />
          </View>
      
       )}

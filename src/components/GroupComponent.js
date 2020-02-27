@@ -25,7 +25,7 @@ Groups_query = async(key_group)=>{
           let items =JSON.stringify(data);
 
             console.log("data groups",data)
-            this.props.navigation.navigate('GroupNotifications',{DataGroup:data})
+            this.props.navigation.navigate('GroupNotifications',{DataGroup:data.notifications})
         }else{
             console.log("no hay grupos")
           }
