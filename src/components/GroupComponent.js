@@ -3,6 +3,8 @@ import { View, Text, StyleSheet,TouchableOpacity,FlatList,AsyncStorage ,StatusBa
 import PropTypes from 'prop-types';
 import {withNavigation} from 'react-navigation';
 import { db } from './firebase.js';
+import NotificationComponent from './NotificationComponent';
+
 class GroupComponent extends React.Component {
   static propTypes = {
     items: PropTypes.array.isRequired,
@@ -22,10 +24,10 @@ Groups_query = async(key_group)=>{
       group_data.on('value',(snapshot) =>{
         let data = snapshot.val();
         if(data !== null){ 
-          let items =JSON.stringify(data);
+          let notifications = Object.values(data.notifications);
 
-            console.log("data groups",data)
-            this.props.navigation.navigate('GroupNotifications',{DataGroup:data.notifications})
+            console.log("data groups",data.notifications)
+            this.props.navigation.navigate('GroupNotifications',{DataGroup:notifications})
         }else{
             console.log("no hay grupos")
           }

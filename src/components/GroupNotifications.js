@@ -19,10 +19,7 @@ class GroupNotifications extends React.Component {
 
 render() {
   let DataGroup =this.props.navigation.state.params.DataGroup;
-  let data =  Object.values(DataGroup)
-  let info = Object.values(data)
-  data.map((item)=>console.log("item de notificacion",item.name))
-  console.log("grupo notifi", info)
+  DataGroup.map((item)=>console.log("item de notificacion",item.name))
 
   
   return (
@@ -34,15 +31,17 @@ render() {
       ):(
          <View>
             <FlatList
-           data={data}
+           data={DataGroup}
            enableEmptySections={true}
            renderItem={({item,index}) => (
            <View >
+             <TouchableOpacity
+             onPress={() => this.props.navigation.navigate('ContentItem',{item})}
+             >
              <Text style={styles.itemtext}>Titulo: {item.name}</Text>
              <Text style={styles.itemtext}>Categoria: {item.category}</Text>
              <Text style={styles.itemtext}>Comentario: {item.coment}</Text>
-             <Text style={styles.itemtext}>Letra: {item.lyrics}</Text>
-
+             </TouchableOpacity>
 
 
              </View>
