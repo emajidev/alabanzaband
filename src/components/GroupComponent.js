@@ -9,16 +9,45 @@ class GroupComponent extends React.Component {
   static propTypes = {
     items: PropTypes.array.isRequired,
   };
+
+
+render() {
+  
+   
+    return (
+      <View style={styles.content}>
+          <View style={styles.container}>
+                  <FlatList
+                  data={this.props.items}
+                  enableEmptySections={true}
+                  renderItem={({item}) => (
+                    <View>
+                        <Componentes item={item}/>
+                    </View>
+                    )}
+                    /> 
+                  
+              </View>
+            </View>
+            )
+        }
+     
+  
+  }
+
+class Componentes extends React.Component {
+  static propTypes = {
+    item: PropTypes.array.isRequired,
+  };
   constructor(props) {
     super(props);
     this.state = {
-      accepted:false,
+      accepted:'waiting',
       query_key:'',
       Group_data:''
     };
   }
-
-Groups_query = async(key_group)=>{
+  Groups_query = async(key_group)=>{
     try {
       const group_data  = db.ref('/users/groups/'+key_group)
       group_data.on('value',(snapshot) =>{
@@ -35,36 +64,43 @@ Groups_query = async(key_group)=>{
     }catch(e){
   }               
   }
-render() {
-  
-   
-    return (
-      <View style={styles.content}>
-          <View style={styles.container}>
-                  <FlatList
-                  data={this.props.items}
-                  enableEmptySections={true}
-                  renderItem={({item}) => (
-                    <TouchableOpacity
-                    onPress={()=>this.Groups_query(item.key_group)}
-                    >
-                        <Text style={styles.itemtext}>{item.director}</Text>
-                        <Text style={styles.itemtext}>{item.key_group}</Text>
-                        <Text>Banda: {item.group_name}</Text>
-                    </TouchableOpacity>
-               
-                    
-                    )}
-                    /> 
-                  
-              </View>
-            </View>
-            )
-        }
-     
-  
+  handleChange(status){
+    this.setState({accepted:status})
   }
+render(){
+  let item = this.props.item
 
+  return(
+    <View style={styles.notifStyle}>
+    {this.state.accepted =="accepted" ? (
+    <TouchableOpacity onPress={()=>this.Groups_query(item.key_group)}>
+      <Text style={styles.itemtext}>{item.director}</Text>
+      <Text style={styles.itemtext}>{item.key_group}</Text>
+      <Text>Banda: {item.group_name}</Text>
+    </TouchableOpacity>
+    ) : (
+    <View style={styles.confirmation}>
+      <Text style={{color:'#10cb42'}}>¿ Acepta la invitacion de {item.sender} ?</Text>
+      <View style={{flexDirection:'row'}}>
+        <TouchableOpacity
+        onPress={()=>{this.handleChange("accepted")}}
+        style={styles.btn_accept}
+        >
+          <Text style={{color:'#fff'}}>si</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+        onPress={()=>{this.handleChange("denied")}}
+        style={styles.btn_denied}
+        >
+          <Text style={{color:'#10cb42'}}>no</Text>
+        </TouchableOpacity>
+      </View> 
+    </View>
+    )}
+    </View>
+  )
+}
+  }
 export default withNavigation(GroupComponent);
 
 const styles = StyleSheet.create({

@@ -161,15 +161,15 @@ class List extends Component {
                       let phoneReceiver= item.phoneReceiver;
                       console.log("el que rescive", item.phoneReceiver)
                       let id = item.id
-                      console.log(index)
+                      //notificacion cuando se recibe un evento
                       this.sendNotificationImmediately(item.phoneTransmitter,item.coment);
                       const received = db.ref('/users/user'+phoneReceiver+'/'+'notificationsReceived')
+                      //actualiza el estado a enviado
                       received.child(id).update({toSent: 'sended'})
                     }
+                    // si el evento ya fue aceptado entonces inicia el evento programado
                     if(item.accepted == "accepted"){
-                        /* console.log("diferencia",dif ); */
                       if(dif >= 300000){
-                        /* send notification  */
                         /* console.log("Enviado mayor a 5min") */
                         let scheduleNotification = this.scheduleNotification( item.sender, item.coment,dif);
                         scheduleNotification.then(()=>{
@@ -180,6 +180,41 @@ class List extends Component {
                       }
                     } 
                   }
+                })
+              }else{
+                console.log("no hay notificaciones")
+              }
+            });
+          }catch(e){
+            console.log("notificacions error",e)
+          }
+      }
+    } catch(e) {
+      // error reading value
+      console.log("error",e)
+    }
+  }
+  nofiticationsGroups = async () => {
+    try {
+      const data = await AsyncStorage.getItem('@storage_Key')
+      let newData = JSON.parse(data);
+      if(newData.phone !== null) {
+          let groups = db.ref('/users/user'+newData.phone+'/'+'groups' );
+          try{
+            groups.on('value', snapshot => {
+              let groupsData = snapshot.val();
+              if(groupsData !== null){
+                let groupItems = Object.values(groupsData);
+               
+                groupItems.map((item, index) => {
+                    if (item.toSent=='yes'){
+                      var key = Object.keys(snapshot.val())[index];
+                      //notificacion cuando se recibe un evento
+                      this.sendNotificationImmediately(item.director,"grupo");
+                      //actualiza el estado a enviado
+                      groups.child(key).update({toSent: 'sended'})
+                    }
+                    // si el evento ya fue aceptado entonces inicia el evento programado
                 })
               }else{
                 console.log("no hay notificaciones")
@@ -260,6 +295,7 @@ console.log("notificacion request")
 
  
       this.nofiticationsBd();
+      this.nofiticationsGroups();
       this.notifcationRequest();
       this.chanelAndroid();
    

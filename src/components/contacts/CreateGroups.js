@@ -14,6 +14,11 @@ class CreateGroups extends React.Component {
         };
     }
 
+    handleChange = e => {
+      this.setState({
+        groupName: e.nativeEvent.text
+      });
+   };
     CreateGroup = async (selected) => {
         try {
             const dataUser = await AsyncStorage.getItem('@storage_Key')
@@ -34,6 +39,7 @@ class CreateGroups extends React.Component {
                             key_group:key,
                             director:newDataUser.phone,
                             group_name:this.state.groupName,
+                            toSent:'yes'
                         })
                     });
                     
@@ -65,7 +71,7 @@ class CreateGroups extends React.Component {
       return (
         <View style={styles.container}>
             <Text>{selected}</Text>
-            <TextInput style={styles.itemInput} onChange={this.Group_Name} placeholder={'Titulo'}/>
+            <TextInput style={styles.itemInput} onChange={this.handleChange} placeholder={'Titulo'}/>
             <TouchableOpacity onPress={()=>{this.CreateGroup(selected)}}>
                 <Text style={styles.textContact}>crear</Text>
             </TouchableOpacity>
