@@ -3,94 +3,62 @@ import { View, Text, StyleSheet,TouchableOpacity,FlatList,AsyncStorage ,StatusBa
 import PropTypes from 'prop-types';
 import {withNavigation} from 'react-navigation';
 import { db } from './firebase.js';
-import GroupRequest from './GroupRequest'
+import { useNavigation } from '@react-navigation/native';
 
-class GroupNotifications extends React.Component {
- 
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      accepted:false,
-      query_key:''
-    };
-  }
-  handleChange(status){
-    this.setState({accepted:status})
-  }
-render() {
-  let DataGroup =this.props.navigation.state.params.DataGroup;
-  DataGroup.map((item)=>console.log("item de notificacion",item.name))
+  class GroupRequest extends React.Component {
 
-  
-  return (
-  <View style={styles.content}>
-    <View style={styles.container}>
-      {(DataGroup==undefined)?(
-        <Text style={styles.itemtext}>No hay notificaciones</Text>
-
-      ):(
-         <View>
-            <FlatList
-           data={DataGroup}
-           enableEmptySections={true}
-           renderItem={({item,index}) => (
-           <View >
-             <GroupRequest item={item}/>
-             </View>
-             )}
-             />
-         </View>
-     
-      )}
-      </View> 
-    </View>
-)
-        }
-    
-  }
-  class Componentes extends React.Component {
-    
-    static propTypes = {
-      item: PropTypes.array.isRequired,
-    };
     constructor(props) {
       super(props);
       this.state = {
         accepted:'waiting',
         query_key:'',
-        Group_data:''
+        Group_data:'',
+        item:this.props.item
+
       };
 
     }
-    Groups_query = async(key_group)=>{
+    componentDidMount(){
+        console.log(" mis props",this.state.item)
+    }
+    query=async(key_group,id)=>{
+        try {
+            const data = await AsyncStorage.getItem('@storage_Key')
+            var newData = JSON.parse(data);
+            
+            const group_data  = db.ref('/users/groups/'+key_group+'/notifications/'+id +'/members/'+newData.phone)
+            group_data.on('value',(snapshot)=>{
+                let data = snapshot.val()
+                console.log("status de la notificacion",data)
+            })
+          }catch(e){
+        }    
+    }
+    Groups_query = async(key_group,id)=>{
       try {
-        const group_data  = db.ref('/users/groups/'+key_group)
-        group_data.on('value',(snapshot) =>{
-          let data = snapshot.val();
-          if(data !== null){ 
-            let notifications = Object.values(data.notifications);
-  
-              console.log("data groups",data.notifications)
-          }else{
-              console.log("no hay grupos")
-            }
+        const data = await AsyncStorage.getItem('@storage_Key')
+        var newData = JSON.parse(data);
+        
+        const group_data  = db.ref('/users/groups/'+key_group+'/notifications/'+id +'/members/'+newData.phone)
+        group_data.push({
+            status:"accept"
         })
       }catch(e){
     }               
     }
     handleChange(status){
-      this.setState({accepted:status})
+       
+        this.setState({accepted:status})
     }
   render(){
     let item = this.props.item
-    const navigation = useNavigation();
 
     return(
       <View style={styles.notifStyle}>
-    {this.state.accepted =="accepted" ? (
+    {this.state.accepted =="accepted"  ? (
             <TouchableOpacity
-            onPress={() => navigation.navigate('ContentItem',{item})}
+            onPress={() => this.props.navigation.navigate('ContentItem',{item})}
             >
             <Text style={styles.itemtext}>Titulo: {item.name}</Text>
             <Text style={styles.itemtext}>Categoria: {item.category}</Text>
@@ -98,10 +66,12 @@ render() {
             </TouchableOpacity>
     ) : (
     <View style={styles.confirmation}>
-      <Text style={{color:'#10cb42'}}>¿ Acepta la invitacion de {item.sender} ?</Text>
+      <Text style={{color:'#10cb42'}}>¿ Acepta la invitacion ?</Text>
       <View style={{flexDirection:'row'}}>
         <TouchableOpacity
-        onPress={()=>{this.handleChange("accepted")}}
+        onPress={()=>{
+            this.Groups_query(item.key_group,item.id)
+        }}
         style={styles.btn_accept}
         >
           <Text style={{color:'#fff'}}>si</Text>
@@ -119,7 +89,7 @@ render() {
     )
   }
     }
-export default withNavigation(GroupNotifications);
+export default withNavigation(GroupRequest);
 
 const styles = StyleSheet.create({
     

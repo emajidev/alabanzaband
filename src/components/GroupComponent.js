@@ -9,7 +9,34 @@ class GroupComponent extends React.Component {
   static propTypes = {
     items: PropTypes.array.isRequired,
   };
+  constructor(props) {
+    super(props);
+    this.state = {
+      accepted:'waiting',
+      query_key:'',
+      Group_data:''
+    };
+  }
+  Groups_query = async(key_group)=>{
+    try {
+      const group_data  = db.ref('/users/groups/'+key_group)
+      group_data.on('value',(snapshot) =>{
+        let data = snapshot.val();
+        if(data !== null){ 
+          let notifications = Object.values(data.notifications);
 
+            console.log("data groups",data.notifications)
+            this.props.navigation.navigate('GroupNotifications',{DataGroup:notifications})
+        }else{
+            console.log("no hay grupos")
+          }
+      })
+    }catch(e){
+  }               
+  }
+  handleChange(status){
+    this.setState({accepted:status})
+  }
 
 render() {
   
@@ -21,9 +48,11 @@ render() {
                   data={this.props.items}
                   enableEmptySections={true}
                   renderItem={({item}) => (
-                    <View>
-                        <Componentes item={item}/>
-                    </View>
+                    <TouchableOpacity onPress={()=>this.Groups_query(item.key_group)}>
+                      <Text style={styles.itemtext}>{item.director}</Text>
+                      <Text style={styles.itemtext}>{item.key_group}</Text>
+                      <Text>Banda: {item.group_name}</Text>
+                    </TouchableOpacity>
                     )}
                     /> 
                   

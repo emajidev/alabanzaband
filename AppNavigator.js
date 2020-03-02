@@ -14,6 +14,7 @@ import AddGroups from './src/components/contacts/AddGroups.js'
 import CreateGroups from './src/components/contacts/CreateGroups.js'
 import GroupComponent from './src/components/GroupComponent.js'
 import GroupNotifications from './src/components/GroupNotifications.js'
+import GroupRequest from './src/components/GroupRequest.js'
 import SendNotification from './src/components/SendNotification.js'
 import ContactsComponent from './src/components/contacts/ContactsComponent.js'
 import ListContacts from './src/components/contacts/ListContacts.js'
@@ -46,6 +47,7 @@ const AppNavigator = createStackNavigator(
   CreateGroups:{screen:CreateGroups},
   GroupComponent:{screen:GroupComponent},
   GroupNotifications:{screen:GroupNotifications},
+  GroupRequest:{screen:GroupRequest},
   ContactsComponent:{screen:ContactsComponent},
   ListContacts:{screen:ListContacts},
   Contacts:{screen:Contacts},

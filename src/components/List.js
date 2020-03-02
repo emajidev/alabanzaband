@@ -208,11 +208,25 @@ class List extends Component {
                
                 groupItems.map((item, index) => {
                     if (item.toSent=='yes'){
-                      var key = Object.keys(snapshot.val())[index];
+                      let key = Object.keys(snapshot.val())[index];
                       //notificacion cuando se recibe un evento
                       this.sendNotificationImmediately(item.director,"grupo");
                       //actualiza el estado a enviado
                       groups.child(key).update({toSent: 'sended'})
+                    }else{
+                      let ref = db.ref('/users/groups/'+item.key_group+'/notifications' );
+
+                      ref.limitToLast(1).startAt(1).on("child_added", (snapshot) =>{
+                        let newPost = snapshot.val();
+                        if(newPost !=null){
+                        let  post =  Object.values(newPost);
+                       
+                        console.log("Author: " + item.group_name);
+                        console.log("Title: " + post.name);
+                        this.sendNotificationImmediately(item.group_name,"Nueva notificacion");
+                      }
+                      })
+
                     }
                     // si el evento ya fue aceptado entonces inicia el evento programado
                 })
@@ -282,6 +296,14 @@ console.log("notificacion request")
         });
       }
     
+  }
+  query_groups_notifications(){
+    ref.on("child_added", function(snapshot, prevChildKey) {
+      var newPost = snapshot.val();
+      console.log("Author: " + newPost.author);
+      console.log("Title: " + newPost.title);
+      console.log("Previous Post ID: " + prevChildKey);
+    });
   }
 
   componentDidMount=async()=>{

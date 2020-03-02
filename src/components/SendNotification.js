@@ -220,7 +220,10 @@ class SelectGroups extends React.Component {
         lyrics:ItemNotification.item.lyrics,
         coment:ItemNotification.coment,
         time:ItemNotification.date,
-      })
+        
+      }).then((snapshot) => {
+        groups.child(snapshot.key).update({"id": snapshot.key})
+    })
     }catch(e){
       console.log(e)
     }
