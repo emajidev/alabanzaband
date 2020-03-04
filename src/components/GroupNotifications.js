@@ -41,13 +41,10 @@ render() {
              )}
              />
          </View>
-     
       )}
       </View> 
-    </View>
-)
-        }
-    
+    </View>)
+    }
   }
   class Componentes extends React.Component {
     

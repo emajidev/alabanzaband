@@ -62,9 +62,9 @@ class ItemComponent extends React.Component{
 
     try {
       var doc = await this.song_DB.get('songs');
-      console.log("doc",doc.item)
+      this.queryPouchDb()
       if(doc.data !=undefined){
-        console.log("cargando datos")
+        console.log("cargando datos",doc)
         this.setState({songsItems:doc.data})
       }
     } catch (err) {
@@ -72,6 +72,26 @@ class ItemComponent extends React.Component{
     }
  
   }
+ async queryPouchDb(doc) {
+    var searchterm = "coros";
+    var doc = this.song_DB.get('songs');
+    function map(doc) {
+      // join artist data to albums
+      let data = doc.data[0]
+      if (data.category === 'coros') {
+        emit(data.name,{value:data});
+      }
+    }
+    try {
+      var result = await this.song_DB.query(map, {include_docs : true});
+      console.log("mi busqueda es",result)
+  
+
+    } catch (err) {
+      console.log(err);
+    }
+  }
+  
   onRefresh() {
     //Clear old data of the list
     this.setState({ dataSource: [] });
