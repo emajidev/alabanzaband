@@ -1,7 +1,10 @@
 import React from 'react';
-import { StatusBar,StyleSheet, Text, View, Button, TouchableOpacity,AsyncStorage} from 'react-native';
+import { StatusBar,StyleSheet, Text, View, Modal, TouchableOpacity,AsyncStorage,Alert,TouchableHighlight} from 'react-native';
 import List from './List.js'
 import Icon from 'react-native-vector-icons/Feather';
+import Icon2 from 'react-native-vector-icons/Ionicons';
+import ItemComponent from '../components/ItemComponent';
+
 import ContactsIcon from 'react-native-vector-icons/AntDesign';
 import {withNavigation} from 'react-navigation';
 import * as firebase from "firebase/app";
@@ -11,19 +14,28 @@ import {ThemeContext, themes} from './conext/theme-context';
 
 import {ThemeProvider} from 'styled-components/native'
 import {Container,Header} from './conext/themes/styled'
+import { styles } from '../styles/Styles.js';
 
 
 class Navbar extends React.Component{
 
   constructor(props) {
     super(props);
+    this.state={
+      modalVisible: false,
+    }
   }
   _menu = null;
  
   setMenuRef = ref => {
     this._menu = ref;
   };
- 
+
+  setModalVisible(visible) {
+    this.setState({modalVisible: visible});
+    console.log("modal de busqueda activado",this.state.modalVisible)
+  }
+
   hideMenu = () => {
     this._menu.hide();
   };
@@ -55,15 +67,20 @@ class Navbar extends React.Component{
 
     
   }
+  componentDidMount(){
+  }
   render() {
   return (
  
     <View style={navbarStyles.container} >
-    <ThemeContext.Consumer>
-        {data =>
-      <ThemeProvider theme={data}>
        
+    <ThemeContext.Consumer>
+        {data => 
+      <ThemeProvider theme={data}>
+        <StatusBar backgroundColor={data.bg} barStyle={data.text == '#fff'?("light-content"):("dark-content")}/>
+
         <Header>
+
           <View style={navbarStyles.iconMenu}>
           <TouchableOpacity style={navbarStyles.btn_nav}
           onPress={() => this.props.navigation.openDrawer()}
@@ -71,35 +88,43 @@ class Navbar extends React.Component{
             
               <Icon 
                 name='menu'
-                color='#5f25fe'
+                color={data.text}
                 size={30}
             
               />
             </TouchableOpacity>
           </View>
           <View style={{ flex:1}}>
-            <Text style={navbarStyles.title}> ALABANZABAND</Text>
+            <Text style={{color:data.text,textAlign:'center',fontSize:20}}> ALABANZABAND</Text>
           </View>
           <View >
-     
-            <TouchableOpacity style={navbarStyles.btn_nav}>
+          <TouchableOpacity style={navbarStyles.btn_nav}>
+              <Icon2 
+                name='ios-search'
+                color={data.text}
+                onPress={() => this.props.navigation.navigate('Search')}
+                size={25}
+            
+            />
+            </TouchableOpacity> 
+{/*        <TouchableOpacity style={navbarStyles.btn_nav}>
               <ContactsIcon 
                 name='contacts'
-                color='#5f25fe'
+                color={data.text}
                 onPress={() => this.props.navigation.navigate('Contacts')}
                 size={25}
             
-              />
-            </TouchableOpacity> 
-            <TouchableOpacity >
+            />
+            </TouchableOpacity>  */}
+          {/*    <TouchableOpacity >
               <Icon 
                 name='bell'
-                color='#5f25fe'
+                color='#fff'
                 onPress={() => this.props.navigation.navigate('ListNotification')}
                 size={25}
             
               />
-            </TouchableOpacity>
+            </TouchableOpacity> */}
     {/*         <TouchableOpacity style={navbarStyles.btn_nav}
             onPress={() => this.props.navigation.navigate('Suggestion')}>
               <Icon 
@@ -130,7 +155,10 @@ class Navbar extends React.Component{
             </Menu> */}
             
           </View>
+
         </Header>
+    
+
           <List/>
       </ThemeProvider>
     }
@@ -144,8 +172,6 @@ export default withNavigation(Navbar);
 const navbarStyles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop:StatusBar.currentHeight,
-    backgroundColor: '#fff',
     justifyContent:'flex-start',
     alignItems:'center',
     width:'100%',
@@ -160,7 +186,8 @@ const navbarStyles = StyleSheet.create({
     justifyContent:'space-around',
     alignItems:'center' , 
    
-  }, 
+  },
+
   btn_nav:{
     margin:8
   },
@@ -183,7 +210,6 @@ const navbarStyles = StyleSheet.create({
   },
  
   title: {
-    color: '#777',
     fontSize:20,
     textAlign:'center'
    

@@ -3,7 +3,8 @@ import { View, Text, StatusBar, StyleSheet,ScrollView ,TouchableOpacity} from 'r
 import { withNavigation } from 'react-navigation'
 import Shareicon from 'react-native-vector-icons/Feather';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import MusicIcon from 'react-native-vector-icons/Entypo'
+import MusicIcon from 'react-native-vector-icons/MaterialCommunityIcons'
+
 
 
    
@@ -22,21 +23,21 @@ class ContentItem extends React.Component {
                <View style={{flexDirection:'row'}}>
                   <View style={{width:'20%', alignContent:'center',justifyContent:'center'}}>
                      <MusicIcon 
-                     name='music'
-                     color='#5f25fe'
-                     size={80}
+                     name='bookmark-music'
+                     color='#000'
+                     size={60}
                      />
                   </View>
                 
                   <View style={{width:'60%'}}>
-                     <Text style={styles.title}>Canción: <Text style={{fontWeight:'bold'}}>{item.name}</Text> </Text>
+                     <Text style={styles.title}>Titulo: <Text style={{fontWeight:'bold'}}>{item.name}</Text> </Text>
                      <Text style={styles.subtitle}>Categoria:  <Text style={{fontWeight:'bold'}}>{item.category}</Text></Text>
                   </View>
                   <View style={{width:'20%', alignContent:'center',justifyContent:'center'}}>
                      <TouchableOpacity style={styles.btn_nav}>
                      <Shareicon 
                         name='share-2'
-                        color='#5f25fe'
+                        color='#000'
                         onPress={() => this.props.navigation.navigate('AddNotification',{item})}
                         size={50}
                      />

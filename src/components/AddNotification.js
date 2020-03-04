@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
-import { Text, View, TouchableOpacity, StyleSheet,ScrollView,StatusBar,TextInput,TouchableHighlight} from 'react-native'
+import { Text, View, TouchableOpacity, StyleSheet,ScrollView,StatusBar,TextInput,TouchableHighlight, Alert} from 'react-native'
 import { withNavigation } from 'react-navigation'
-import MusicIcon from 'react-native-vector-icons/Entypo'
+import MusicIcon from 'react-native-vector-icons/MaterialCommunityIcons'
 import DatePicker from 'react-native-datepicker'
 
 class AddNotification extends React.Component {
@@ -10,16 +10,16 @@ class AddNotification extends React.Component {
       this.state = {
          date:'',
          dateCurrent:'',
-         timestamp:'' 
+         timestamp:'',
+         coment:'' 
       }
    }      
-   state = {
-      coment: ''
-   };
+  
 
    handleChange = e => {
       this.setState({
-      coment: e.nativeEvent.text
+      coment: e.nativeEvent.text,
+
       });
    };
    handleSubmit = () => {
@@ -61,30 +61,36 @@ class AddNotification extends React.Component {
        return (
     
             <View style={styles.container}>
-            <Text style={styles.title}>Crear notificación</Text>
+            <Text style={{fontSize:20,marginBottom:10}}>Nuevo Evento</Text>
+            <Text style={styles.comentarie}>Comparte con tus colegas eventos para ensayar o realizar toques entre bandas...</Text>
             <View style={{flexDirection:'row'}}>
                   <View style={{width:'20%', alignContent:'center',justifyContent:'center'}}>
                      <MusicIcon 
-                     name='music'
-                     color='#5f25fe'
-                     size={80}
+                     name='bookmark-music'
+                     color='#000'
+                     size={60}
                      />
                   </View>
                 
                   <View style={{width:'80%'}}>
-                     <Text style={styles.song}>Canción: <Text style={{fontWeight:'bold'}}>{item.name}</Text> </Text>
-                     
+                     <Text style={styles.title}>Titulo: <Text style={{fontWeight:'bold'}}>{item.name}</Text> </Text>
+                     <Text style={styles.subtitle}>Categoria:  <Text style={{fontWeight:'bold'}}>{item.category}</Text></Text>
                   </View>
             </View>
-            <TextInput style={styles.itemInput} onChange={this.handleChange} placeholder='Añadir comentario' />
-            <Text>{this.state.date}</Text>
-            <TouchableHighlight
-               style={styles.btn_primary_light}
-               underlayColor="#000"
-               onPress={() => this.props.navigation.navigate('SendNotification',{ItemNotification})}
-            >
-               <Text style={styles.buttonText}>Siguiente</Text>
-            </TouchableHighlight>
+            
+            <TextInput 
+            maxLength = {90}
+            multiline = {true}
+            style={styles.itemInput} 
+            onChange={this.handleChange} 
+            placeholder='Añadir comentario' 
+            />
+            <View style={{width:'100%',justifyContent:'flex-end',paddingRight:20,marginTop:10}}>
+            <Text style={{textAlign:'right'}}>
+               {this.state.coment.length}/90
+            </Text>
+            </View>
+            <View style={{padding:50}}>
             {/*   seleccionar fecha */}
             <DatePicker
               style={{width: 200}}
@@ -97,19 +103,45 @@ class AddNotification extends React.Component {
               confirmBtnText="Confirm"
               cancelBtnText="Cancel"
               customStyles={{
+            
                 dateIcon: {
                   position: 'absolute',
-                  left: 0,
-                  top: 4,
-                  marginLeft: 0
+                  width:100,
+                  height:100
+                  
                 },
                 dateInput: {
-                  marginLeft: 36
+                  position: 'absolute',
+                  top:50,
+                  borderColor:0,
+                  width:200,
+                  height:100
                 }
                 // ... You can check the source to find the other keys.
               }}
               onDateChange={(date) => {this.setState({date: date})}}
             />
+            </View>
+            <Text>{this.state.date}</Text>
+
+            <View>
+
+            
+            <TouchableHighlight
+               style={styles.btn_primary_light}
+               underlayColor="#000"
+               onPress={() =>{
+                  if(this.state.coment==''|| this.state.date ==''){
+                     Alert.alert("Hay campos vacios")
+                  }else{
+                     this.props.navigation.navigate('SendNotification',{ItemNotification})
+                  }
+                  
+               }}
+            >
+               <Text style={styles.buttonText}>Siguiente</Text>
+            </TouchableHighlight>
+            </View>
             </View>
           
        
@@ -119,30 +151,30 @@ class AddNotification extends React.Component {
  export default withNavigation(AddNotification)
 
  const styles = StyleSheet.create ({
-   main: {
-      flex: 1,
-      padding: 30,
-      flexDirection: 'column',
-      justifyContent: 'center',
-      backgroundColor: '#6565fc'
-    },
-    title: {
+   title:{
+      fontSize:20,
+   },
+   subtitle:{
+     fontSize:15,
+   },
+    comentarie: {
       marginBottom: 20,
-      fontSize: 25,
-      textAlign: 'center'
+      fontSize: 15,
+      textAlign: 'center',
+      color:"#999"
     },
-    song:{fontSize: 25,},
+    song:{fontSize: 20,},
     itemInput: {
       width:'95%',
-      height: 50,
+      height: 150,
       padding: 10,
       marginRight: 5,
       fontSize: 16,
       borderWidth: 1,
       borderColor: '#000',
       borderRadius: 8,
-      marginTop:20
-      
+      marginTop:20,
+      textAlignVertical:'top'
     },
     buttonText: {
       fontSize: 18,
@@ -154,7 +186,7 @@ class AddNotification extends React.Component {
         flex:1,
         justifyContent:'flex-start',
         alignItems:'center',
-        marginTop:StatusBar.currentHeight+15,
+        marginTop:15,
 
         
       

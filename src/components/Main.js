@@ -4,11 +4,17 @@ import * as firebase from "firebase/app";
 import Navbar from './Navbar.js';
 import {createDrawerNavigator } from 'react-navigation-drawer';
 import {createAppContainer} from 'react-navigation';
-import Categories from './Categories'
+import Categories from './Categories';
+import ListNotification from './ListNotification'
+
 import Settings from './Settings'
 import ShowProfile from './profile/ShowProfile'
 import AdminDashboard from './admin/AdminDashboard'
+import Icon from 'react-native-vector-icons/Feather';
+import Icon2 from 'react-native-vector-icons/Ionicons';
+import Icon3 from 'react-native-vector-icons/MaterialCommunityIcons';
 
+import ContactsIcon from 'react-native-vector-icons/AntDesign';
 import {ThemeContext, themes} from './conext/theme-context';
 
 import {ThemeProvider} from 'styled-components/native'
@@ -74,9 +80,11 @@ class Content extends React.Component {
       const dataTheme = this.state.theme
       let modUser =  this.state.moduser
       return (
+        
         <ThemeContext.Provider value={{...this.state.theme}}>
            {this.props.children}
            <View style={styles.container}>
+
                 {
                   modUser =='admin' ? (
                     <AdminDashboard />
@@ -97,7 +105,7 @@ class Content extends React.Component {
 
 class Main extends React.Component {
     static navigationOptions = {
-      drawerLabel: 'Inicio',
+      drawerLabel: 'Menu',
     /*   drawerIcon: ({ tintColor }) => (
         <Image
           source={require('./chats-icon.png')}
@@ -119,15 +127,15 @@ class Main extends React.Component {
         const { currentUser } = this.state
        
         return (
-       
             <Content/>   
+
         )
       
     }}
 const styles = StyleSheet.create({
   container:{
-    backgroundColor:'#f4f',
     flex:1,
+    backgroundColor:'#f4f4f4',
     width:'100%',
     margin:0,
     padding:0,
@@ -157,33 +165,33 @@ const styles = StyleSheet.create({
 
 class NotificationsScreen extends React.Component {
   static navigationOptions = {
-    drawerLabel: 'Notifications',
- /*    drawerIcon: ({ tintColor }) => (
-      <Image
-        source={require('./notif-icon.png')}
-        style={[styles.icon, { tintColor: tintColor }]}
+    drawerLabel: 'Eventos',
+    drawerIcon: ({ tintColor }) => (
+      <Icon 
+      name='bell'
+      color='#000'
+      size={25}
       />
-    ), */
+    ),
   };
 
   render() {
     return (
-      <Button
-        onPress={() => this.props.navigation.goBack()}
-        title="Go back home"
+      <ListNotification
       />
     );
   }
 }
 class Page1 extends React.Component {
   static navigationOptions = {
-    drawerLabel: 'Ajustes',
- /*    drawerIcon: ({ tintColor }) => (
-      <Image
-        source={require('./notif-icon.png')}
-        style={[styles.icon, { tintColor: tintColor }]}
+    drawerLabel: 'Temas',
+    drawerIcon: ({ tintColor }) => (
+      <Icon2 
+      name='ios-color-palette'
+      color='#000'
+      size={25}
       />
-    ), */
+    ),
   };
 
   render() {
@@ -197,12 +205,13 @@ class Page1 extends React.Component {
 class Page2 extends React.Component {
   static navigationOptions = {
     drawerLabel: 'Perfil',
- /*    drawerIcon: ({ tintColor }) => (
-      <Image
-        source={require('./notif-icon.png')}
-        style={[styles.icon, { tintColor: tintColor }]}
+    drawerIcon: ({ tintColor }) => (
+       <Icon2 
+      name='md-person'
+      color='#000'
+      size={25}
       />
-    ), */
+    ),
   };
 
   render() {
@@ -217,12 +226,13 @@ class Page2 extends React.Component {
 class Page3 extends React.Component {
   static navigationOptions = {
     drawerLabel: 'Categorias',
- /*    drawerIcon: ({ tintColor }) => (
-      <Image
-        source={require('./notif-icon.png')}
-        style={[styles.icon, { tintColor: tintColor }]}
+    drawerIcon: ({ tintColor }) => (
+       <Icon3 
+        name='file-tree'
+        color='#000'
+        size={25}
       />
-    ), */
+    ),
   };
 
   render() {
@@ -281,7 +291,8 @@ const MyDrawerNavigator = createDrawerNavigator({
                 { cancelable: false }
               )  
             }>
-              <Text style={{margin: 16,fontWeight: 'bold',color: '#f44'}}>Logout</Text>
+              
+              <Text style={{margin: 16,fontWeight: 'bold',color: '#000'}}>Cerrar Sesion</Text>
             </TouchableOpacity>
           </SafeAreaView>
       </View>

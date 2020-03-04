@@ -19,9 +19,7 @@ import { useNavigation } from '@react-navigation/native';
       };
 
     }
-    componentDidMount(){
-        console.log(" mis props",this.state.item)
-    }
+  
     query=async(key_group,id)=>{
         try {
             const data = await AsyncStorage.getItem('@storage_Key')
@@ -47,16 +45,57 @@ import { useNavigation } from '@react-navigation/native';
       }catch(e){
     }               
     }
-    handleChange(status){
-       
-        this.setState({accepted:status})
+    user_group_query = async(key_group,id)=>{
+      try {
+        const data = await AsyncStorage.getItem('@storage_Key')
+        var newData = JSON.parse(data);
+        
+        const group_data  = db.ref('/users/groups/'+key_group+'/notifications/'+id +'/members/'+newData.phone)
+        group_data.push({
+            status:"accept"
+        })
+      }catch(e){
+    }               
     }
+    user_group_query_notifi = async(key_group,id)=>{
+      try {
+        const data = await AsyncStorage.getItem('@storage_Key')
+        var newData = JSON.parse(data);
+        
+        const group_data  = db.ref('/users/groups/'+key_group+'/notifications/'+id +'/members/'+newData.phone)
+        if(group_data != undefined){
+        group_data.on('value',(snapshot)=>{
+          let data = snapshot.val()
+          if(data != null || data != undefined){ 
+            if(Object.values(data)!=null || Object.values(data)!=undefined  ){
+              let status = Object.values(data);
+  
+              console.log("data status",status[0].status)
+              if(status[0].status =='accept'){
+                this.setState({accepted:'accept'})
+              }
+            }
+          }else{
+              console.log("no hay status")
+              this.setState({accepted:'waiting'})
+            }
+          
+        }
+        )
+      }
+      }catch(e){
+    }               
+    }
+    componentWillMount(){
+      this.user_group_query_notifi(this.state.item.key_group,this.state.item.id)
+    }
+
   render(){
     let item = this.props.item
 
     return(
       <View style={styles.notifStyle}>
-    {this.state.accepted =="accepted"  ? (
+    {this.state.accepted =="accept"  ? (
             <TouchableOpacity
             onPress={() => this.props.navigation.navigate('ContentItem',{item})}
             >
@@ -77,7 +116,6 @@ import { useNavigation } from '@react-navigation/native';
           <Text style={{color:'#fff'}}>si</Text>
         </TouchableOpacity>
         <TouchableOpacity
-        onPress={()=>{this.handleChange("denied")}}
         style={styles.btn_denied}
         >
           <Text style={{color:'#10cb42'}}>no</Text>

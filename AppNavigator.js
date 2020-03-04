@@ -26,6 +26,7 @@ import AdminDashboard from './src/components/admin/AdminDashboard.js'
 import Suggestion from './src/components/Suggestion.js'
 import ShowSuggestion from './src/components/admin/ShowSuggestion.js'
 import Categories from './src/components/Categories.js'
+import Search from './src/components/Search.js'
 
 const AppNavigator = createStackNavigator(
 {
@@ -36,7 +37,7 @@ const AppNavigator = createStackNavigator(
   AddItem:{screen:AddItem},
   ContentItem:{screen:ContentItem},
   Categories:{screen:Categories},
-  
+  Search:{screen:Search},
   AddNotification:{screen:AddNotification},
   NotificationComponent:{screen:NotificationComponent},
   ListNotification:{screen:ListNotification},

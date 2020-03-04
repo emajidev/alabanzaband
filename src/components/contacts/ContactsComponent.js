@@ -23,7 +23,7 @@ render() {
               <View style={styles.boxContact} key={index}>
                 <Icon 
                 name='md-contact'
-                color='#5f25fe'
+                color='#222'
                 size={40}
                 />
                 <Text style={styles.itemtext} >{item.name} </Text>
@@ -50,9 +50,14 @@ const styles = StyleSheet.create ({
     boxContact:{
       flexDirection:'row',
       margin:15,
-      height:50,width:'80%'
+      height:50,width:'100%',
+      borderBottomColor:'#888',
+      borderBottomWidth:1
     },
-    itemtext:{fontSize:20,marginLeft:5},
+    itemtext:{
+      fontSize:20,marginLeft:10,
+    
+    },
    TouchableOpacity: {
       padding: 10,
       marginTop: 3,

@@ -1,7 +1,7 @@
 import React from 'react';
 import { StatusBar,StyleSheet, Text, View, Button, TouchableOpacity} from 'react-native';
 import ListContacts from './ListContacts.js'
-import Icon from 'react-native-vector-icons/Entypo';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import ContactsIcon from 'react-native-vector-icons/AntDesign';
 import {withNavigation} from 'react-navigation';
 
@@ -20,17 +20,17 @@ class Contacts extends React.Component{
        
             <TouchableOpacity style={styles.btn_nav}>
               <Icon 
-                name='circle-with-plus'
-                color='#5f25fe'
+                name='person-add'
+                color='#000'
                 onPress={() => this.props.navigation.navigate('AddContacts')}
-                size={40}
+                size={30}
              
               />
             </TouchableOpacity>
             <TouchableOpacity style={styles.btn_nav}>
               <Icon 
-                name='circle-with-plus'
-                color='#5f25fe'
+                name='group-add'
+                color='#222'
                 onPress={() => this.props.navigation.navigate('AddGroups')}
                 size={40}
              
@@ -52,16 +52,10 @@ export default withNavigation(Contacts);
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop:StatusBar.currentHeight,
-    backgroundColor: '#fff',
-
-
-   
   },
   header:{
     flex: .5,
     flexDirection:'row',
-    backgroundColor: '#eee',
     justifyContent:'space-around',
     alignItems:'center' , 
    
