@@ -10,6 +10,7 @@ import IconLike from 'react-native-vector-icons/AntDesign';
 import {ThemeContext, themes} from './conext/theme-context';
 import {ThemeProvider} from 'styled-components/native'
 import PouchDB from 'pouchdb-react-native'
+import { TouchableHighlight } from 'react-native-gesture-handler';
 
 class ItemComponent extends React.Component{
 
@@ -18,7 +19,7 @@ class ItemComponent extends React.Component{
     this.song_DB = new PouchDB('songs')
 
     this.state={
-      songsItems:'',
+      songsItems:this.props.items,
       refreshing: true,
       search:'',
       typeOfSearch:'name',
@@ -60,38 +61,63 @@ class ItemComponent extends React.Component{
 
   get_localdb=async(name)=>{
 
-    try {
+/*     try {
       var doc = await this.song_DB.get('songs');
-      this.queryPouchDb()
       if(doc.data !=undefined){
+   
+       
         console.log("cargando datos",doc)
         this.setState({songsItems:doc.data})
       }
     } catch (err) {
       console.log(err);
-    }
+    } */
  
   }
  async queryPouchDb(doc) {
     var searchterm = "coros";
     var doc = this.song_DB.get('songs');
-    function map(doc) {
-      // join artist data to albums
-      let data = doc.data[0]
-      if (data.category === 'coros') {
-        emit(data.name,{value:data});
-      }
+    function myMapFunction(doc) {
+      if (doc.data){
+      doc.data.forEach( function(m) {
+        console.log("data de la consulta",m)
+        emit(m.category,m);  // key is name, value is the individual member Object
+      
+      });
+    }
     }
     try {
-      var result = await this.song_DB.query(map, {include_docs : true});
-      console.log("mi busqueda es",result)
-  
+      await  this.song_DB.query(myMapFunction, {startkey: 'Coros', include_docs: true}).then(function (result) {
+        console.log("mi busqueda es",result)
+      });
 
     } catch (err) {
       console.log(err);
     }
   }
-  
+  async alldocs(){
+    function myMapFunction(doc) {
+      if (doc.data){
+      doc.data.forEach( function(m) {
+        console.log("data de la consulta",m)
+        emit(m.category,m);  // key is name, value is the individual member Object
+      
+      });
+    }
+    }
+    try {
+      var result = await this.song_DB.allDocs(myMapFunction,{
+        include_docs: true,
+        attachments: true,
+        startkey: 'coros',
+        endkey: 'coros\ufff0'
+      });
+      console.log("data de la consulta",result)
+
+    } catch (err) {
+      console.log(err);
+    }
+  }
   onRefresh() {
     //Clear old data of the list
     this.setState({ dataSource: [] });
@@ -241,7 +267,16 @@ render() {
             </TouchableOpacity>
           </View>
         </View>
-        ):(<View></View>)}
+        ):(<View>
+          <TouchableOpacity
+          onPress={()=>{
+            this.queryPouchDb()
+          }}>
+            <Text>
+            consultar
+            </Text>
+          </TouchableOpacity>
+        </View>)}
        
           <FlatList
           data={filtered}

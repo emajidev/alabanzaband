@@ -9,6 +9,7 @@ import {AppColors}from './global'
 let itemsRef = db.ref('/items');
 import chordpro from './funtion/chordpro.js';
 import PouchDB from 'pouchdb-react-native'
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 class List extends Component {
   _isMounted = false;
@@ -24,13 +25,14 @@ class List extends Component {
 
     this.state={
       search: '',
-      items: [],
+      items: null,
       users:[],
       songsItems:[],
       query_key:'',
       notiitems:[],
       navigation: this.props.navigation,
       date:new Date().getTime() + 10000,
+      optionCategory:'all'
     }
   }
 
@@ -313,9 +315,10 @@ console.log("notificacion request")
     var output = chordpro.to_txt(letra.toString());
     console.log(output); */
     if(this._isMounted){
-      this.songsBd()
-
- 
+      if( this.state.optionCategory == "all"){
+        this.songsBd()
+    }
+      this.show_songs(this.state.optionCategory)
       this.nofiticationsBd();
       this.nofiticationsGroups();
       this.notifcationRequest();
@@ -334,6 +337,7 @@ console.log("notificacion request")
   songsBd(){
     itemsRef.on('value', snapshot => {
       let data = snapshot.val();
+      if(data !== null){ 
       let items = Object.values(data);
       this.setState({ items });
 /*       console.log("datos de cancaciones", items)
@@ -352,24 +356,35 @@ console.log("notificacion request")
         })
         
       }
-      
+
+    }
       
     });
+    
+  }
+  show_songs(option){
+ 
+    if( option =="bandas"){
+      this.select_category("bandas")
+    }
+    
+    
+  }
+  select_category(category){
+    let query = itemsRef.orderByChild('category').equalTo(category).once('value')
+    query.then((snapshot)=> {
+       let query_category = snapshot.val();
+       let items = Object.values(query_category);
+       this.setState({ items});
+        console.log("consulta data base",items)
+      }).catch((e)=>{
+      console.log("valor no encontrado",e)
+    })
   }
   componentWillUnmount(){
       this._isMounted = false;
     }
-    filterSearch(text){
-      const filterItem = items.filter(function(item){
-      const itemdata=  item.name.toUpperCase()
-      const textData =  text.toUpperCase()
-      return itemdata.indexOf(textData) > -1
-    });
-    this.setState({
-      text:text,
-      items : this.state.items.cloneWithRows(filterItem),
-    })
-  }
+   
   Initial_db=async(data)=>{
     try {
       console.log("initial db")
@@ -421,11 +436,14 @@ console.log("notificacion request")
 render() {
     return (
       <View style={{flex:1,width:'100%',height:'100%',position:'relative'}}>
-   
-        {this.state.items.length > 0 ? (
-          
+        <TouchableOpacity
+        onPress={()=>{
+          this.setState({optionCategory:'bandas'})
+        }}
+        ><Text>click</Text></TouchableOpacity>
+        {this.state.items != null  ? (
+          <ItemComponent items={this.state.items}/>
 
-          <ItemComponent />
         ) : (
           <View style={styles.cont}>
             <Text style={{margin:10}}>Buscando canciones...</Text>
