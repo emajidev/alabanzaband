@@ -32,7 +32,7 @@ class List extends Component {
       notiitems:[],
       navigation: this.props.navigation,
       date:new Date().getTime() + 10000,
-      optionCategory:'all'
+   
     }
   }
 
@@ -315,10 +315,9 @@ console.log("notificacion request")
     var output = chordpro.to_txt(letra.toString());
     console.log(output); */
     if(this._isMounted){
-      if( this.state.optionCategory == "all"){
-        this.songsBd()
-    }
-      this.show_songs(this.state.optionCategory)
+    
+      this.setState({items:this.props.items})
+
       this.nofiticationsBd();
       this.nofiticationsGroups();
       this.notifcationRequest();
@@ -334,53 +333,7 @@ console.log("notificacion request")
       });
     }
   }
-  songsBd(){
-    itemsRef.on('value', snapshot => {
-      let data = snapshot.val();
-      if(data !== null){ 
-      let items = Object.values(data);
-      this.setState({ items });
-/*       console.log("datos de cancaciones", items)
- */      if(items!=undefined){
-        let create_local_DB = new Promise((resolve,reject)=>{
-          resolve(
-            this.Initial_db(),
-            this.creacte_db(items)
-          )
-        })
-        create_local_DB.then(()=>{
-          this.get_localdb()
-        }
-        ).catch((error)=>{
-          console.log("error en localdb",error)
-        })
-        
-      }
-
-    }
-      
-    });
-    
-  }
-  show_songs(option){
- 
-    if( option =="bandas"){
-      this.select_category("bandas")
-    }
-    
-    
-  }
-  select_category(category){
-    let query = itemsRef.orderByChild('category').equalTo(category).once('value')
-    query.then((snapshot)=> {
-       let query_category = snapshot.val();
-       let items = Object.values(query_category);
-       this.setState({ items});
-        console.log("consulta data base",items)
-      }).catch((e)=>{
-      console.log("valor no encontrado",e)
-    })
-  }
+  
   componentWillUnmount(){
       this._isMounted = false;
     }
@@ -436,13 +389,8 @@ console.log("notificacion request")
 render() {
     return (
       <View style={{flex:1,width:'100%',height:'100%',position:'relative'}}>
-        <TouchableOpacity
-        onPress={()=>{
-          this.setState({optionCategory:'bandas'})
-        }}
-        ><Text>click</Text></TouchableOpacity>
-        {this.state.items != null  ? (
-          <ItemComponent items={this.state.items}/>
+        {this.props.items != null  ? (
+          <ItemComponent items={this.props.items}/>
 
         ) : (
           <View style={styles.cont}>

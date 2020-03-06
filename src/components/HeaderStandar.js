@@ -17,6 +17,7 @@ class HeaderStandar extends React.Component{
 
   constructor(props) {
     super(props);
+  
   }
   _menu = null;
  
@@ -61,7 +62,7 @@ class HeaderStandar extends React.Component{
         <Header>
          
           <View style={{ flex:1}}>
-            <Text style={navbarStyles.title}> EVENTOS</Text>
+            <Text style={{color:data.text,textAlign:'center',fontSize:20}}> {this.props.title} </Text>
           </View>
         
         </Header>

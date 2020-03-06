@@ -30,7 +30,7 @@ class Contacts extends React.Component{
             <TouchableOpacity style={styles.btn_nav}>
               <Icon 
                 name='group-add'
-                color='#222'
+                color='#000'
                 onPress={() => this.props.navigation.navigate('AddGroups')}
                 size={40}
              

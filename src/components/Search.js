@@ -5,11 +5,22 @@ import {withNavigation} from 'react-navigation';
 import ItemComponent from '../components/ItemComponent';
 
 
+
 class Search extends React.Component {
+   constructor(props) {
+      super(props);
+      this.state={
+        modalVisible: false,
+        optionCategory:'all',
+        items: this.props.navigation.state.params.items
+   
+      }
+    }
     render(){
+       console.log("datos",this.props.items)
        return(
          
-            <ItemComponent search_mode={true}/>
+            <ItemComponent  items={this.state.items} search_mode={true}/>
       
          
        )

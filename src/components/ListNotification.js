@@ -12,60 +12,23 @@ import {TouchableOpacity} from 'react-native-gesture-handler';
 
 let user;
 let newData
-let modUser = db.ref('/moduser');
-class Child  extends React.Component {
-  render(){
-     return(
-       <View >
-          <ThemeContext.Consumer>
-             {data =>
-           <ThemeProvider theme={data}>
-              <HeaderStandar/>
-           </ThemeProvider>
-        }
-           
-          </ThemeContext.Consumer>
-       </View>
-       
-     )
-  }
-}
-class Content extends React.Component {
+
+class Header extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       theme: themes.light,
-      moduser:[],
 
     };
  }
- getModUser(){
-  modUser.on('value', snapshot => {
-    let data = snapshot.val();
-    let moduser = Object.values(data);
-    this.setState({ moduser });
-    console.log("modo de usuario", this.state.moduser) 
-  });
-}
- componentDidMount() {
-
-
-
-   this.getModUser();
-  setTimeout(() => {
-    console.log("temp")
-    this.getData()
-    }, 1000);
-}
+ 
   componentWillUpdate(){
-    this.getData()
+    this.getTheme()
   }
-   getData = async () => {
+   getTheme = async () => {
     try {
       user = await AsyncStorage.getItem('@storage_Key')
       newData = JSON.parse(user);
-      /* console.log("obteniendo datos",newData) */
-      /* console.log(" storage ",newData.theme) */
       const valueDefault = themes.light
       if ( this.state.theme !=newData.theme){
         this.setState({theme:newData.theme ? newData.theme:valueDefault})
@@ -81,13 +44,13 @@ class Content extends React.Component {
  
 
    render() {
+
      return (
      <ThemeContext.Provider value={{...this.state.theme}}>
        {this.props.children}
       <View style={styles.header}>
-         <HeaderStandar />
+         <HeaderStandar title={'EVENTOS'}/>
       </View>
-     
     </ThemeContext.Provider>   
       
       )
@@ -235,7 +198,7 @@ render() {
      
       <View style={styles.container}>
         <View style={styles.header}>
-          <Content/>   
+          <Header/>   
         </View>
         <View style={styles.navbar}>
           <View style={{width:'33%'}}>

@@ -177,8 +177,7 @@ class NotificationsScreen extends React.Component {
 
   render() {
     return (
-      <ListNotification
-      />
+      <ListNotification/>
     );
   }
 }

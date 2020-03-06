@@ -9,6 +9,8 @@ import ContactsIcon from 'react-native-vector-icons/AntDesign';
 import {withNavigation} from 'react-navigation';
 import * as firebase from "firebase/app";
 import Menu, { MenuItem, MenuDivider } from 'react-native-material-menu';
+let itemsRef = db.ref('/items');
+import { db } from './firebase.js';
 
 import {ThemeContext, themes} from './conext/theme-context';
 
@@ -23,6 +25,8 @@ class Navbar extends React.Component{
     super(props);
     this.state={
       modalVisible: false,
+      optionCategory:'all',
+      items: null,
     }
   }
   _menu = null;
@@ -68,6 +72,41 @@ class Navbar extends React.Component{
     
   }
   componentDidMount(){
+    this.songsBd()
+
+    if( this.state.optionCategory == "all"){
+      this.songsBd()
+    }
+    this.show_songs(this.state.optionCategory)
+  }
+  songsBd(){
+    itemsRef.on('value', snapshot => {
+      let data = snapshot.val();
+      if(data !== null){ 
+      let items = Object.values(data);
+      this.setState({ items });
+      }
+      })
+    
+  }
+  show_songs(option){
+ 
+    if( option =="bandas"){
+      this.select_category("bandas")
+    }
+    
+    
+  }
+  select_category(category){
+    let query = itemsRef.orderByChild('category').equalTo(category).once('value')
+    query.then((snapshot)=> {
+       let query_category = snapshot.val();
+       let items = Object.values(query_category);
+       this.setState({ items});
+        console.log("consulta data base",items)
+      }).catch((e)=>{
+      console.log("valor no encontrado",e)
+    })
   }
   render() {
   return (
@@ -102,7 +141,7 @@ class Navbar extends React.Component{
               <Icon2 
                 name='ios-search'
                 color={data.text}
-                onPress={() => this.props.navigation.navigate('Search')}
+                onPress={() => this.props.navigation.navigate('Search',{items:this.state.items})}
                 size={25}
             
             />
@@ -159,7 +198,7 @@ class Navbar extends React.Component{
         </Header>
     
 
-          <List/>
+          <List items={this.state.items}/>
       </ThemeProvider>
     }
       </ThemeContext.Consumer>

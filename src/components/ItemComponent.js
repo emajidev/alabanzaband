@@ -141,7 +141,7 @@ render() {
   }else{
     if (this.state.typeOfSearch == 'temas'){
       /*  console.log("category") */
-       let coros = this.state.songsItems.filter(
+       let coros = this.props.items.filter(
          (item) => {
            return item.category.toLowerCase().indexOf(this.state.typeOfSearch.toLowerCase())!==-1;
          }
@@ -157,7 +157,7 @@ render() {
      }
      if (this.state.typeOfSearch == 'notas'){
        /* console.log("category") */
-       let coros = this.state.songsItems.filter(
+       let coros = this.props.items.filter(
          (item) => {
            return item.notes.toLowerCase().indexOf(this.state.typeOfSearch.toLowerCase() )!==-1;
          }
@@ -173,7 +173,7 @@ render() {
      }
      if (this.state.typeOfSearch == 'coros'){
       /*  console.log("category") */
-       let coros = this.state.songsItems.filter(
+       let coros = this.props.items.filter(
          (item) => {
            return item.category.toLowerCase().indexOf(this.state.typeOfSearch.toLowerCase() )!==-1;
          }
@@ -189,7 +189,7 @@ render() {
      }
      if (this.state.typeOfSearch == 'titulo'){
        /* console.log("category") */
-       let coros = this.state.songsItems.filter(
+       let coros = this.props.items.filter(
          (item) => {
            return item.category.toLowerCase().indexOf(this.state.typeOfSearch.toLowerCase() )!==-1;
          }
@@ -204,7 +204,7 @@ render() {
        
      }
      if (this.state.typeOfSearch == 'name'){
-     var filtered = this.state.songsItems.filter(
+     var filtered = this.props.items.filter(
          (item) => {
           return item.name.toLowerCase().indexOf(this.state.search.toLowerCase() )!==-1;
          }
@@ -268,14 +268,6 @@ render() {
           </View>
         </View>
         ):(<View>
-          <TouchableOpacity
-          onPress={()=>{
-            this.queryPouchDb()
-          }}>
-            <Text>
-            consultar
-            </Text>
-          </TouchableOpacity>
         </View>)}
        
           <FlatList
