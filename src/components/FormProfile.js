@@ -19,13 +19,14 @@ export default class FormProfile extends React.Component {
     }
     state = { name: '',numberPhone:'', theme:themes.red, errorMessage: null }
 
-    storeData = async (phone,nick,theme,user) => {
+    storeData = async (phone,nick,theme,user,rol) => {
  
       data={
         theme:themes.red,
         phone:phone,
         user:user,
-        nick:nick
+        nick:nick,
+        rol:rol
       }
       try {
         await AsyncStorage.setItem('@storage_Key',JSON.stringify(data))
@@ -35,15 +36,16 @@ export default class FormProfile extends React.Component {
       }
     }
     
-    addUser = (user,numberPhone,theme) => {
+    addUser = (user,numberPhone,theme,rol) => {
             
-      this.storeData(numberPhone,user,theme,currentUser)
+      this.storeData(numberPhone,user,theme,currentUser,rol)
       var currentUser = firebase.auth().currentUser;
 
       db.ref('/users/user'+numberPhone+'/profile').push({
           user:currentUser.email,
           nick: user,
-          numberPhone:numberPhone
+          numberPhone:numberPhone,
+          rol:rol
           })
     
         
@@ -54,7 +56,11 @@ export default class FormProfile extends React.Component {
       numberPhone: e.nativeEvent.text
       });
    };
-   
+   rolHandle = e => {
+    this.setState({
+    rol: e.nativeEvent.text
+    });
+ };
     toggleSwitch() {
       this.setState({ showPassword: !this.state.showPassword });
     }
@@ -110,9 +116,15 @@ export default class FormProfile extends React.Component {
                 onChange={this.numberPhoneHandle} 
                 style={{ color:'#808080', width:'90%', fontSize:18, paddingLeft:5,}}
               />
-       
-             
-              
+      
+             </View>
+             <View style={styles.TextInput}>
+
+              <TextInput
+                autoCapitalize="none"
+                placeholder="rol musical"
+                style={{ color:'#808080', width:'90%', fontSize:18, paddingLeft:5,}}
+              />
              </View>
             </View>
             

@@ -80,23 +80,7 @@ class Content extends React.Component {
       const dataTheme = this.state.theme
       let modUser =  this.state.moduser
       return (
-        
-        <ThemeContext.Provider value={{...this.state.theme}}>
-           {this.props.children}
-           <View style={styles.container}>
-
-                {
-                  modUser =='admin' ? (
-                    <AdminDashboard />
-                
-                  ):(
-                    <Navbar />
-                )}
-                
-           
-            
-           </View>
-     </ThemeContext.Provider>   
+        <Navbar />
       
       )
    }

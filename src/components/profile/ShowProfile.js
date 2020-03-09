@@ -2,7 +2,7 @@ import React from 'react'
 import { Modal,Text, Alert,TextInput, View, TouchableOpacity,AsyncStorage,TouchableHighlight,StatusBar,StyleSheet, PanResponder } from 'react-native'
 import Icon from 'react-native-vector-icons/Feather';
 import { withNavigation } from 'react-navigation'
-
+import Icon2 from 'react-native-vector-icons/Ionicons';
 import * as firebase from "firebase/app";
 import { db } from '../firebase';
 
@@ -182,7 +182,7 @@ class ShowProfile extends React.Component {
         
         return (
         
-        <View  style={[styles.modalAdminActive, this.state.inactive ? styles.inactive:styles.modalAdminInactive]}  {...this._panResponder.panHandlers}>
+        <View style={[styles.modalAdminActive, this.state.inactive ? styles.inactive:styles.modalAdminInactive]}  {...this._panResponder.panHandlers}>
         <Modal
          style={{with:'100%',height:'100%'}}
           animationType="fade"
@@ -213,25 +213,43 @@ class ShowProfile extends React.Component {
          
           </View>
         </Modal>
-            <Text >Perfil</Text>
-            <Icon 
-                name='user'
-                color='#5f25fe'
-                size={25}
+        
+            <View style={styles.container} >
+            <Icon2
+                name='md-person'
+                color='#000'
+                size={50}
               />
-            <View  >
-              <Text>{this.state.email}</Text>
-              <Text>{this.state.phone}</Text>
+              <Text style={{textAlign:'center',fontSize:20,margin:20}}>Datos de cuenta</Text>
+            <View>
+              <Text style={{textAlign:'left',fontSize:16,margin:10,color:"#888"}}>Usuario: {this.state.email}</Text>
+              <Text style={{textAlign:'left',fontSize:16,margin:10,color:"#888"}}>Telefono: {this.state.phone}</Text>
+              <Text style={{textAlign:'left',fontSize:16,margin:10,color:"#888"}}>Id: user{this.state.phone}</Text>
+              <Text style={{textAlign:'left',fontSize:16,margin:10,color:"#888"}}>Rol musical: user{this.state.rol}</Text>
+
+
+            </View>
              
-              <Text>Estado de inactividad {this.state.inactive + ""}</Text>
-              {
+             {
+              
                 this.state.counTouch >= 20 ? (
-                  <TouchableHighlight
+                  <View style={{width:'100%',height:50,backgroundColor:'#000',alignItems:'center',justifyContent:'center',flex:1}}>
+                    
+                  <TouchableOpacity
+                  style={{width:'100%',height:'100%',alignItems:'center'}}
                   onPress={() => {
                    this.setModalVisible()
                   }}>
-                  <Text>Entrar en modo Adminitrador</Text>
-                  </TouchableHighlight>
+                  <View style={{alignItems:'center',justifyContent:'center',flex:1}}>
+                  <Icon2
+                    name='ios-finger-print'
+                    color='#fff'
+                    size={100}
+                  /> 
+                    <Text style={{color:"#fff",fontSize:20}}>Entrar en modo Adminitrador</Text>
+                  </View>
+                  </TouchableOpacity>
+                  </View>
                 ):(
                   <View><Text>Modo usuario</Text></View>
                 )}
@@ -253,6 +271,7 @@ class ShowProfile extends React.Component {
         justifyContent:'flex-start',
         alignItems:'center',
         marginTop:StatusBar.currentHeight+15,  
+        width:'100%'
      },
      theme1:{
       flex:1,
@@ -284,7 +303,7 @@ class ShowProfile extends React.Component {
       flex:1,
       justifyContent:'center',
       alignItems:'center',
-      backgroundColor:'#5ff9'
+      backgroundColor:'#fff'
      },
      modalAdminInactive:{
       width:'100%',
@@ -292,7 +311,7 @@ class ShowProfile extends React.Component {
       flex:1,
       justifyContent:'center',
       alignItems:'center',
-      backgroundColor:'#F23'
+      backgroundColor:'#fff'
      }
     })
     
