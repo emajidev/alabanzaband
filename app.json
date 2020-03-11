@@ -1,10 +1,5 @@
 {
   "expo": {
-    "androidStatusBar": {
-      "barStyle": "#fff",
-      "translucent":true
-
-    },
     "name": "alabanzaband",
     "slug": "alabanzaband-app",
     "privacy": "public",
@@ -21,7 +16,7 @@
     "splash": {
       "image": "./assets/Bing-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#44ff"
+      "backgroundColor": "#fff"
     },
     "notification": {
       "icon": "./assets/icons/icon.png",
