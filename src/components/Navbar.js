@@ -1,11 +1,12 @@
 import React from 'react';
 import { StatusBar,StyleSheet, View, Modal, TouchableOpacity,AsyncStorage,Alert,TouchableHighlight} from 'react-native';
+import {YellowBox} from 'react-native';
 import List from './List.js'
 /* import Icon from 'react-native-vector-icons/Feather';
  */import Icon2 from 'react-native-vector-icons/FontAwesome';
 import ItemComponent from '../components/ItemComponent';
 
-import ContactsIcon from 'react-native-vector-icons/AntDesign'; 
+import IconsV from 'react-native-vector-icons/AntDesign'; 
 
 import {withNavigation} from 'react-navigation';
 import * as firebase from "firebase/app";
@@ -26,9 +27,23 @@ import themeD from '../../native-base-theme/variables/themeD';
 
 import material from '../../native-base-theme/variables/material';
 import { clearThemeCache } from 'native-base-shoutem-theme'
-import { Container,Content,Text, Header, Left, Body, Right, Button, Icon, Title,Badge,FooterTab,Footer,StyleProvider } from 'native-base';
+import { Container,Content,Text, Header, Left, Body, Right, Button, Icon, Title,Badge,FooterTab,Footer,StyleProvider,Drawer } from 'native-base';
 import { Col, Row, Grid } from 'react-native-easy-grid';
 
+import {CalendarList} from 'react-native-calendars';
+
+import SideBar from './Sidebar';
+
+import {LocaleConfig} from 'react-native-calendars';
+
+LocaleConfig.locales['fr'] = {
+  monthNames: ['Enero','Febrero','Marzo','Abril','Mayo ','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'],
+  monthNamesShort: ['Ene.','Feb.','Marz','Abr','May','Jun','Jul.','Ago','Sept.','Oct.','Nov.','Dic.'],
+  dayNames: ['Domingo','Lunes','Martes','Miercoles','Juevez','Viernes','Sabado'],
+  dayNamesShort: ['Dom.','Lun.','Mar.','Mie.','Jue.','Vie.','Sab.'],
+  today: 'Aujourd\'hui'
+};
+LocaleConfig.defaultLocale = 'fr';
 class Navbar extends React.Component{
   constructor(props) {
     super(props);
@@ -40,6 +55,7 @@ class Navbar extends React.Component{
       theme:turquesa,
     };
   }
+  componentDi
   themeA() {
     clearThemeCache();
     this.setState({
@@ -71,7 +87,8 @@ class Navbar extends React.Component{
       tab1: true,
       tab2: false,
       tab3: false,
-      tab4: false
+      tab4: false,
+      tab5: false
     });
   }
   toggleTab2() {
@@ -79,7 +96,9 @@ class Navbar extends React.Component{
       tab1: false,
       tab2: true,
       tab3: false,
-      tab4: false
+      tab4: false,
+      tab5: false
+
     });
   }
   toggleTab3() {
@@ -87,7 +106,9 @@ class Navbar extends React.Component{
       tab1: false,
       tab2: false,
       tab3: true,
-      tab4: false
+      tab4: false,
+      tab5: false
+
     });
   }
   toggleTab4() {
@@ -95,17 +116,44 @@ class Navbar extends React.Component{
       tab1: false,
       tab2: false,
       tab3: false,
-      tab4: true
+      tab4: true,
+      tab5: false
+
     });
   }
+  toggleTab5() {
+    this.setState({
+      tab1: false,
+      tab2: false,
+      tab3: false,
+      tab4: false,
+      tab5: true
+
+    });
+  }
+  closeDrawer(){
+    this.drawer._root.close()
+  };
+  openDrawer(){
+    this.drawer._root.open()
+  };
   render() {
+    console.disableYellowBox = true;
+
   return (
     <StyleProvider style={getTheme(this.state.theme)}>
+    <Drawer
+        ref = {(ref) => {this.drawer = ref;}}
+        content = {<SideBar navigator = {this.navigator} />} onClose = {() => this.closeDrawer ()}
+        panCloseMask={0}
+        >
+        
+   
     <Container>
       <Header>
       <Left>
-        <Button transparent>
-          <Icon name='menu' />
+        <Button transparent onPress={()=>this.openDrawer()}>
+          <Icon name='md-list' />
         </Button>
       </Left>
       <Body>
@@ -178,29 +226,81 @@ class Navbar extends React.Component{
         
     </Content>
 
+
+ 
+   <CalendarList
+          horizontal = { true }
+          pagingEnabled = { true }
+
+          current={'2012-05-16'}
+                  // Callback which gets executed when visible months change in scroll view. Default = undefined
+          onVisibleMonthsChange={(months) => {console.log('now these months are visible', months);}}
+          // Max amount of months allowed to scroll to the past. Default = 50
+          pastScrollRange={50}
+          // Max amount of months allowed to scroll to the future. Default = 50
+          futureScrollRange={50}
+          // Enable or disable scrolling of calendar list
+          scrollEnabled={true}
+          // Enable or disable vertical scroll indicator. Default = false
+          showScrollIndicator={true}
+          hideExtraDays={false}
+          
+          style={{borderBottomWidth: 1, borderBottomColor: 'lightgrey'}}
+          markingType={'custom'}
+          markedDates={{
+            '2014-02-5': {
+              customStyles: {
+                container: {
+                  backgroundColor: 'green'
+                },
+                text: {
+                  color: 'black',
+                  fontWeight: 'bold'
+                }
+              }
+            },
+            '2014-02-10': {
+              customStyles: {
+                container: {
+                  backgroundColor: 'blue',
+                  elevation: 2
+                },
+                text: {
+                  color: 'white'
+                }
+              }
+            }
+          }}
+    
+         
+          
+        />
     <Footer>
       <FooterTab>
         <Button vertical active={this.state.tab1} onPress={() => this.toggleTab1()}>
-          <Icon active={this.state.tab1} name="apps" />
-          <Text >Apps</Text>
+          <Icon active={this.state.tab1} name="ios-easel" />
+          <Text style={{ fontSize: 12}}>Crono</Text>
         </Button>
         <Button vertical active={this.state.tab2} onPress={() => this.toggleTab2()}>
-          <Icon active={this.state.tab2} name="camera" />
-          <Text>Camera</Text>
+          <Icon active={this.state.tab2} name="md-bookmark" />
+          <Text style={{ fontSize: 12}}>Agen</Text>
         </Button>
-        <Button vertical active={this.state.tab3} onPress={() => this.toggleTab3()}>
-          <Icon active={this.state.tab3} name="compass" />
-          <Text>Compass</Text>
+        <Button vertical active={this.state.tab3=true}>
+          <Icon style={{ fontSize: 40 }} name="ios-add-circle" />
         </Button>
         <Button vertical active={this.state.tab4} onPress={() => this.toggleTab4()}>
-          <Icon active={this.state.tab4} name="contact" />
-          <Text>Contact</Text>
+          <Icon active={this.state.tab3} name="md-musical-note" />
+          <Text style={{ fontSize: 12}}>Songs</Text>
+        </Button>
+        <Button vertical active={this.state.tab5} onPress={() => this.toggleTab5()}>
+          <Icon active={this.state.tab4} name="md-person" />
+          <Text style={{ fontSize: 12}}>Amigos</Text>
         </Button>
       </FooterTab>
     </Footer>
      
     </Container>
-    
+    </Drawer>
   </StyleProvider>
 
 

@@ -116,7 +116,6 @@ class Navbar extends React.Component{
     <ThemeContext.Consumer>
         {data => 
       <ThemeProvider theme={data}>
-        <StatusBar backgroundColor={data.bg} barStyle={data.text == '#fff'?("light-content"):("dark-content")}/>
 
         <Header>
 

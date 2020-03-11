@@ -1,291 +1,317 @@
-import React from 'react'
-import {StatusBar, StyleSheet, AsyncStorage, SafeAreaView, Text, View, TouchableOpacity, Button,Alert } from 'react-native'
+import React from 'react';
+import {StatusBar, StyleSheet, View, Modal, TouchableOpacity,AsyncStorage,Alert,TouchableHighlight} from 'react-native';
+
+import {YellowBox} from 'react-native';
+import List from './List.js'
+/* import Icon from 'react-native-vector-icons/Feather';
+ */import Icon2 from 'react-native-vector-icons/FontAwesome';
+import ItemComponent from '../components/ItemComponent';
+
+import IconsV from 'react-native-vector-icons/AntDesign'; 
+
+import {withNavigation} from 'react-navigation';
 import * as firebase from "firebase/app";
-import Navbar from './Navbar.js';
-import {createDrawerNavigator } from 'react-navigation-drawer';
-import {createAppContainer} from 'react-navigation';
-import Categories from './Categories';
-import ListNotification from './ListNotification'
+import Menu, { MenuItem, MenuDivider } from 'react-native-material-menu';
+let itemsRef = db.ref('/items');
+import { db } from './firebase.js';
 
-import Settings from './Settings'
-import ShowProfile from './profile/ShowProfile'
-import AdminDashboard from './admin/AdminDashboard'
-import Icon from 'react-native-vector-icons/Feather';
-import Icon2 from 'react-native-vector-icons/Ionicons';
-import Icon3 from 'react-native-vector-icons/MaterialCommunityIcons';
-
-import ContactsIcon from 'react-native-vector-icons/AntDesign';
 import {ThemeContext, themes} from './conext/theme-context';
 
 import {ThemeProvider} from 'styled-components/native'
-import {Container} from './conext/themes/styled'
-import { db } from './firebase';
+import { styles } from '../styles/Styles.js';
+import getTheme from '../../native-base-theme/components';
+import turquesa from '../../native-base-theme/variables/turquesa';
+import themeA from '../../native-base-theme/variables/themeA';
+import themeB from '../../native-base-theme/variables/themeB';
+import themeC from '../../native-base-theme/variables/themeC';
+import themeD from '../../native-base-theme/variables/themeD';
 
-import {DrawerItems} from 'react-navigation-drawer'
+import material from '../../native-base-theme/variables/material';
+import { clearThemeCache } from 'native-base-shoutem-theme'
+import { Container,Content,Text, Header, Left, Body, Right, Button, Icon, Title,Badge,FooterTab,Footer,StyleProvider,Drawer } from 'native-base';
+import { Col, Row, Grid } from 'react-native-easy-grid';
 
+import {CalendarList} from 'react-native-calendars';
 
-let user;
-let newData
-let modUser = db.ref('/moduser');
+import SideBar from './Sidebar';
 
+import {LocaleConfig} from 'react-native-calendars';
 
-class Content extends React.Component {
+LocaleConfig.locales['fr'] = {
+  monthNames: ['Enero','Febrero','Marzo','Abril','Mayo ','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'],
+  monthNamesShort: ['Ene.','Feb.','Marz','Abr','May','Jun','Jul.','Ago','Sept.','Oct.','Nov.','Dic.'],
+  dayNames: ['Domingo','Lunes','Martes','Miercoles','Juevez','Viernes','Sabado'],
+  dayNamesShort: ['Dom.','Lun.','Mar.','Mie.','Jue.','Vie.','Sab.'],
+  today: 'Aujourd\'hui'
+};
+LocaleConfig.defaultLocale = 'fr';
+class Main extends React.Component{
   constructor(props) {
     super(props);
     this.state = {
-      theme: themes.light,
-      moduser:[],
-
+      tab1: true,
+      tab2: false,
+      tab3: false,
+      tab4: false,
+      theme:turquesa,
     };
- }
- getModUser(){
-  modUser.on('value', snapshot => {
-    let data = snapshot.val();
-    let moduser = Object.values(data);
-    this.setState({ moduser });
-    console.log("modo de usuario", this.state.moduser) 
-  });
-}
- componentDidMount() {
-   this.getModUser();
-  setTimeout(() => {
-    console.log("temp")
-    this.getData()
-    }, 1000);
-}
-  componentWillUpdate(){
-    this.getData()
   }
-   getData = async () => {
-    try {
-      user = await AsyncStorage.getItem('@storage_Key')
-      newData = JSON.parse(user);
-      const valueDefault = themes.light
-      if ( this.state.theme !=newData.theme){
-        this.setState({theme:newData.theme ? newData.theme:valueDefault})
-        return true
-      }
-      this.setState({theme:newData.theme ? newData.theme:valueDefault})
-       }
-       catch(e) {
-         // error reading value
-         console.log(e)
-      }
-   }
-   cosa(){
-     this.getData()
-   }
+  componentDi
+  themeA() {
+    clearThemeCache();
+    this.setState({
+      theme:themeA
+    });
 
-   render() {
-      const dataTheme = this.state.theme
-      let modUser =  this.state.moduser
-      return (
-        <Navbar />
-      
-      )
-   }
-}
+  }
+  themeB() {
+    clearThemeCache();
+    this.setState({
+      theme:themeB
+    });
+
+  }
+  themeC() {
+    clearThemeCache();
+    this.setState({
+      theme:themeC
+    });
+  }
+  themeD() {
+    clearThemeCache();
+    this.setState({
+      theme:themeD
+    });
+  }
+  toggleTab1() {
+    this.setState({
+      tab1: true,
+      tab2: false,
+      tab3: false,
+      tab4: false,
+      tab5: false
+    });
+  }
+  toggleTab2() {
+    this.setState({
+      tab1: false,
+      tab2: true,
+      tab3: false,
+      tab4: false,
+      tab5: false
+
+    });
+  }
+  toggleTab3() {
+    this.setState({
+      tab1: false,
+      tab2: false,
+      tab3: true,
+      tab4: false,
+      tab5: false
+
+    });
+  }
+  toggleTab4() {
+    this.setState({
+      tab1: false,
+      tab2: false,
+      tab3: false,
+      tab4: true,
+      tab5: false
+
+    });
+  }
+  toggleTab5() {
+    this.setState({
+      tab1: false,
+      tab2: false,
+      tab3: false,
+      tab4: false,
+      tab5: true
+
+    });
+  }
+  closeDrawer(){
+    this.drawer._root.close()
+  };
+  openDrawer(){
+    this.drawer._root.open()
+  };
+  render() {
+    console.disableYellowBox = true;
+
+  return (
+
+    <StyleProvider style={getTheme(this.state.theme)}>
 
 
-class Main extends React.Component {
-    static navigationOptions = {
-      drawerLabel: 'Menu',
-    /*   drawerIcon: ({ tintColor }) => (
-        <Image
-          source={require('./chats-icon.png')}
-          style={[styles.icon, { tintColor: tintColor }]}
+    <Drawer
+        ref = {(ref) => {this.drawer = ref;}}
+        content = {<SideBar navigator = {this.navigator} />} onClose = {() => this.closeDrawer ()}
+        panCloseMask={0}
+        >
+        
+   
+    <Container>
+      <Header>
+
+      <Left>
+        <Button transparent onPress={()=>this.openDrawer()}>
+          <Icon name='md-list' />
+        </Button>
+      </Left>
+      <Body>
+        <Title>Header</Title>
+      </Body>
+      <Right>
+        <Button transparent>
+          <Icon name='search' />
+        </Button>
+      </Right>
+    </Header>
+    <Content padder>
+        <Text>Content goes here</Text>
+        <Grid padder>
+          <Row>
+            <Col>
+              <Button vertical transparent onPress={() => this.themeA()}>
+                <Icon2 name='circle' size={40} color="#00ffc0" />
+              </Button>
+            </Col>
+            <Col>
+              <Button vertical transparent onPress={() => this.themeB()}>
+                <Icon2 name='circle' size={40} color="#00e241" />
+              </Button>
+            </Col>
+            <Col>
+              <Button vertical transparent onPress={() => this.themeC()}>
+                <Icon2 name='circle' size={40} color="#0a86d8" />
+              </Button>
+            </Col>
+            <Col>
+            <Button vertical transparent onPress={() => this.themeD()}>
+              <Icon2 name='circle' size={40} color="#7d392f" />
+            </Button>
+            </Col>
+            <Col>
+            <Button vertical transparent >
+              <Icon2 name='circle' size={40} color="#000" />
+            </Button>
+            </Col>
+          </Row>
+          <Row>
+            <Col>
+              <Button vertical transparent >
+                <Icon2 name='circle' size={40} color="#ff0800" />
+              </Button>
+            </Col>
+            <Col>
+              <Button vertical transparent >
+                <Icon2 name='circle' size={40} color="#ff0048" />
+              </Button>
+            </Col>
+            <Col>
+              <Button vertical transparent >
+                <Icon2 name='circle' size={40} color="#ff4300" />
+              </Button>
+            </Col>
+            <Col>
+            <Button vertical transparent >
+              <Icon2 name='circle' size={40} color="#ffa000" />
+            </Button>
+            </Col>
+            <Col>
+            <Button vertical transparent>
+              <Icon2 name='circle' size={40} color="#a566ce" />
+            </Button>
+            </Col>
+          </Row>
+        </Grid>
+        
+    </Content>
+
+
+ 
+   <CalendarList
+          horizontal = { true }
+          pagingEnabled = { true }
+
+          current={'2012-05-16'}
+                  // Callback which gets executed when visible months change in scroll view. Default = undefined
+          onVisibleMonthsChange={(months) => {console.log('now these months are visible', months);}}
+          // Max amount of months allowed to scroll to the past. Default = 50
+          pastScrollRange={50}
+          // Max amount of months allowed to scroll to the future. Default = 50
+          futureScrollRange={50}
+          // Enable or disable scrolling of calendar list
+          scrollEnabled={true}
+          // Enable or disable vertical scroll indicator. Default = false
+          showScrollIndicator={true}
+          hideExtraDays={false}
+          
+          style={{borderBottomWidth: 1, borderBottomColor: 'lightgrey'}}
+          markingType={'custom'}
+          markedDates={{
+            '2014-02-5': {
+              customStyles: {
+                container: {
+                  backgroundColor: 'green'
+                },
+                text: {
+                  color: 'black',
+                  fontWeight: 'bold'
+                }
+              }
+            },
+            '2014-02-10': {
+              customStyles: {
+                container: {
+                  backgroundColor: 'blue',
+                  elevation: 2
+                },
+                text: {
+                  color: 'white'
+                }
+              }
+            }
+          }}
+    
+         
+          
         />
-      ), */
-    };
-    state = { currentUser: null }  
-    constructor(pros){
-      super(pros)
-    }
-    componentDidMount() {
-        const { currentUser } = firebase.auth()
-        this.setState({ currentUser })
-    }
-  
-
-    render() {
-        const { currentUser } = this.state
-       
-        return (
-            <Content/>   
-
-        )
-      
-    }}
-const styles = StyleSheet.create({
-  container:{
-    flex:1,
-    backgroundColor:'#f4f4f4',
-    width:'100%',
-    margin:0,
-    padding:0,
-    justifyContent:'center',
-    alignItems:'center',
-    
- },
- theme1:{
-    width:50,
-    height:50,
-    backgroundColor:'#Ff2'
- },
-
- theme2:{
-    width:50,
-    height:50,
-    backgroundColor:'#F23'
- },
- theme3:{
-    width:50,
-    height:50,
-    backgroundColor:'#5ff9'
- },
-})
+    <Footer>
+      <FooterTab>
+        <Button vertical active={this.state.tab1} onPress={() => this.toggleTab1()}>
+          <Icon active={this.state.tab1} name="ios-easel" />
+          <Text style={{ fontSize: 12}}>Crono</Text>
+        </Button>
+        <Button vertical active={this.state.tab2} onPress={() => this.toggleTab2()}>
+          <Icon active={this.state.tab2} name="md-bookmark" />
+          <Text style={{ fontSize: 12}}>Agen</Text>
+        </Button>
+        <Button vertical active={this.state.tab3=true}>
+          <Icon style={{ fontSize: 40 }} name="ios-add-circle" />
+        </Button>
+        <Button vertical active={this.state.tab4} onPress={() => this.toggleTab4()}>
+          <Icon active={this.state.tab3} name="md-musical-note" />
+          <Text style={{ fontSize: 12}}>Songs</Text>
+        </Button>
+        <Button vertical active={this.state.tab5} onPress={() => this.toggleTab5()}>
+          <Icon active={this.state.tab4} name="md-person" />
+          <Text style={{ fontSize: 12}}>Amigos</Text>
+        </Button>
+      </FooterTab>
+    </Footer>
+     
+    </Container>
+    </Drawer>
+  </StyleProvider>
 
 
 
-class NotificationsScreen extends React.Component {
-  static navigationOptions = {
-    drawerLabel: 'Eventos',
-    drawerIcon: ({ tintColor }) => (
-      <Icon 
-      name='bell'
-      color='#000'
-      size={25}
-      />
-    ),
-  };
-
-  render() {
-    return (
-      <ListNotification/>
-    );
+  );
   }
 }
-class Page1 extends React.Component {
-  static navigationOptions = {
-    drawerLabel: 'Temas',
-    drawerIcon: ({ tintColor }) => (
-      <Icon2 
-      name='ios-color-palette'
-      color='#000'
-      size={25}
-      />
-    ),
-  };
+export default withNavigation(Main);
 
-  render() {
-    return (
-      
-        <Settings/>
-    
-    );
-  }
-}
-class Page2 extends React.Component {
-  static navigationOptions = {
-    drawerLabel: 'Perfil',
-    drawerIcon: ({ tintColor }) => (
-       <Icon2 
-      name='md-person'
-      color='#000'
-      size={25}
-      />
-    ),
-  };
-
-  render() {
-    return (
-      
-        <ShowProfile/>
-    
-    );
-  }
-}
-
-class Page3 extends React.Component {
-  static navigationOptions = {
-    drawerLabel: 'Categorias',
-    drawerIcon: ({ tintColor }) => (
-       <Icon3 
-        name='file-tree'
-        color='#000'
-        size={25}
-      />
-    ),
-  };
-
-  render() {
-    return (
-      
-        <Categories/>
-    
-    );
-  }
-}
-
-
-const MyDrawerNavigator = createDrawerNavigator({
-  Inicio: {
-    screen: Main,
-  },
-  Notifications: {
-    screen: NotificationsScreen,
-  },
-  Ajustes:{
-    screen:Page1,
-  },
-  Perfil:{
-    screen:Page2,
-  },
-  Categorias:{
-    screen:Page3,
-  },
-
-  },
-  {
-    contentComponent:(props) => (
-      <View style={{flex:1}}>
-          <SafeAreaView forceInset={{ top: 'always', horizontal: 'never' }}>
-            <DrawerItems {...props} />
-            <TouchableOpacity onPress={()=>
-              Alert.alert(
-                'Log out',
-                'Do you want to logout?',
-                [
-                  {text: 'Cancel', onPress: () => {this.props.navigation.dispatch(DrawerActions.closeDrawer()) }},
-                  {text: 'Confirm', onPress: () => {
-                    AsyncStorage.removeItem('@storage_Key')
-                    props.navigation.navigate('AuthLoading');
-                    firebase
-                    .auth()
-                    .signOut()
-                    .then(() => {
-                      console.log('cerrar')
-                      AsyncStorage.clear().then(() => console.log('Cleared'))
-                    }
-                      )
-                    .catch(error =>console.log("error en cerrar sesion",error))
-                  }},
-                ],
-                { cancelable: false }
-              )  
-            }>
-              
-              <Text style={{margin: 16,fontWeight: 'bold',color: '#000'}}>Cerrar Sesion</Text>
-            </TouchableOpacity>
-          </SafeAreaView>
-      </View>
-    ),
-    drawerOpenRoute: 'DrawerOpen',
-    drawerCloseRoute: 'DrawerClose',
-    drawerToggleRoute: 'DrawerToggle'
-  }
-);
-
-
-const Drawer = createAppContainer(MyDrawerNavigator);
-export default Drawer
