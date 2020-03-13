@@ -1,13 +1,9 @@
 {
   "expo": {
-    "androidStatusBar": {
-      "barStyle": "light-content",
-      "translucent":true
-  },
+  
     "name": "alabanzaband",
     "slug": "alabanzaband-app",
     "privacy": "public",
-    "sdkVersion": "36.0.0",
     "platforms": [
       "ios",
       "android",

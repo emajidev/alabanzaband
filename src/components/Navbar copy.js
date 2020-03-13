@@ -123,6 +123,7 @@ class Navbar extends React.Component{
           <TouchableOpacity style={navbarStyles.btn_nav}
           onPress={() => this.props.navigation.openDrawer()}
           >
+
             
               <Icon 
                 name='menu'

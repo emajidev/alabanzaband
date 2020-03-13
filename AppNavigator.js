@@ -4,7 +4,7 @@ import Loading from './src/components/Loading.js'
 import Main from './src/components/Main.js'// create our app's navigation stack
 import List from './src/components/List.js'
 import AddItem from './src/components/AddItem.js'
-import Navbar from './src/components/Navbar.js'
+import Home from './src/components/Home.js'
 import ContentItem from './src/components/ContentItem.js'
 import AddNotification from './src/components/AddNotification.js'
 import NotificationComponent from './src/components/NotificationComponent.js'
@@ -33,7 +33,7 @@ const AppNavigator = createStackNavigator(
   Loading:{screen:Loading},
   Main: {screen: Main},
   List:{screen:List},
-  Navbar:{screen:Navbar},
+  Home:{screen:Home},
   AddItem:{screen:AddItem},
   ContentItem:{screen:ContentItem},
   Categories:{screen:Categories},
