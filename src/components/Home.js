@@ -121,7 +121,7 @@ class Home extends React.Component{
         
    
     <Container>
-      <Header >
+      <Header style={{marginTop:10}} >
       <Left>
         <Button transparent onPress={()=>this.openDrawer()}>
           <Icon name='md-list' />

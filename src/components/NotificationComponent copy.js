@@ -1,10 +1,8 @@
 import React, { Component,useState } from 'react';
-import { View,StyleSheet,TouchableOpacity,AsyncStorage ,StatusBar,ScrollView} from 'react-native';
+import { View, Text, StyleSheet,TouchableOpacity,AsyncStorage ,StatusBar,ScrollView} from 'react-native';
 import PropTypes from 'prop-types';
 import {withNavigation} from 'react-navigation';
 import { db } from './firebase.js';
-import { Container, Header,SwipeRow, Content, List, ListItem, Thumbnail, Text, Left, Body, Right, Button } from 'native-base';
-
 class NotificationComponent extends React.Component {
   static propTypes = {
     items: PropTypes.array.isRequired,
@@ -58,60 +56,48 @@ render() {
    
     return (
       <ScrollView contentContainerStyle={styles.contcontainer}>
-      <Container>
-      <Content>
+      <View style={styles.content}>
+       
         
         {this.props.items.map((item, index) => {
 /*         console.log("notificaciones",item)
  */          return (
-          <Content key={index}>
-            {item.accepted =="complete" ||  item.accepted =="accepted" ||item.accepted ==true   || this.props.type_notification=='sent'? (
-           <List>
-           <ListItem thumbnail>
-              <Body>
-                <Text style={styles.itemtext} >{item.name} </Text>
-              <Text style={styles.itemtext} >{item.coment} </Text>
-              <Text style={styles.itemtext} >{item.accepted} </Text>
-              </Body>
-              <Right>
-              <Button transparent>
-                <Text>Ver</Text>
-              </Button>
-            </Right>
-            </ListItem>
-            </List>
-
-            ): (
-             <Content scrollEnabled={false}>
-             <SwipeRow
-               leftOpenValue={75}
-               rightOpenValue={-75}
-               left={
-                 <Button success onPress={() =>this.change_status(item.phoneTransmitter,item.id,true)}>
-                   <Icon active name="add" />
-                 </Button>
-               }
-               body={
-                 <View>
-                   <Text>¿ Acepta la invitacion de {item.sender} ?</Text>
-                 </View>
-               }
-               right={
-                 <Button danger onPress={()=>this.change_status(item.phoneTransmitter,item.id,false)}>
-                   <Icon active name="trash" />
-                 </Button>
-               }
-             />
-           </Content>
-
-          )}
-          </Content>
-
-        )})}
-           
+              <View key={index} style={styles.container}>
+                
+                {item.accepted =="complete" ||  item.accepted =="accepted" ||item.accepted ==true   || this.props.type_notification=='sent'? (
+                  <View style={styles.notifStyle}>
+                    <Text style={styles.itemtext} >{item.name} </Text>
+                   <Text style={styles.itemtext} >{item.coment} </Text>
+                   <Text style={styles.itemtext} >{item.accepted} </Text>
+                  </View>
+                ): (
+                  <View style={styles.confirmation}>
+                    <Text style={{color:'#10cb42'}}>¿ Acepta la invitacion de {item.sender} ?</Text>
+                    <View style={{flexDirection:'row'}}>
+                      <TouchableOpacity
+                      onPress={()=>this.change_status(item.phoneTransmitter,item.id,true)}
+                      style={styles.btn_accept}
+                      >
+                        <Text style={{color:'#fff'}}>si</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                      onPress={()=>this.change_status(item.phoneTransmitter,item.id,false)}
+                      style={styles.btn_denied}
+                      >
+                        <Text style={{color:'#10cb42'}}>no</Text>
+                      </TouchableOpacity>
+                    </View>
+             
+                 
+                  </View>
+                )}
+               
+              </View>
+         
+          );
+        })}
      
-      </Content>
-      </Container>
+      </View>
       </ScrollView>
     );
   }
