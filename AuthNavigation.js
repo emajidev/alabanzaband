@@ -6,7 +6,7 @@ import Presentation from './src/components/Presentation.js'
 import Loading from './src/components/Loading.js'
 import SignUp from './src/components/SignUp.js'
 import Login from './src/components/Login.js'
-import FormProfile from './src/components/FormProfile.js'
+import FormProfile from './src/components/FormProfile'
 
 const AuthNavigation = createStackNavigator(
 {

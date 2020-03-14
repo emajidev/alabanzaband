@@ -4,6 +4,7 @@ import UserContext from '../UserContext'
 
 import getTheme from '../../../native-base-theme/components';
 import turquesa from '../../../native-base-theme/variables/turquesa';
+import Options from './Options'
 
 import Settings from './Settings'
 export default class Sidebar extends Component {
@@ -29,10 +30,10 @@ export default class Sidebar extends Component {
          
         </Header>
 
-        <Tabs>
+       <Tabs>
           <Tab heading={ <TabHeading><Icon name="ios-options" /><Text>Opciones</Text></TabHeading>}>
+          <Options />
           </Tab>
-          
           <Tab heading={ <TabHeading><Icon name="ios-settings" /><Text>Ajustes</Text></TabHeading>}>
             <Settings />
           </Tab>
