@@ -1,5 +1,6 @@
 {
   "expo": {
+  
     "name": "alabanzaband",
     "slug": "alabanzaband-app",
     "privacy": "public",
@@ -41,18 +42,7 @@
         "WRITE_EXTERNAL_STORAGE",
         "ACCESS_COARSE_LOCATION",
         "ACCESS_FINE_LOCATION"
-      ],
-      "publishBundlePath": "android/app/src/main/assets/shell-app.bundle",
-      "publishManifestPath": "android/app/src/main/assets/shell-app-manifest.json"
-    },
-    "sdkVersion": "36.0.0",
-    "isDetached": true,
-    "detach": {
-      "androidExpoViewUrl": "https://s3.amazonaws.com/exp-exponent-view-code/android-v2.14.2-sdk36.0.0-ce7e16db-fd5d-4fdd-bdeb-701ba94a04d1.tar.gz"
-    },
-    "scheme": "exp1bd50cf2210b4eefb45f98713276b0e6",
-    "entryPoint": "node_modules/expo/AppEntry.js"
-  },
-  "displayName": "alabanzaband",
-  "name": "alabanzaband"
+      ]
+    }
+  }
 }

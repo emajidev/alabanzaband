@@ -19,28 +19,20 @@ export default class CodeCountries extends React.Component {
     };
   }
 
-  handleChange = (phone )=> {
+  handleChange = phone => {
     this.props.handler(phone);
   };
-  handleChangeCode = (code )=> {
-    this.props.handlerCode(code);
-  };
-
-  
-
   render() {
     let countries = JsonCountries;
     return (
       <View style={styles.container}>
         <View style={styles.selectContry}>
           <Picker
-            placeholder="Start Year" 
             selectedValue={this.state.codeCountry}
             itemStyle={{ fontSize: 20, textAlign: "center" }}
             style={{
               height: 50,
-              width: '85%',
-              
+              width: 150,
               fontSize: 20,
               transform: [{ scaleX: 1.2 }, { scaleY: 1.2 }],
               textAlign: "flex-end"
@@ -48,24 +40,14 @@ export default class CodeCountries extends React.Component {
             textStyle={{ fontSize: 20 }}
             onValueChange={(itemValue, itemIndex) => {
               this.setState({ codeCountry: itemValue });
-              this.handleChangeCode(itemValue)
             }}
           >
-            {countries.map((contry,index) => (
-              (index !=0 ?(
-                <Picker.Item
+            {countries.map(contry => (
+              <Picker.Item
                 itemStyle={styles.itemStyle}
                 label={contry.emoji + "     " + contry.name}
                 value={contry.dialCode}
               />
-              ):(
-                <Picker.Item
-                itemStyle={styles.itemStyle}
-                label="Selecciona tu pais..." value="+123" 
-              />
-              ))
-             
-             
             ))}
           </Picker>
         </View>
@@ -94,37 +76,35 @@ export default class CodeCountries extends React.Component {
 let styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 10
+    alignItems: "center",
+    padding: 20,
+    paddingTop: 60
   },
   formatPhoneNumber: {
-    
     flexDirection: "row",
     alignItems: "center",
     width:'100%',
 
   },
   borderCode: {
-    width:100,
-    paddingLeft:20,
+    width: 60,
     marginBottom: 30,
-    borderBottomColor: "rgba(80,227,194,1)",
-    borderBottomWidth: 1
+    borderBottomColor: "#d5d5d5",
+    borderBottomWidth: 2
   },
   borderPhone: {
-    width:'100%',
     marginLeft: 10,
     marginBottom: 30,
-    borderBottomColor: "rgba(80,227,194,1)",
-    borderBottomWidth: 1
+    borderBottomColor: "#d5d5d5",
+    borderBottomWidth: 2
   },
   selectContry: {
-    
+    width:'100%',
     height:50,
-    paddingLeft:10,
+    marginLeft: 10,
     marginBottom: 30,
-    borderBottomColor: "rgba(80,227,194,1)",
-    borderBottomWidth: 1,
-
+    borderBottomColor: "#d5d5d5",
+    borderBottomWidth: 2,
     alignItems: "center",
   },
 
