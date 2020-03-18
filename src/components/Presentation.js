@@ -20,21 +20,37 @@ export default class Login extends React.Component {
         
         const data = await AsyncStorage.getItem('@storage_Key')
         let newData = JSON.parse(data);
-        if(newData.phone !== null) {
-       
-          this.props.navigation.navigate('Main')
+        console.log("store",newData)
+        if(newData != null) {
+          console.log('consulta');
+
+          firebase.auth().onAuthStateChanged((user) => {
+            if (user) {
+              console.log('user is logged');
+              this.props.navigation.navigate('Main')
+            }
+          })
         }
       } catch(e) {
         // error reading value
         console.log("error en list constactos",e)
       }
     }
-    componentDidMount() {
-      firebase.auth().onAuthStateChanged((user)=>{
-        if(user !=null){
-          console.log(user)
+    getAsyncStorage = async()=>{
+      try {
+        const data = await AsyncStorage.getItem('@storage_Key')
+        if(data!= undefined ){
+          return true
+        }else{
+          return false
         }
-      })
+
+       
+      }catch(e){
+    }               
+  }
+    componentDidMount() {
+     
      this.getData()
     }
     handleLoginFacebook = () =>{
@@ -56,18 +72,20 @@ export default class Login extends React.Component {
           if (type === 'success') {
             // Get the user's name using Facebook's Graph API
             const response = await fetch(`https://graph.facebook.com/me?access_token=${token}`);
-            Alert.alert('Logged in!', `Hi ${(await response.json()).name}!`);
+            Alert.alert('Sesion iniciada!', `Hola! ${(await response.json()).name}!`);
             const cred = firebase.auth.FacebookAuthProvider.credential(token);
             firebase.auth().signInWithCredential(cred)
               .then((result) => {
                 // User signed in.
+                console.log("redirecionar a formProfile")
                 var token = result.credential.accessToken;
                 this.props.navigation.navigate('FormProfile')
               })    
               .catch((error) => {
                 // Error occurred.
                 console("error al iniciar facebook",error)
-              });
+              })
+              
 
           } else {
             // type === 'cancel'

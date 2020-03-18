@@ -12,13 +12,15 @@
     "debug": "adb shell input keyevent 82 && adb shell input keyevent 61 && adb shell input keyevent 66 && adb shell input keyevent 66"
   },
   "dependencies": {
+    "@expo/vector-icons": "^10.0.6",
     "@react-navigation/native": "^5.0.7",
     "@shoutem/theme": "^0.11.5",
     "braces": "^3.0.2",
     "buffer": "^5.4.3",
     "expo": "^36.0.0",
     "expo-facebook": "~8.0.0",
-    "expo-font": "~8.0.0",
+    "expo-font": "^8.0.0",
+    "expo-image-picker": "^8.0.2",
     "firebase": "^7.1.0",
     "mem": "^6.0.1",
     "native-base": "^2.13.8",

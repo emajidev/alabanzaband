@@ -4,10 +4,11 @@ let config = {
     authDomain: "alabanzaband.firebaseapp.com",
     databaseURL: "https://alabanzaband.firebaseio.com",
     projectId: "alabanzaband",
-    storageBucket: "",
+    storageBucket: "gs://alabanzaband.appspot.com",
     messagingSenderId: "1085755789248",
     appId: "1:1085755789248:web:66c67449de5dc516cac225",
     measurementId: "G-WWJHTYRF48"
   };
 let app = Firebase.initializeApp(config);
+export const  storage = app.storage();
 export const  db = app.database();

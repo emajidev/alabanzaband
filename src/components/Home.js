@@ -1,33 +1,69 @@
-import React from 'react';
-import { StatusBar, StyleSheet, View, Modal, TouchableOpacity, AsyncStorage, Alert, TouchableHighlight } from 'react-native';
+import React from "react";
+import {
+  StatusBar,
+  StyleSheet,
+  View,
+  Modal,
+  TouchableOpacity,
+  AsyncStorage,
+  Alert,
+  TouchableHighlight
+} from "react-native";
 
-import { YellowBox } from 'react-native';
+import { YellowBox } from "react-native";
 
-import List from './List'
-import Calendars from './Calendars'
-import ListNotification from './ListNotification'
-import Contacts from './contacts/ListContacts'
-import Icon2 from 'react-native-vector-icons/FontAwesome';
-import ItemComponent from '../components/ItemComponent';
-import IconsV from 'react-native-vector-icons/AntDesign';
+import List from "./List";
+import Calendars from "./Calendars";
+import ListNotification from "./ListNotification";
+import Contacts from "./contacts/ListContacts";
+import Icon2 from "react-native-vector-icons/FontAwesome";
+import ItemComponent from "../components/ItemComponent";
+import IconsV from "react-native-vector-icons/AntDesign";
 
-import { withNavigation } from 'react-navigation';
+import { withNavigation } from "react-navigation";
 import * as firebase from "firebase/app";
-let itemsRef = db.ref('/items');
-import { db } from './firebase.js';
+let itemsRef = db.ref("/items");
+import { db } from "./firebase.js";
 
+import { styles } from "../styles/Styles.js";
+import getTheme from "../../native-base-theme/components";
 
-import { styles } from '../styles/Styles.js';
-import getTheme from '../../native-base-theme/components';
-import { Container, Content, Text, Card, Tabs, Tab, TabHeading, CardItem, Header, Left, Body, Right, Button, Icon, Title, Badge, FooterTab, Footer, StyleProvider, Drawer } from 'native-base';
-import { Col, Row, Grid } from 'react-native-easy-grid';
+import NotificationsIOS from "react-native-notifications";
+import {Notifications, NotificationsAndroid} from 'react-native-notifications';
 
+import {
+  Container,
+  Content,
+  Text,
+  Card,
+  Tabs,
+  Tab,
+  TabHeading,
+  CardItem,
+  Header,
+  Left,
+  Body,
+  Right,
+  Button,
+  Icon,
+  Title,
+  Badge,
+  FooterTab,
+  Footer,
+  StyleProvider,
+  Drawer
+} from "native-base";
+import { Col, Row, Grid } from "react-native-easy-grid";
 
-import SideBar from './sidebar/Sidebar';
-import UserContext from './UserContext'
+import SideBar from "./sidebar/Sidebar";
+import UserContext from "./UserContext";
+
+let songsRef = db.ref("/items");
+var storageRef = firebase.storage().ref();
+var mountainImagesRef = storageRef.child("../img/icon.jpg");
 
 class Home extends React.Component {
-  static contextType = UserContext
+  static contextType = UserContext;
 
   constructor(props) {
     super(props);
@@ -36,126 +72,153 @@ class Home extends React.Component {
       tab2: false,
       tab3: false,
       tab4: false,
-      context: ''
+      context: "",
+      songs: [],
+
+      title: "Calendario"
     };
   }
+  songsBd() {
+    itemsRef.on("value", snapshot => {
+      let data = snapshot.val();
+      if (data !== null) {
+        let songs = Object.values(data);
+        this.setState({ songs });
+        console.log("cancions", songs);
+      }
+    });
+  }
   componentDidMount() {
-    const user = this.context
-    this.setState({ context: user })
-    console.log("context", user) // { name: 'Tania', loggedIn: true }
-  }
-
-  toggleTab1() {
-    this.setState({
-      tab1: true,
-      tab2: false,
-      tab3: false,
-      tab4: false,
-      tab5: false
-    });
-  }
-  toggleTab2() {
-    this.setState({
-      tab1: false,
-      tab2: true,
-      tab3: false,
-      tab4: false,
-      tab5: false
-
-    });
-    this.props.navigation.navigate('ListNotification')
-  }
-  toggleTab3() {
-    this.setState({
-      tab1: false,
-      tab2: false,
-      tab3: true,
-      tab4: false,
-      tab5: false
-
-    });
-  }
-  toggleTab4() {
-    this.setState({
-      tab1: false,
-      tab2: false,
-      tab3: false,
-      tab4: true,
-      tab5: false
-
-    });
-    this.props.navigation.navigate('List')
-
-  }
-  toggleTab5() {
-    this.setState({
-      tab1: false,
-      tab2: false,
-      tab3: false,
-      tab4: false,
-      tab5: true
-
-    });
-    this.props.navigation.navigate('Contacts')
+    const user = this.context;
+    this.setState({ context: user });
+    console.log("context", user); // { name: 'Tania', loggedIn: true }
+    this.songsBd();
   }
   closeDrawer() {
-    this.drawer._root.close()
-  };
+    this.drawer._root.close();
+  }
   openDrawer() {
-    this.drawer._root.open()
+    this.drawer._root.open();
+  }
+  asynChange = async tab => {
+    try {
+      switch (tab) {
+        case 2: {
+          this.props.navigation.navigate("NewEvent");
+          setTimeout(() => {
+            this.setState({ activeTab: 0 });
+          }, 800);
+          break;
+        }
+      }
+    } catch (e) {
+      //error
+    }
   };
+  localNotification(){
+    NotificationsAndroid.localNotification({
+      title: "Local notification",
+      body: "This notification was generated by the app!",
+      extra: "data"
+    });
+  }
   render() {
     console.disableYellowBox = true;
-    const { user, setUser } = this.context
+    const { user, setUser } = this.context;
     return (
-
       <StyleProvider style={getTheme(user.theme)}>
         <Drawer
-          ref={(ref) => { this.drawer = ref; }}
-          content={<SideBar navigator={this.navigator} />} onClose={() => this.closeDrawer()}
+          ref={ref => {
+            this.drawer = ref;
+          }}
+          content={<SideBar navigator={this.navigator} />}
+          onClose={() => this.closeDrawer()}
           panCloseMask={0}
         >
           <Container>
-            <Header style={{ marginTop: 10 }} >
-              <Left>
+            <Header style={{ marginTop: 10 }}>
+              <Left style={{ flex: 0.5 }}>
                 <Button transparent onPress={() => this.openDrawer()}>
-                  <Icon name='md-list' />
+                  <Icon name="md-list" />
                 </Button>
               </Left>
-              <Body>
-                <Title>{user.name}</Title>
+              <Body
+                style={{
+                  flex: 3,
+                  justifyContent: "center",
+                  alignItems: "center"
+                }}
+              >
+                <Title style={{ letterSpacing: 5 }}>alabanzaband</Title>
               </Body>
-              <Right>
-                <Button transparent onPress={() => {
-                  const newUser = { name: 'pepe', loggedIn: true }
-
-                  setUser(newUser)
-                }}>
-                  <Icon name='search' />
+              <Right style={{ flex: 0.5 }}>
+                <Button
+                  transparent
+                  onPress={() => {
+                    const newUser = { name: "pepe", loggedIn: true };
+                    setUser(newUser);
+                    this.localNotification()
+                  }}
+                >
+                  <Icon name="search" />
                 </Button>
               </Right>
             </Header>
 
-            <Tabs tabBarPosition={'bottom'}>
-              <Tab heading={<TabHeading><Icon name="ios-easel" /></TabHeading>}>
+            <Tabs
+              tabBarPosition={"bottom"}
+              initialPage={this.state.initialPage}
+              page={this.state.activeTab}
+              onChangeTab={e => {
+                //console.log("tab", e.i);
+                this.asynChange(e.i);
+              }}
+            >
+              <Tab
+                heading={
+                  <TabHeading>
+                    <Icon name="ios-easel" />
+                  </TabHeading>
+                }
+              >
                 <Calendars />
               </Tab>
-              <Tab heading={<TabHeading><Icon name="md-bookmark" /></TabHeading>}>
+              <Tab
+                heading={
+                  <TabHeading>
+                    <Icon name="md-bookmark" />
+                  </TabHeading>
+                }
+              >
                 <ListNotification />
               </Tab>
-              <Tab heading={
-                <Button vertical active={this.state.tab3 = true}>
-                  <Icon style={{ fontSize: 40 }} name="ios-add-circle" />
-                </Button>}>
+              <Tab
+                ref="tab3"
+                heading={
+                  <Button vertical active={(this.state.tab3 = true)}>
+                    <Icon style={{ fontSize: 40 }} name="ios-add-circle" />
+                  </Button>
+                }
+              ></Tab>
+              <Tab
+                heading={
+                  <TabHeading>
+                    <Icon name="md-musical-note" />
+                  </TabHeading>
+                }
+              >
+                <List songs={this.state.songs} />
               </Tab>
-              <Tab heading={<TabHeading><Icon name="md-musical-note" /></TabHeading>}>
-                <List />
-              </Tab>
-              <Tab heading={<TabHeading><Icon name="md-person" /></TabHeading>}>
+              <Tab
+                heading={
+                  <TabHeading>
+                    <Icon name="md-person" />
+                  </TabHeading>
+                }
+              >
                 <Contacts />
               </Tab>
             </Tabs>
-
           </Container>
         </Drawer>
       </StyleProvider>
@@ -163,4 +226,3 @@ class Home extends React.Component {
   }
 }
 export default withNavigation(Home);
-
