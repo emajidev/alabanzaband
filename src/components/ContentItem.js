@@ -5,11 +5,6 @@ import Shareicon from 'react-native-vector-icons/Feather';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import MusicIcon from 'react-native-vector-icons/MaterialCommunityIcons'
 
-
-
-   
-    
-
 class ContentItem extends React.Component {
 
     render() {

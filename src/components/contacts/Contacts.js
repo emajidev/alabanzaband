@@ -9,12 +9,14 @@ import {withNavigation} from 'react-navigation';
 class Contacts extends React.Component{
 
   render() {
+    const theme = this.props.theme
+
   return (
     <View style={styles.container}>
         <View style={styles.header} >
          
           <View style={{ flex:1, justifyContent:'flex-start'}}>
-            <Text style={styles.title}> Contactos</Text>
+            <Text style={styles.title}> Amigos</Text>
           </View>
           <View style={styles.iconnavbar}>
        
@@ -27,7 +29,7 @@ class Contacts extends React.Component{
              
               />
             </TouchableOpacity>
-            <TouchableOpacity style={styles.btn_nav}>
+            {/* <TouchableOpacity style={styles.btn_nav}>
               <Icon 
                 name='group-add'
                 color='#000'
@@ -35,7 +37,7 @@ class Contacts extends React.Component{
                 size={40}
              
               />
-            </TouchableOpacity>
+            </TouchableOpacity> */}
            
           </View>
         </View>

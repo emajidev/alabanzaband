@@ -24,13 +24,14 @@ import {
 import UserContext from "../UserContext";
 import * as ImagePicker from "expo-image-picker";
 import * as firebase from 'firebase/app';
-import 'firebase/storage';
+import storage from 'firebase/storage';
 
 import getTheme from "../../../native-base-theme/components";
-import turquesa from "../../../native-base-theme/variables/turquesa";
 import Options from "./Options";
 import { StyleSheet, StatusBar, AsyncStorage } from "react-native";
 import Settings from "./Settings";
+
+
 export default class Sidebar extends Component {
   static contextType = UserContext;
 
@@ -182,9 +183,12 @@ export default class Sidebar extends Component {
                     <Text style={{ color: "#fff", marginTop: 5, fontSize: 14 }}>
                       {this.state.dataUser.nick}
                     </Text>
-                    <Text style={{ color: "#fff", marginTop: 5, fontSize: 12 }}>
-                      telefono: {phone}
+                    <Text style={{ color: "#fff", marginTop: 5, fontSize: 14 }}>
+                      user: {this.state.dataUser.user}
                     </Text>
+            {/*         <Text style={{ color: "#fff", marginTop: 5, fontSize: 12 }}>
+                      telefono: {phone}
+                    </Text> */}
                   </Col>
                 </Row>
               </Grid>

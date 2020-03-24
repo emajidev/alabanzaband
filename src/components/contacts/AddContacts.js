@@ -1,90 +1,174 @@
-import React, { Component } from 'react'
-import { Text, View, TouchableOpacity, StyleSheet,ScrollView,AsyncStorage,TextInput,TouchableHighlight} from 'react-native'
-import { db } from '../firebase.js';
+import React, { Component } from 'react';
+import { Container, Header, Title,Text, Button, Left, Right, Body, Icon, Label, StyleProvider, Content, Form, Item, Input } from 'native-base';
+import { Alert,StatusBar,StyleSheet } from 'react-native'
 
-let addItem = async (name,phoneContact) => {
-   try {
-      const data = await AsyncStorage.getItem('@storage_Key')
-      let newData = JSON.parse(data);
-      if(newData.phone !== null) {
-        // value previously stored
-        db.ref('/users/user'+newData.phone+'/'+'contacts').push({
-         name: name,
-         phoneContact:phoneContact
-       })
-      }
-    } catch(e) {
-      // error reading value
-    }
+import UserContext from "../UserContext";
+import getTheme from "../../../native-base-theme/components";
+import { db } from '../firebase.js';
+import { withGlobalContext } from '../UserContext';
+
+
+ 
+class AddContacts extends Component {
+   
+   constructor(props) {
+      super(props);
+      this.state = {
+         userName:'',
+         name:'',
+         phone:'',
+         band:'',
+         next:false
+      };
+
+   }
+
+   handleSubmit = () => {
+      addItem(this.state.userName , this.state.name,this.state.phone,this.state.band);
+      alert('Notification saved successfully');
+     
+   };
+   validateEmail = email => {
+      var re = /^(([^<>()\[\]\\.,;:\s@”]+(\.[^<>()\[\]\\.,;:\s@”]+)*)|(“.+”))@((\[[0–9]{1,3}\.[0–9]{1,3}\.[0–9]{1,3}\.[0–9]{1,3}])|(([a-zA-Z\-0–9]+\.)+[a-zA-Z]{2,}))$/;
+      return re.test(email);
     
+   };
+
+ addItem = async (userName,name,phoneContact,band) => {
+   console.log("cuenta",this.props.global.account)
+   let account = this.props.global.account
+   db.ref('/users/user'+ account +'/'+'contacts/').push({
+      userName:userName,
+      name: name,
+      phoneContact:phoneContact,
+      band:band
+    })
 
  };
- class AddContacts extends React.Component {
-       state = {
-          name: '',
-          phoneContact:''
-       };
-    
-    nameContact = e => {
-          this.setState({
-          name: e.nativeEvent.text,
-          });
-        }
-    phoneContact = e => {
-          this.setState({
-          phoneContact: e.nativeEvent.text
-          });    
-       };
-       handleSubmit = () => {
-          addItem(this.state.name , this.state.phoneContact);
-          alert('Notification saved successfully');
+   handleNext(email){
+      if (this.validateEmail(email)) {
+         this.addItem(this.state.userName , this.state.name,this.state.phone,this.state.band);
+         alert('Notification saved successfully');
+
+      }else{
+         Alert.alert("Formato de correo invalido")
+
+      }
+   }
+
+   render() {
+      console.log("props",this.props.global)
+      let name = this.state.name;
+      let userName = this.state.userName;
+      let next = false;
+      if (name.length != 0 && userName.length != 0) {
+         next = true;
+       }
+      return (
          
-       };
-     alertItemName = (item) => {
-       alert(item.name)
-       };
-     render() {
-        return (
-     
-             <View style={styles.container}>
-             <Text style={styles.title}>Añadir Contactos</Text>
-             <TextInput style={styles.itemInput} 
-             onChange={this.nameContact} 
-             placeholder='Nombre' />
-             <TextInput style={styles.itemInput} 
-             onChange={this.phoneContact} 
-             placeholder='Telefono' />     
-             <TouchableHighlight
-                style={styles.button}
-                underlayColor="white"
-                onPress={this.handleSubmit}
-             >
-                <Text style={styles.buttonText}>Agregar</Text>
-             </TouchableHighlight>
-             </View>
-           
-        
-        )
-     }
-  }
-  export default AddContacts
+         <Container>
+            <Header style={{ marginTop: 10 }}>
+               <Left>
+                  <Button transparent
+                  onPress={() => this.props.navigation.goBack()}
+                  >
+                     <Icon name='ios-arrow-back' />
+                  </Button>
+               </Left>
+               <Body>
+                  <Title>Agregar amigo</Title>
+               </Body>
+               <Right />
+            </Header>
+            <Content>
+               <Form>
+                  <Item floatingLabel>
+                  <Label>Nombre</Label>
+                     <Input   
+                        style={{ marginTop: 15}}
+                        onChangeText={(name) => {
+                           this.setState({ name })}
+                        }
+                        value={this.state.name}
+                     />
+                  </Item>
+                  <Item floatingLabel>
+                  <Label>Correo</Label>
+                     <Input 
+                        style={{ marginTop: 15}}
+                        placeholder="ingresa un correo... "
+                        onChangeText={(userName) => {
+                           this.setState({ userName })}
+                        }
+                        value={this.state.userName}
+                     />
+                  </Item>
+                  <Item stackedLabel last style={{justifyContent:'center'}}>
+                  <Text style={{fontSize:20,color:"#999"}}>Datos extras</Text>
+                  </Item>
+                  <Item floatingLabel>
+                  <Label>telefono</Label>
+                     <Input 
+                        style={{ marginTop: 15}}
+                        onChangeText={(phone) => {
+                           this.setState({ phone })}
+                        }
+                        value={this.state.phone}
+                     />
+                  </Item>
+                  <Item floatingLabel>
+                  <Label>Banda o grupo musical</Label>
 
- const styles = StyleSheet.create ({
+                     <Input 
+                        style={{ marginTop: 15}}
+ 
+                        onChangeText={(band) => {
+                           this.setState({ band })}
+                        }
+                        value={this.state.band}
+                     />
+                  </Item>
+               </Form>
+               
+               <Text style={{ textAlign:'center',padding:40,color: "rgba(80,227,194,1)",fontSize:16}}>Alabanzaband respalda tus contactos en la nube
+               para tenerlos a disposicion desde cualquier dispositivo movil...</Text>
+               <Button
+               transparent
+          style={styles.button}
+          onPress={() => {
+            next == true ? this.handleNext(this.state.userName) : console.log("falso");
+          }}
+        >
+          <Icon 
+          style={next == false ? styles.inactive : styles.active}
+           name="md-checkmark-circle-outline" />
+        </Button>
+            </Content>
+         </Container>
+      );
+   }
+}
+export default withGlobalContext(AddContacts);
 
-     container:{
-        flex:1,
-        justifyContent:'center',
-        alignItems:'center'
-        
-      
-     },
-     itemInput:{
-         borderWidth:1,
-         borderColor:'#000',
-         borderRadius:10,
-         width:'80%',
-         height:40,
-         margin:20,
-         padding:10
-     }
- })
+const styles = StyleSheet.create({
+   button: {
+      elevation: 0,
+      marginTop: 10,
+      width: 100,
+      height: 80,
+      alignSelf: "center",
+      justifyContent: "center",
+      borderRadius: 300,
+      alignItems: "center",
+    },
+   inactive: {
+     fontSize:60,
+     color: "#d5d5d5"
+   },
+   active: {
+     elevation: 0,
+     fontSize:60,
+     color: "rgba(80,227,194,1)"
+   }
+ });
+ 

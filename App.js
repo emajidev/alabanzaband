@@ -3,12 +3,15 @@ import { createStackNavigator } from 'react-navigation-stack';
 import AuthNavigation from './AuthNavigation'
 import AppNavigator from './AppNavigator'
 import AuthLoadingScreen from './src/components/AuthLoadingScreen'
+import { UserProvider } from "./src/components/UserContext";
+import React, { Component } from 'react'
+
 // Implementation of HomeScreen, OtherScreen, SignInScreen, AuthLoadingScreen
 // goes here.
 
 
 
-export default createAppContainer(
+const AppContainer = createAppContainer(
   
   createSwitchNavigator(
     {
@@ -21,3 +24,10 @@ export default createAppContainer(
     }
   )
 );
+const App  = () => {
+  return (
+  <UserProvider>
+    <AppContainer />
+  </UserProvider>);
+}
+export default App

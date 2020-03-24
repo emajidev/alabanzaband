@@ -27,6 +27,7 @@ import Suggestion from './src/components/Suggestion.js'
 import ShowSuggestion from './src/components/admin/ShowSuggestion.js'
 import Categories from './src/components/Categories.js'
 import Search from './src/components/Search.js'
+import NewEvent from './src/components/NewEvent.js'
 
 const AppNavigator = createStackNavigator(
 {
@@ -41,7 +42,7 @@ const AppNavigator = createStackNavigator(
   AddNotification:{screen:AddNotification},
   NotificationComponent:{screen:NotificationComponent},
   ListNotification:{screen:ListNotification},
-
+  NewEvent:{screen:NewEvent},
   SendNotification:{screen:SendNotification},
   AddContacts:{screen:AddContacts},
   AddGroups:{screen:AddGroups},

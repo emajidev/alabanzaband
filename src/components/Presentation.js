@@ -30,6 +30,9 @@ export default class Login extends React.Component {
               this.props.navigation.navigate('Main')
             }
           })
+          if(newData.user != null){
+            this.props.navigation.navigate('Main')
+          }
         }
       } catch(e) {
         // error reading value

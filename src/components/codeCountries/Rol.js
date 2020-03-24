@@ -15,31 +15,35 @@ export default class Rol extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      codeCountry: "+ 123"
+      codeCountry: "+ 123",
+      colorSelect:"#888"
     };
   }
 
   handleChangeRol= (rol )=> {
+    this.setState({colorSelect:"rgba(80,227,194,1)"})
     this.props.handlerRol(rol);
   };
   render() {
     let countries = RolJson;
     return (
       <View style={styles.container}>
-        <View style={styles.selectContry}>
+      <Text style={{fontSize:20,marginLeft:15,marginBottom:15,color:"#555"}}>Destreza Musical</Text>
+        <View style={styles.selectRol}>
+        
           <Picker
             placeholder="Selecciona tu Rol en la banda" 
             selectedValue={this.state.codeCountry}
-            itemStyle={{ fontSize: 20, textAlign: "center" }}
+            itemStyle={{ fontSize: 20, textAlign: "center"}}
             style={{
               height: 50,
               width: '85%',
-              
-              fontSize: 20,
-              transform: [{ scaleX: 1.2 }, { scaleY: 1.2 }],
-              textAlign: "flex-end"
+              fontSize: 15,
+              transform: [{ scaleX: 1.22 }, { scaleY: 1.2 }],
+              textAlign: "flex-end",
+              color:this.state.colorSelect, 
             }}
-            textStyle={{ fontSize: 20 }}
+            textStyle={{ fontSize: 20 ,}}
             onValueChange={(itemValue, itemIndex) => {
               this.setState({ codeCountry: itemValue });
               this.handleChangeRol(itemValue)
@@ -51,11 +55,12 @@ export default class Rol extends React.Component {
                 itemStyle={styles.itemStyle}
                 label={contry.name}
                 value={contry.name}
+                
               />
               ):(
                 <Picker.Item
                 itemStyle={styles.itemStyle}
-                label="Selecciona tu Rol en la banda" value="Select"
+                label="Selecciona tu destreza musical" value="Select"
               />
               ))
              
@@ -94,10 +99,10 @@ let styles = StyleSheet.create({
     borderBottomColor: "rgba(80,227,194,1)",
     borderBottomWidth: 1
   },
-  selectContry: {
+  selectRol: {
     
     height:50,
-    paddingLeft:10,
+    marginLeft:15,
     marginBottom: 30,
     borderBottomColor: "rgba(80,227,194,1)",
     borderBottomWidth: 1,

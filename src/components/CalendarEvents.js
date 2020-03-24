@@ -40,7 +40,7 @@ import {
   Drawer
 } from "native-base";
 import { Col, Row, Grid } from "react-native-easy-grid";
-import { CalendarList } from "react-native-calendars";
+import { CalendarList,Calendar } from "react-native-calendars";
 import { LocaleConfig } from "react-native-calendars";
 
 import UserContext from "./UserContext";
@@ -108,8 +108,7 @@ class Calendars extends React.Component {
 /*     console.log("context", user); // { name: 'Tania', loggedIn: true }
  */    let dateToDo = select()
  .then((data)=>{
-  this.setState({dataSourceTask:data})
-  console.log("bd task",data)
+  this.setState({dataSourceTask:JSON.parse(data)})
 })
 
        
@@ -124,8 +123,26 @@ class Calendars extends React.Component {
   render() {
     console.disableYellowBox = true;
     let theme=this.props.global.user.theme;
-    let task=this.state.dataSourceTask;
-    console.log("task",task)
+    let task={
+    '2020-01-22': {  periods: [
+      {startingDay: true, endingDay: false, color: '#ffa500'},
+      {color: 'transparent'},
+      {startingDay: false, endingDay: false, color: '#f0e68c'}
+    ]},
+    '2020-01-23': {  periods: [
+      {startingDay: true, endingDay: false, color: '#ffa500'},
+      {color: 'transparent'},
+      {startingDay: false, endingDay: false, color: '#f0e68c'}
+    ]},
+    '2020-01-04': {  periods: [
+      {startingDay: true, endingDay: false, color: '#ffa500'},
+      {color: 'transparent'},
+      {startingDay: false, endingDay: false, color: '#f0e68c'}
+    ]}
+  }
+    let json = JSON.stringify(task)
+    let final= json.length
+    let str = json.substring(1,final-1)
     return (
       <StyleProvider style={getTheme(theme)}>
         <Container>
@@ -171,7 +188,7 @@ class Calendars extends React.Component {
               hideExtraDays={false}
               showScrollIndicator={true}
               markedDates={
-                task
+               this.state.dataSourceTask
               }
               // Date marking style [simple/period/multi-dot/custom]. Default = 'simple'
               markingType='multi-period'

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { View, Text, StyleSheet,StatusBar ,AsyncStorage} from 'react-native';
 import ContactsComponent from './ContactsComponent';
 import { withNavigation } from 'react-navigation';
+import { withGlobalContext } from '../UserContext';
 
 import { db } from '../firebase.js';
 
@@ -28,29 +29,23 @@ componentDidMount() {
   
 }
   getData = async () => {
-    try {
-      const data = await AsyncStorage.getItem('@storage_Key')
-      let newData = JSON.parse(data);
-      if(newData.phone !== null) {
-        // value previously stored
-        let itemsRef = db.ref('/users/user'+newData.phone+'/contacts' );
-        itemsRef.on('value', snapshot => {
-          try{
-            let data = snapshot.val();
-            let items = Object.values(data);
-            this.setState({ items });
-          }catch(e){
-            console.log("error en list constactos",e)
-          }
-         
-        });
-      }
-   
-    } catch(e) {
-      // error reading value
-      console.log("error en list constactos",e)
-  
-    }
+   console.log("hola que lo")
+   let account = this.props.global.account
+      console.log("cuenta",account)
+   try {
+    let itemsRef = db.ref('/users/user'+account+'/contacts' );
+    itemsRef.on('value', snapshot => {
+    
+        let data = snapshot.val();
+        let items = Object.values(data);
+        this.setState({ items });
+    })
+ 
+  } catch(e) {
+    // error reading value
+    console.log("error en list constactos",e)
+
+  }
   }
 componentDidMount() {
     this.getData()
@@ -58,8 +53,9 @@ componentDidMount() {
   }
 
 render() {
-    
-   
+  let account = this.props.global.account
+
+   console.log("contactos ",account)
     return (
      
       <View style={styles.container}>
@@ -76,7 +72,7 @@ render() {
     );
   }
 }
-export default withNavigation(ListContacts);
+export default withGlobalContext(ListContacts);
 
 const styles = StyleSheet.create({
   container: {

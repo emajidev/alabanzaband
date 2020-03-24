@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet,TouchableOpacity,TextInput } from 'react-native';
+import { View, Text, StyleSheet,TouchableOpacity,TextInput,FlatList,RefreshControl } from 'react-native';
+import { Container, Header, Content, List, ListItem, Thumbnail, Left, Body, Right, Button } from 'native-base';
+
 import PropTypes from 'prop-types';
 import {withNavigation} from 'react-navigation';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -12,28 +14,48 @@ class ContactsComponent extends React.Component {
     search:'',
     typeOfSearch:'name',
   };
-
+  onRefresh() {
+    //Clear old data of the list
+    //Call the Service to get the latest data
+  }
 render() {
   
  
     return (
-      <View style={styles.itemsList}>
-        {this.props.items.map((item, index) => {
-          return (
-              <View style={styles.boxContact} key={index}>
-                <Icon 
-                name='md-contact'
-                color='#222'
-                size={40}
-                />
-                <Text style={styles.itemtext} >{item.name} </Text>
-                
-              </View>
-              
-         
-          );
-        })}
-      </View>
+     
+      <FlatList
+          data={this.props.items}
+          enableEmptySections={true}
+          renderItem={({item,index}) => (
+            <List>
+          <ListItem thumbnail>
+            <Left>
+              <Thumbnail square source={{ uri: "https://facebook.github.io/react-native/docs/assets/favicon.png" }} />
+            </Left>
+            <Body>
+            <Text style={styles.itemtext} >{item.name} </Text>
+                <Text style={styles.itemtext} >{item.userName} </Text>
+            </Body>
+            <Right>
+              <Button transparent>
+                <Text>ver</Text>
+              </Button>
+            </Right>
+          </ListItem>
+        </List>
+
+          )}
+          refreshControl={
+            <RefreshControl
+              //refresh control used for the Pull to Refresh
+              refreshing={this.state.refreshing}
+              onRefresh={this.onRefresh.bind(this)}
+            />
+          }
+          /> 
+        
+     
+     
     );
   }
 }

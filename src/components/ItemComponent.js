@@ -279,7 +279,7 @@ render() {
                   style={styles.songs}
                   onPress={() => this.props.navigation.navigate('ContentItem',{item})}>
                   <View style={{paddingLeft:15, flexDirection:'row', alignItems:'center'}}>
-                  <Text style={{fontSize:18,paddingRight:10}}>{index+1}</Text>
+                  {/* <Text style={{fontSize:18,paddingRight:10}}>{index+1}</Text> */}
                     <View style={{width:'15%'}}>
                     <Icon 
                         name='music'
