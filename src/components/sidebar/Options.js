@@ -25,13 +25,24 @@ class Options extends Component {
     return (
       <Container>
         <Content>
-    
+        <Button transparent onPress={()=>this.logOut()}>
+            <Text>Noticias</Text>
+          </Button>
+          <Button transparent onPress={()=>this.logOut()}>
+            <Text>Canciones</Text>
+          </Button>
+          <Button transparent onPress={()=>this.logOut()}>
+            <Text>Crear grupos</Text>
+          </Button>
+          <Button transparent onPress={()=>this.logOut()}>
+            <Text>Chats</Text>
+          </Button>
           <Button transparent onPress={()=>this.logOut()}>
             <Text>cerrar sesion</Text>
           </Button>
-          <Button transparent onPress={()=> delete_all_todo()}>
+     {/*      <Button transparent onPress={()=> delete_all_todo()}>
             <Text>borrar bd task</Text>
-          </Button>
+          </Button> */}
          
         </Content>
       </Container>

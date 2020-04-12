@@ -5,7 +5,7 @@ import CodeCountries from "./codeCountries/CodeCountries";
 import Rol from "./codeCountries/Rol";
 import { AsyncStorage } from "react-native";
 import md5 from 'md5';
-import {create_DB_ToDo}from './SqliteDateBase'
+import {create_DB_ToDo,create_DB_infoTask,create_DB_avatarUri}from './SqliteDateBase'
 import {
   Container,
   Header,
@@ -88,6 +88,8 @@ export default class FormProfile extends Component {
         this.props.navigation.navigate("Main");
         //local db sqlite - create db to initial 
         create_DB_ToDo()
+        create_DB_infoTask()
+        create_DB_avatarUri()
     }, 200);
   };
   Loading = () => {

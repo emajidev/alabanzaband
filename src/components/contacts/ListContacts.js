@@ -29,7 +29,6 @@ componentDidMount() {
   
 }
   getData = async () => {
-   console.log("hola que lo")
    let account = this.props.global.account
       console.log("cuenta",account)
    try {

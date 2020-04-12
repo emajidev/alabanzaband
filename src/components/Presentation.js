@@ -3,7 +3,6 @@ import { StyleSheet,ImageBackground, Text, AsyncStorage, View, TouchableOpacity,
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {styles} from '../styles/Styles'
 import * as firebase from "firebase/app";
-import { create } from 'uuid-js';
 import { AccessToken, LoginManager } from 'react-native-fbsdk';
 import Expo from 'expo'
 import * as Facebook from 'expo-facebook';

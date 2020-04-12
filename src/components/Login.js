@@ -2,7 +2,6 @@ import React from 'react'
 import { StyleSheet,AsyncStorage, Text, TextInput, View, TouchableOpacity,StatusBar } from 'react-native'
 import Icon from 'react-native-vector-icons/FontAwesome';
 import * as firebase from "firebase/app";
-import { create } from 'uuid-js';
 
 
 export default class Login extends React.Component {

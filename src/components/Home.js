@@ -19,6 +19,7 @@ import Contacts from "./contacts/Contacts";
 import Icon2 from "react-native-vector-icons/FontAwesome";
 import ItemComponent from "../components/ItemComponent";
 import IconsV from "react-native-vector-icons/AntDesign";
+import { select_avatarUri } from './SqliteDateBase'
 
 import { withNavigation } from "react-navigation";
 import * as firebase from "firebase/app";
@@ -71,12 +72,13 @@ class Home extends React.Component {
       tab4: false,
       context: "",
       songs: [],
+      refreshCalendar: false
 
-    }; 
+    };
     this.lastId = 0;
   }
 
-  
+
   songsBd() {
     itemsRef.on("value", snapshot => {
       let data = snapshot.val();
@@ -93,7 +95,7 @@ class Home extends React.Component {
     console.log("context", user); // { name: 'Tania', loggedIn: true }
     this.songsBd();
 
-    
+
   }
   closeDrawer() {
     this.drawer._root.close();
@@ -102,24 +104,19 @@ class Home extends React.Component {
     this.drawer._root.open();
   }
   asynChange = async tab => {
-    try {
-      switch (tab) {
-        case 2: {
-          this.props.navigation.navigate("NewEvent");
-          setTimeout(() => {
-            this.setState({ activeTab: 0 });
-          }, 800);
-          break;
-        }
-      }
-    } catch (e) {
-      //error
+    if (tab == 2) {
+      this.props.navigation.navigate("NewEvent");
+      setTimeout(() => {
+        this.setState({ activeTab: 0 });
+      }, 800);
+
     }
   };
-  
+
   render() {
     console.disableYellowBox = true;
-    const { user, setUser } = this.context;
+    const { user, setUser,calendar } = this.context;
+   /*  console.log("props refresh",calendar) */
     return (
       <StyleProvider style={getTheme(user.theme)}>
         <Drawer
@@ -152,6 +149,7 @@ class Home extends React.Component {
                   onPress={() => {
                     const newUser = { name: "pepe", loggedIn: true };
                     setUser(newUser);
+                    
                   }}
                 >
                   <Icon name="search" />
@@ -160,6 +158,7 @@ class Home extends React.Component {
             </Header>
 
             <Tabs
+              locked
               tabBarPosition={"bottom"}
               initialPage={this.state.initialPage}
               page={this.state.activeTab}
@@ -175,7 +174,7 @@ class Home extends React.Component {
                   </TabHeading>
                 }
               >
-                <CalendarEvents />
+               <CalendarEvents />
               </Tab>
               <Tab
                 heading={
@@ -189,7 +188,8 @@ class Home extends React.Component {
               <Tab
                 ref="tab3"
                 heading={
-                  <Button vertical active={(this.state.tab3 = true)}>
+                  <Button transparent onPress={() => this.props.navigation.navigate("NewEvent")}>
+
                     <Icon style={{ fontSize: 40 }} name="ios-add-circle" />
                   </Button>
                 }
@@ -210,7 +210,7 @@ class Home extends React.Component {
                   </TabHeading>
                 }
               >
-                <Contacts theme={user.theme}/>
+                <Contacts theme={user.theme} />
               </Tab>
             </Tabs>
           </Container>

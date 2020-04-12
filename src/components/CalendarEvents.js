@@ -7,7 +7,10 @@ import {
   TouchableOpacity,
   AsyncStorage,
   Alert,
-  TouchableHighlight
+  TouchableHighlight,
+  FlatList,
+  Text,
+
 } from "react-native";
 import { withNavigation } from "react-navigation";
 import * as firebase from "firebase/app";
@@ -15,12 +18,11 @@ let itemsRef = db.ref("/items");
 import { db } from "./firebase.js";
 import getTheme from "../../native-base-theme/components";
 import { withGlobalContext } from './UserContext';
-import {select}from './SqliteDateBase'
+import md5 from 'md5';
 
 import {
   Container,
   Content,
-  Text,
   Card,
   Tabs,
   Tab,
@@ -31,17 +33,16 @@ import {
   Body,
   Right,
   Button,
-  Icon,
   Title,
   Badge,
   FooterTab,
   Footer,
   StyleProvider,
-  Drawer
 } from "native-base";
 import { Col, Row, Grid } from "react-native-easy-grid";
-import { CalendarList,Calendar } from "react-native-calendars";
+import { CalendarList, Calendar } from "react-native-calendars";
 import { LocaleConfig } from "react-native-calendars";
+import Icon2 from "react-native-vector-icons/FontAwesome5";
 
 import UserContext from "./UserContext";
 
@@ -96,109 +97,397 @@ class Calendars extends React.Component {
     this.state = {
       modalVisible: false,
       dataAgenda: 'No hay programacion para hoy',
-      dataSourceTask:''
+      dataSourceTask: '',
+      infotask: '',
+      dateCurrent: '',
+      day: '',
+      hour: '',
+      weekDay: ''
     };
   }
   setModalVisible(visible) {
     this.setState({ modalVisible: visible });
-  }
-  componentDidMount() {
-    const user = this.context;
-    this.setState({ context: user });
-/*     console.log("context", user); // { name: 'Tania', loggedIn: true }
- */    let dateToDo = select()
- .then((data)=>{
-  this.setState({dataSourceTask:JSON.parse(data)})
-})
-
-       
-     
-
   }
   onDayPress(e) {
     this.setModalVisible(true)
     this.setState({ dataAgenda: e.day })
     console.log("dia", e);
   }
+  clock() {
+    var date = new Date().getDate(); //Current Date
+    var hours = new Date().getHours(); //Current Hours
+    var min = new Date().getMinutes(); //Current Minutes
+
+    this.setState({
+      hour: hours + ':' + min
+    })
+    if (this.state.hour == '00:00') {
+      this.setState({
+        day: date
+      })
+    }
+  }
+  currentDate() {
+    var date = new Date().getDate(); //Current Date
+    var month = new Date().getMonth() + 1; //Current Month
+    var year = new Date().getFullYear(); //Current Year
+    var hours = new Date().getHours(); //Current Hours
+    var min = new Date().getMinutes(); //Current Minutes
+    var sec = new Date().getSeconds(); //Current Seconds
+    this.setState({
+      //Setting the value of the date time
+      dateCurrent:
+        date + '/' + month + '/' + year + ' ',
+    });
+
+    var fecha = new Date();
+    this.setState({
+      day: date
+    })
+    var semana = ["DOMINGO.", "LUNES.", "MARTES.", "MIÈRCOLES.", "JUEVES.", "VIERNES.", "SABADO."];
+    this.setState({
+      weekDay: semana[fecha.getDay()]
+    })
+  }
+
+  CreateGroup = async (key_group, ItemNotification) => {
+    try {
+      const groups = db.ref('/users//users/user' + email + '/notifications')
+      groups.push({
+
+
+      }).then((snapshot) => {
+        groups.child(snapshot.key).update({ "id": snapshot.key })
+      })
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
+  preProcessingEvent(results) {
+
+    let list_dates = [];
+    //1 eliminamos la fechas repetidas 
+    results.map((data, index) => {
+      list_dates.push(data.event.dateStart, data.event.dateEnd)
+    });
+    // 2 limpiar valores repetidos
+    Array.prototype.unique = function (a) {
+      return function () { return this.filter(a) }
+    }(function (a, b, c) {
+      return c.indexOf(a, b + 1) < 0
+    });
+
+    console.log("List dates events no repeact", list_dates.unique().sort());
+    //3 agrupamos
+    
+    let list_ev = []
+    list_dates.unique().sort().map((date,index) => {
+      let group = []
+      counterPost = 0
+      results.map((data, index) => {
+        console.log("fecha",date,data.event.dateStart)
+        if (date == data.event.dateStart ) {
+          let tag = { color: data.event.colorTag, id:data.event.uid,type:"dateStart"}
+          console.log("postion",data.event.uid,counterPost++)
+          group.push(tag)
+        }
+        if (date == data.event.dateEnd ) {
+          let tag = { color: data.event.colorTag, id:data.event.uid,type:"dateEnd"}
+          group.push(tag)    
+        }
+      })
+      let obj = {
+        [date]:{
+          periods:group
+        }
+      }
+      list_ev.push(obj)
+    })
+    console.log("cosa",list_ev)
+    //4 Buscamos las posiciones las fechas iniciales 
+    let position = []
+    results.sort().map((data, index) => {
+      console.log("iteracion",data.event.uid)
+      list_ev.map((array)=>{
+        
+        const element = Object.values(array)
+        element.map((el)=>{
+          const foundIndex = el.periods.findIndex(element => element.type == "dateStart")
+          const found = el.periods.find(element => element.type == "dateStart")
+          if(found != undefined){
+            let el ={id:found.id,pos:foundIndex}
+            position.push(el)
+        }
+    
+        })
+     
+      })
+  
+  })
+    //5 aplicamos el mismo procedimiento que en 3 pero creamos esta vez un array con las posiciones 
+    // se crea columna de 5filas que sera los maximo, despues de esto podremos aplicar los splice 
+    let newlist_ev = []
+    let sequens = []
+
+    list_dates.unique().sort().map((date,index) => {
+      let newgroup = [{color:'transparent'},{color:'transparent'},{color:'transparent'},{color:'transparent'},{color:'transparent'}]
+      results.sort().map((data, index) => {
+        console.log("fecha",date,data.event.dateStart)
+        if (date == data.event.dateStart ) {
+          const postIdElements =this.getUnique(position,'id')
+          const foundPosition = postIdElements.find(element => element.id == data.event.uid)
+          console.log("found post",foundPosition)
+          if(newgroup[foundPosition.pos].color == "transparent"   ){
+            console.log("es transparente")
+            let tag = { color: data.event.colorTag, id:data.event.uid,type:"dateStart",pos:foundPosition.pos}
+
+            newgroup.splice(foundPosition.pos, 0, tag);
+            sequens.push({id:data.event.uid,type:"dateStart",pos:foundPosition.pos})
+          }else{
+            console.log("ocupado")
+            let tag = { color: data.event.colorTag, id:data.event.uid,type:"dateStart",pos:foundPosition.pos +1}
+
+            newgroup.splice(foundPosition.pos + 1, 0, tag);
+            sequens.push({id:data.event.uid,type:"dateStart",pos:foundPosition.pos + 1})
+
+          }
+         
+
+        }
+        else if (date == data.event.dateEnd ) {
+          const sucesion  =this.getUnique(sequens,'id')
+
+          console.log("new",data.event.dateStart,sequens)    
+
+          const postIdElements =this.getUnique(sucesion,'id')
+          const foundPosition = postIdElements.find(element => element.id == data.event.uid)
+          let tag = { color: data.event.colorTag, id:data.event.uid,type:"dateEnd",pos:foundPosition.pos}
+         
+            newgroup.splice(foundPosition.pos , 0, tag);
+            console.log("newgroup",index,newgroup)           
+  
+        }
+      })
+      let obj = {
+        [date]:{
+          periods:newgroup
+        }
+      }
+      newlist_ev.push(obj)
+    })
+    console.log("newlist-ev",newlist_ev)
+    let val=''
+    //6 se crea un solo objeto que contiene los las fechas con sus periods
+    newlist_ev.map((data)=>{
+      console.log("data map",data)
+      let newdata = JSON.stringify(data)
+      let str = newdata.substring(1, newdata.length - 1)
+      val = val.concat([str] + ',')
+      
+    }) 
+    let newstr = val.substring(0, val.length - 1)
+    let finalVal = "{" + newstr + "}"
+    console.log("nuevos tags",finalVal)
+
+    //7 y ULTIMO. Se imprime en un estado para ser usado 
+    this.setState({dataSourceTask:JSON.parse(finalVal)})
+
+
+  }
+  getUnique(arr, comp) {
+
+    const unique = arr.reverse()
+         .map(e => e[comp])
+  
+       // store the keys of the unique objects
+      .map((e, i, final) => final.indexOf(e) === i && i)
+  
+      // eliminate the dead keys & store unique objects
+      .filter(e => arr[e]).map(e => arr[e]);
+  
+     return unique;
+  }
+  
+  async processDataEvent() {
+    
+    try {
+      const value = await AsyncStorage.getItem("@storage_Key");
+      if (value !== null) {
+        // We have data!!
+        let data = JSON.parse(value)
+        let userMd5 = md5(data.user)
+        let itemsRef = db.ref('/users/user' + userMd5 + '/' + 'eventReceived')
+      itemsRef.on('value', snapshot => {
+        let data = snapshot.val();
+        if(data != null){
+        let obj = Object.values(data)
+        console.log("eventos", obj)
+          this.preProcessingEvent(obj)
+        }
+      })
+       
+      } else {
+        console.log("nullstore");
+      }
+      
+    } catch (e) {
+      // error reading value
+      console.log("error en list eventos", e)
+    }
+  }
+  componentDidMount() {
+    this.processDataEvent()
+    this.currentDate()
+    this.intervalID = setInterval(
+      () => this.clock(),
+      1000
+    );
+
+
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.intervalID);
+  }
   render() {
     console.disableYellowBox = true;
-    let theme=this.props.global.user.theme;
-    let task={
-    '2020-01-22': {  periods: [
-      {startingDay: true, endingDay: false, color: '#ffa500'},
-      {color: 'transparent'},
-      {startingDay: false, endingDay: false, color: '#f0e68c'}
-    ]},
-    '2020-01-23': {  periods: [
-      {startingDay: true, endingDay: false, color: '#ffa500'},
-      {color: 'transparent'},
-      {startingDay: false, endingDay: false, color: '#f0e68c'}
-    ]},
-    '2020-01-04': {  periods: [
-      {startingDay: true, endingDay: false, color: '#ffa500'},
-      {color: 'transparent'},
-      {startingDay: false, endingDay: false, color: '#f0e68c'}
-    ]}
-  }
+    let theme = this.props.global.user.theme;
+    let task = {
+      '2020-04-22': {
+        periods: [
+          { color: '#ffa500',pos:1 },
+          { color: '#ffa500',pos:1 },
+        ]
+      },
+      '2020-04-23': {
+        periods: [
+          { color: '#ffa500',pos:1 },
+          { color: '#ffa500',pos:1 },
+        ]
+      },
+      
+    }
     let json = JSON.stringify(task)
-    let final= json.length
-    let str = json.substring(1,final-1)
+    let final = json.length
+    let str = json.substring(1, final - 1)
+
     return (
-      <StyleProvider style={getTheme(theme)}>
-        <Container>
-          <Modal
-            animationType="slide"
-            transparent={false}
-            visible={this.state.modalVisible}
-            onRequestClose={() => {
-              this.setModalVisible(false)
-            }}>
-            <View style={{ marginTop: 22 }}>
-              <View>
-                <Text>Hello World!</Text>
-                <Text>{this.state.dataAgenda}</Text>
+      <Container>
+        <Modal
 
-                <TouchableHighlight
-                  onPress={() => {
-                    this.setModalVisible(!this.state.modalVisible);
-                  }}>
-                  <Text>Hide Modal</Text>
-                </TouchableHighlight>
-              </View>
+          visible={this.state.modalVisible}
+          onRequestClose={() => {
+            this.setModalVisible(false)
+          }}>
+          <View style={{ marginTop: 22 }}>
+            <View>
+              <Text>Hello World!</Text>
+              <Text>{this.state.dataAgenda}</Text>
+
+              <TouchableHighlight
+                onPress={() => {
+                  this.setModalVisible(!this.state.modalVisible);
+                }}>
+                <Text>Hide Modal</Text>
+              </TouchableHighlight>
             </View>
-          </Modal>
-          <Content>
-            <CalendarList
-              onDayPress={e => this.onDayPress(e)}
-              onRefresh={() => console.log('refreshing...')}
-              // Set this true while waiting for new data from a refresh
-              refreshing={true}
-              // Add a custom RefreshControl component, used to provide pull-to-refresh functionality for the ScrollView.
-              onVisibleMonthsChange={months => {
-                console.log("now these months are visible", months);
-              }}
-              // Max amount of months allowed to scroll to the past. Default = 50
-              pastScrollRange={5}
-              // Max amount of months allowed to scroll to the future. Default = 50
-              futureScrollRange={5}
-              // Enable or disable scrolling of calendar list
-              scrollEnabled={true}
-              // Enable or disable vertical scroll indicator. Default = false
-              // Do not show days of other months in month page. Default = false
-              hideExtraDays={false}
-              showScrollIndicator={true}
-              markedDates={
-               this.state.dataSourceTask
-              }
-              // Date marking style [simple/period/multi-dot/custom]. Default = 'simple'
-              markingType='multi-period'
-           
+          </View>
+        </Modal>
 
-            />
-          </Content>
-        </Container>
-      </StyleProvider>
+        <Calendar
+          // Enable horizontal scrolling, default = false
+          style={{
+            width: '100%',
+            overflow: 'hidden',
+          }}
+          horizontal={true}
+          // Enable paging on horizontal, default = false
+          pagingEnabled={true}
+          // Set custom calendarWidth.
+          onDayPress={e => this.onDayPress(e)}
+          onRefresh={() => console.log('refreshing...')}
+          // Set this true while waiting for new data from a refresh
+          refreshing={true}
+          // Add a custom RefreshControl component, used to provide pull-to-refresh functionality for the ScrollView.
+          onVisibleMonthsChange={months => {
+            console.log("now these months are visible", this.state.dateCurrent);
+          }}
+          // Do not show days of other months in month page. Default = false
+          hideExtraDays={false}
+          markedDates={
+            this.state.dataSourceTask
+          }
+          // Date marking style [simple/period/multi-dot/custom]. Default = 'simple'
+          markingType='multi-period'
+        />
+        <View style={styles.notes}>
+          <View style={styles.notes_notes}>
+            <Text style={styles.notes_text}>Leyenda de eventos</Text>
+            <View style={{ height: 250, paddingRight: 20 }}>
+              <FlatList
+                data={this.state.infotask}
+                nestedScrollEnabled={true}
+                renderItem={({ item }) =>
+                  <View style={{ width: '100%', height: 50, flexDirection: 'row' }}>
+                    <TouchableOpacity style={{ width: 5, height: 30, marginRight: 5, backgroundColor: [item.color] }}>
+
+                    </TouchableOpacity>
+                    <Text style={{ fontSize: 12 }} >{item.title}</Text>
+                  </View>
+                }
+              />
+            </View>
+          </View>
+
+
+          <View style={[styles.notes_selected_date]}>
+            <Text style={styles.small_text}>{this.state.hour}</Text>
+            <Text style={styles.big_text}>{this.state.day}</Text>
+            <View style={styles.inline}>
+              <Icon2 name="guitar" size={20} color="#888" />
+              <Text style={styles.small_text}> {this.state.weekDay}</Text>
+            </View>
+          </View>
+        </View>
+      </Container>
+
     );
   }
 }
-export default withGlobalContext(Calendars) ;
+export default withGlobalContext(Calendars);
+
+
+const styles = StyleSheet.create({
+  notes: {
+    marginTop: 10,
+    padding: 20,
+    borderColor: '#F5F5F5',
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    flexDirection: 'row',
+    backgroundColor: '#FAFAFA',
+    height: '100%'
+  },
+  notes_notes: {
+    flex: 3
+  },
+  notes_text: {
+    fontSize: 18
+  },
+  notes_selected_date: {
+    flex: 1,
+    alignItems: 'flex-end',
+    flexDirection: 'column'
+  },
+  small_text: {
+    fontSize: 15
+  },
+  big_text: {
+    fontSize: 50,
+    fontWeight: 'bold'
+  },
+  inline: {
+    flexDirection: 'row'
+  },
+});

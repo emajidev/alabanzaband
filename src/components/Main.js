@@ -5,6 +5,8 @@ import { UserProvider } from "./UserContext";
 import { withNavigation } from 'react-navigation'
 import * as firebase from "firebase/app";
 import {AsyncStorage} from 'react-native';
+import { insert_In_avatarUri, select_avatarUri } from './SqliteDateBase';
+import { withGlobalContext } from './UserContext';
 
 class Main extends React.Component {
   constructor() {
@@ -13,6 +15,7 @@ class Main extends React.Component {
       loading: false
     };
   }
+
   getStore=async()=>{
     console.log("store async")
     try {
@@ -51,7 +54,6 @@ class Main extends React.Component {
           backgroundColor: "#fff"
         }}
       >
-
         <Image
           style={{width:220, height: 180}}
           source={require('../img/logo.png')}
@@ -75,4 +77,4 @@ class Main extends React.Component {
     );
   }
 }
-export default withNavigation(Main);
+export default withGlobalContext(Main);

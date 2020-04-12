@@ -19,30 +19,37 @@ import {
   Left,
   Body,
   Right,
-  Switch
+  Switch,
+  Spinner
 } from "native-base";
 import UserContext from "../UserContext";
 import * as ImagePicker from "expo-image-picker";
 import * as firebase from 'firebase/app';
 import storage from 'firebase/storage';
+import { withGlobalContext } from '../UserContext';
+import { AppLoading } from 'expo';
 
 import getTheme from "../../../native-base-theme/components";
 import Options from "./Options";
-import { StyleSheet, StatusBar, AsyncStorage } from "react-native";
+import { StyleSheet, StatusBar, AsyncStorage,Image,View } from "react-native";
 import Settings from "./Settings";
+import { insert_In_avatarUri, select_avatarUri } from '../SqliteDateBase';
 
-
-export default class Sidebar extends Component {
+import CacheImage from './CacheImage';
+class Sidebar extends Component {
   static contextType = UserContext;
 
   constructor(props) {
     super(props);
     this.state = {
       urilink: null,
-      dataUser: []
+      dataUser: [],
+      source: null,
+      refreshAvatar: false,
+      uploadStatus:false
     };
   }
- 
+
   getStore = async () => {
     console.log("store llamado");
     try {
@@ -60,11 +67,11 @@ export default class Sidebar extends Component {
   uriToBlob = uri => {
     return new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
-      xhr.onload = function() {
+      xhr.onload = function () {
         // return the blob
         resolve(xhr.response);
       };
-      xhr.onerror = function() {
+      xhr.onerror = function () {
         // something went wrong
         reject(new Error("uriToBlob failed"));
       };
@@ -74,64 +81,86 @@ export default class Sidebar extends Component {
       xhr.send(null);
     });
   };
-  uploadToFirebase =(blob,phone) => {
+  uploadToFirebase = (blob, email) => {
+    
     return new Promise((resolve, reject) => {
       var storageRef = firebase.storage().ref();
       storageRef
-        .child("uploads/photo"+phone.toString()+".jpg")
+        .child("uploads/photo" + email + ".jpg")
         .put(blob, {
           contentType: "image/jpeg"
         })
         .then(snapshot => {
           blob.close();
           resolve(snapshot);
+          this.setState({uploadStatus:true})
         })
         .catch(error => {
           reject(error);
         });
     });
   };
-  
-  handleGetImages= (phone) => { 
+ 
 
-    ImagePicker.launchImageLibraryAsync({ 
-      mediaTypes: "Images"
-    }).then((result)=>{ 
+  handleGetImages = (email) => {
+
+    ImagePicker.launchImageLibraryAsync({
+      mediaTypes: "Images",
+      quality: 0.2
+    }).then((result) => {
 
       if (!result.cancelled) {
         // User picked an image
-        const {height, width, type, uri} = result;
+        const { height, width, type, uri } = result;
         this.setState({ urilink: uri });
         return this.uriToBlob(uri);
 
       }
 
-    }).then((blob)=>{
+    }).then((blob) => {
 
-      return this.uploadToFirebase(blob,phone);
+      return this.uploadToFirebase(blob, email);
 
-    }).then((snapshot)=>{
+    }).then((snapshot) => {
 
       console.log("File uploaded");
-   
-    }).catch((error)=>{
+      firebase.storage().ref().child("uploads/photo" + email + ".jpg").getDownloadURL()
+        .then(response => {
+          console.log("url", response)
+          this.setState({ source: response })
+          setTimeout(() => {
+            this.setState({ refreshAvatar: true })
+          }, 200)
+          setTimeout(() => {
+            this.setState({ refreshAvatar: false })
+            this.setState({uploadStatus:false})
+          }, 200)
+          
+
+        })
+        .catch(error => console.log("error", error))
+
+    }).catch((error) => {
 
       throw error;
 
-    }); 
+    });
 
   }
 
   componentDidMount() {
     this.getStore();
+
   }
 
   render() {
     const uri = this.state.urilink;
-    const phone = this.state.dataUser.phone
+    const source = this.state.source;
+    const email = this.props.global.account
     const uridefault = require("./icon.jpg");
     const { user, setUser } = this.context;
-    console.log("datos phone", uri);
+    const refreshAvatar = this.state.refreshAvatar
+    console.log("refre", this.state.refresh);
     return (
       <StyleProvider style={getTheme(user.theme)}>
         <Container>
@@ -146,23 +175,30 @@ export default class Sidebar extends Component {
                       flexDirection: "row"
                     }}
                   >
-                    {uri != null ? (
-                      <Thumbnail
-                        style={{ width: 150, height: 150, borderRadius: 400 }}
-                        source={{ uri }}
-                      />
+                    {refreshAvatar == false ? (
+                      <View>
+                    {   this.state.uploadStatus == true ? (
+                      
+                      <View style={{ position: "absolute",zIndex: 2,width: 150, height: 150, borderRadius: 400, backgroundColor:"#fff" ,alignItems:'center',justifyContent:'center', opacity:0.8}} >
+                        <Spinner color="rgba(80,227,194,1)" />
+                      </View>
+                      ):(
+                        
+                        console.log("")
+                      )  }
+                      <CacheImage uri={this.state.source} /> 
+                      </View>
+                     
                     ) : (
-                      <Thumbnail
-                        style={{ width: 150, height: 150, borderRadius: 400 }}
-                        source={require("./icon.jpg")}
-                      />
-                    )}
+                    console.log("refresh")
+                      )
+                    }
 
                     <Button
                       ref="photo"
                       style={styles.imageSelect}
                       transparent
-                      onPress={() => this.handleGetImages(phone)}
+                      onPress={() => this.handleGetImages(email)}
                     >
                       <Icon
                         style={{ color: "#50e2c3ff", fontSize: 25 }}
@@ -186,7 +222,7 @@ export default class Sidebar extends Component {
                     <Text style={{ color: "#fff", marginTop: 5, fontSize: 14 }}>
                       user: {this.state.dataUser.user}
                     </Text>
-            {/*         <Text style={{ color: "#fff", marginTop: 5, fontSize: 12 }}>
+                    {/*         <Text style={{ color: "#fff", marginTop: 5, fontSize: 12 }}>
                       telefono: {phone}
                     </Text> */}
                   </Col>
@@ -222,6 +258,8 @@ export default class Sidebar extends Component {
     );
   }
 }
+export default withGlobalContext(Sidebar);
+
 const styles = StyleSheet.create({
   imageSelect: {
     position: "absolute",
@@ -234,5 +272,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     borderRadius: 300,
     backgroundColor: "#fff"
+  },
+  avatar: {
+    width: 150, height: 150, borderRadius: 400
   }
 });

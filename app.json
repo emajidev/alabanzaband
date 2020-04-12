@@ -1,6 +1,9 @@
 {
   "expo": {
-  
+    "androidStatusBar": {
+      "backgroundColor": "#fff",
+      "barStyle": "dark-content"
+    },
     "name": "alabanzaband",
     "slug": "alabanzaband-app",
     "privacy": "public",
@@ -12,9 +15,9 @@
     "version": "1.0.0",
     "facebookScheme": "fb2487421368013795",
     "orientation": "portrait",
-    "icon": "./assets/Bing-icon.png",
+    "icon": "./assets/icons/app.png",
     "splash": {
-      "image": "./assets/Bing-icon.png",
+      "image": "./assets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#fff"
     },
