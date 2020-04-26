@@ -28,7 +28,8 @@ import ShowSuggestion from './src/components/admin/ShowSuggestion.js'
 import Categories from './src/components/Categories.js'
 import Search from './src/components/Search.js'
 import NewEvent from './src/components/NewEvent.js'
-
+import Chat from './src/components/chat/Chat.js'
+import ListChat from './src/components/chat/ListChat.js'
 const AppNavigator = createStackNavigator(
 {
   Loading:{screen:Loading},
@@ -53,7 +54,8 @@ const AppNavigator = createStackNavigator(
   ContactsComponent:{screen:ContactsComponent},
   ListContacts:{screen:ListContacts},
   Contacts:{screen:Contacts},
-
+  ListChat:{screen:ListChat},
+  Chat:{screen:Chat},
   LocalNotifications:{screen:LocalNotifications},
 
   Settings:{screen:Settings},

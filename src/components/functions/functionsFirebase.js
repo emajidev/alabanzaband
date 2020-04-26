@@ -6,7 +6,7 @@ export async function pushEvent(yourEmail, members, event) {
     try {
         members.map((friend, index) => {
             //buzon de recibido 
-            const arrival = db.ref('/users/user' + md5(friend) + '/' + 'eventReceived')
+            const arrival = db.ref('/users/user' + md5(friend) + '/' + 'events')
             arrival.push(
                 {
                     sender: yourEmail,
@@ -20,19 +20,7 @@ export async function pushEvent(yourEmail, members, event) {
             ).then((snapshot) => {
                 //buzon de envio 
                 arrival.child(snapshot.key).update({ "id": snapshot.key })
-                const sent = db.ref('/users/user' + yourEmail + '/' + 'eventSent')
-                sent.push(
-                    {
-                        id: snapshot.key,
-                        sender:yourEmail,
-                        director: yourEmail,
-                        members: friend,
-                        event:event,
-                        accepted: 'waiting',
-                        toSent: 'yes',
-                        read: false
-                    }
-                )
+        
             });
         })
 

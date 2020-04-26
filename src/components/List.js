@@ -1,15 +1,17 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet,TextInput ,ActivityIndicator,Platform,AsyncStorage,NetInfo,Alert,} from 'react-native';
+import { View, Text, StyleSheet,TextInput ,ActivityIndicator,Platform,AsyncStorage,NetInfo,Alert,SafeAreaView} from 'react-native';
 import ItemComponent from '../components/ItemComponent';
-import { db } from './firebase.js';
 import { Notifications} from 'expo';
 import { withNavigation } from 'react-navigation';
 import * as firebase from "firebase/app";
 import {AppColors}from './global'
 import chordpro from './funtion/chordpro.js';
-import PouchDB from 'pouchdb-react-native'
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import {PreloadContacts} from './preload/PreloadComponents'
 
+const Preload = () => (
+  <PreloadContacts />
+);
 class List extends Component {
  
 render() {
@@ -19,10 +21,12 @@ render() {
           <ItemComponent items={this.props.songs}/>
 
         ) : (
-          <View style={styles.cont}>
-            <Text style={{margin:10}}>Buscando canciones...</Text>
-            <ActivityIndicator size="large" />
-          </View>
+          <SafeAreaView style={styles.cont}>
+              <Preload />
+              <Preload />
+              <Preload />
+              <Preload />
+          </SafeAreaView>
         )}
       </View>
     );
@@ -37,9 +41,9 @@ const styles = StyleSheet.create({
     
 
   },
-  cont:{
-    height:'100%',
-    justifyContent:'center',
-    alignItems:'center'
+  cont: {
+    height: '100%',
+    alignItems: 'center',
+    padding: 10
   }
 });

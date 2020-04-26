@@ -299,7 +299,7 @@ render() {
                         size={20}
                         style={{textAlign:'center'}}
                       />
-                      <Text style={{fontSize:12,textAlign:'center'}}>{item.rating}</Text>
+                      <Text style={{fontSize:12,textAlign:'center'}}>{item.visits}</Text>
                     </View>
                     <View style={{width:'10%',justifyContent:'center'}}>
                       <IconLike 
@@ -308,7 +308,7 @@ render() {
                         size={20}
                         style={{textAlign:'center'}}
                       />
-                      <Text style={{fontSize:12,textAlign:'center'}}>{item.rating}</Text>
+                      <Text style={{fontSize:12,textAlign:'center'}}>{item.likes}</Text>
                     </View>
         
                   </View>

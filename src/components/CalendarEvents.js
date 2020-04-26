@@ -149,21 +149,6 @@ class Calendars extends React.Component {
       weekDay: semana[fecha.getDay()]
     })
   }
-
-  CreateGroup = async (key_group, ItemNotification) => {
-    try {
-      const groups = db.ref('/users//users/user' + email + '/notifications')
-      groups.push({
-
-
-      }).then((snapshot) => {
-        groups.child(snapshot.key).update({ "id": snapshot.key })
-      })
-    } catch (e) {
-      console.log(e)
-    }
-  }
-
   preProcessingEvent(results) {
 
     let list_dates = [];
@@ -180,157 +165,158 @@ class Calendars extends React.Component {
 
     console.log("List dates events no repeact", list_dates.unique().sort());
     //3 agrupamos
-    
+
     let list_ev = []
-    list_dates.unique().sort().map((date,index) => {
+    list_dates.unique().sort().map((date, index) => {
       let group = []
-      counterPost = 0
+      let counterPost = 0
       results.map((data, index) => {
-        console.log("fecha",date,data.event.dateStart)
-        if (date == data.event.dateStart ) {
-          let tag = { color: data.event.colorTag, id:data.event.uid,type:"dateStart"}
-          console.log("postion",data.event.uid,counterPost++)
+        console.log("fecha", date, data.event.dateStart)
+        if (date == data.event.dateStart) {
+          let tag = { color: data.event.colorTag, id: data.event.uid, type: "dateStart" }
+          console.log("postion", data.event.uid, counterPost++)
           group.push(tag)
         }
-        if (date == data.event.dateEnd ) {
-          let tag = { color: data.event.colorTag, id:data.event.uid,type:"dateEnd"}
-          group.push(tag)    
+        if (date == data.event.dateEnd) {
+          let tag = { color: data.event.colorTag, id: data.event.uid, type: "dateEnd" }
+          group.push(tag)
         }
       })
       let obj = {
-        [date]:{
-          periods:group
+        [date]: {
+          periods: group
         }
       }
       list_ev.push(obj)
     })
-    console.log("cosa",list_ev)
+    console.log("cosa", list_ev)
     //4 Buscamos las posiciones las fechas iniciales 
     let position = []
     results.sort().map((data, index) => {
-      console.log("iteracion",data.event.uid)
-      list_ev.map((array)=>{
-        
+      console.log("iteracion", data.event.uid)
+      list_ev.map((array) => {
+
         const element = Object.values(array)
-        element.map((el)=>{
+        element.map((el) => {
           const foundIndex = el.periods.findIndex(element => element.type == "dateStart")
           const found = el.periods.find(element => element.type == "dateStart")
-          if(found != undefined){
-            let el ={id:found.id,pos:foundIndex}
+          if (found != undefined) {
+            let el = { id: found.id, pos: foundIndex }
             position.push(el)
-        }
-    
+          }
+
         })
-     
+
       })
-  
-  })
+
+    })
     //5 aplicamos el mismo procedimiento que en 3 pero creamos esta vez un array con las posiciones 
     // se crea columna de 5filas que sera los maximo, despues de esto podremos aplicar los splice 
     let newlist_ev = []
     let sequens = []
 
-    list_dates.unique().sort().map((date,index) => {
-      let newgroup = [{color:'transparent'},{color:'transparent'},{color:'transparent'},{color:'transparent'},{color:'transparent'}]
+    list_dates.unique().sort().map((date, index) => {
+      let newgroup = [{ color: 'transparent' }, { color: 'transparent' }, { color: 'transparent' }, { color: 'transparent' }, { color: 'transparent' }]
       results.sort().map((data, index) => {
-        console.log("fecha",date,data.event.dateStart)
-        if (date == data.event.dateStart ) {
-          const postIdElements =this.getUnique(position,'id')
+        console.log("fecha", date, data.event.dateStart)
+        if (date == data.event.dateStart) {
+          const postIdElements = this.getUnique(position, 'id')
           const foundPosition = postIdElements.find(element => element.id == data.event.uid)
-          console.log("found post",foundPosition)
-          if(newgroup[foundPosition.pos].color == "transparent"   ){
+          console.log("found post", foundPosition)
+          if (newgroup[foundPosition.pos].color == "transparent") {
             console.log("es transparente")
-            let tag = { color: data.event.colorTag, id:data.event.uid,type:"dateStart",pos:foundPosition.pos}
+            let tag = { color: data.event.colorTag, id: data.event.uid, type: "dateStart", pos: foundPosition.pos }
 
             newgroup.splice(foundPosition.pos, 0, tag);
-            sequens.push({id:data.event.uid,type:"dateStart",pos:foundPosition.pos})
-          }else{
+            sequens.push({ id: data.event.uid, type: "dateStart", pos: foundPosition.pos })
+          } else {
             console.log("ocupado")
-            let tag = { color: data.event.colorTag, id:data.event.uid,type:"dateStart",pos:foundPosition.pos +1}
+            let tag = { color: data.event.colorTag, id: data.event.uid, type: "dateStart", pos: foundPosition.pos + 1 }
 
             newgroup.splice(foundPosition.pos + 1, 0, tag);
-            sequens.push({id:data.event.uid,type:"dateStart",pos:foundPosition.pos + 1})
+            sequens.push({ id: data.event.uid, type: "dateStart", pos: foundPosition.pos + 1 })
 
           }
-         
+
 
         }
-        else if (date == data.event.dateEnd ) {
-          const sucesion  =this.getUnique(sequens,'id')
+        else if (date == data.event.dateEnd) {
+          const sucesion = this.getUnique(sequens, 'id')
 
-          console.log("new",data.event.dateStart,sequens)    
+          console.log("new", data.event.dateStart, sequens)
 
-          const postIdElements =this.getUnique(sucesion,'id')
+          const postIdElements = this.getUnique(sucesion, 'id')
           const foundPosition = postIdElements.find(element => element.id == data.event.uid)
-          let tag = { color: data.event.colorTag, id:data.event.uid,type:"dateEnd",pos:foundPosition.pos}
-         
-            newgroup.splice(foundPosition.pos , 0, tag);
-            console.log("newgroup",index,newgroup)           
-  
+          let tag = { color: data.event.colorTag, id: data.event.uid, type: "dateEnd", pos: foundPosition.pos }
+
+          newgroup.splice(foundPosition.pos, 0, tag);
+          console.log("newgroup", index, newgroup)
+
         }
       })
       let obj = {
-        [date]:{
-          periods:newgroup
+        [date]: {
+          periods: newgroup
         }
       }
       newlist_ev.push(obj)
     })
-    console.log("newlist-ev",newlist_ev)
-    let val=''
+    console.log("newlist-ev", newlist_ev)
+    let val = ''
     //6 se crea un solo objeto que contiene los las fechas con sus periods
-    newlist_ev.map((data)=>{
-      console.log("data map",data)
+    newlist_ev.map((data) => {
+      console.log("data map", data)
       let newdata = JSON.stringify(data)
       let str = newdata.substring(1, newdata.length - 1)
       val = val.concat([str] + ',')
-      
-    }) 
+
+    })
     let newstr = val.substring(0, val.length - 1)
     let finalVal = "{" + newstr + "}"
-    console.log("nuevos tags",finalVal)
+    console.log("nuevos tags", finalVal)
 
     //7 y ULTIMO. Se imprime en un estado para ser usado 
-    this.setState({dataSourceTask:JSON.parse(finalVal)})
+    this.setState({ dataSourceTask: JSON.parse(finalVal) })
 
 
   }
   getUnique(arr, comp) {
 
     const unique = arr.reverse()
-         .map(e => e[comp])
-  
-       // store the keys of the unique objects
+      .map(e => e[comp])
+
+      // store the keys of the unique objects
       .map((e, i, final) => final.indexOf(e) === i && i)
-  
+
       // eliminate the dead keys & store unique objects
       .filter(e => arr[e]).map(e => arr[e]);
-  
-     return unique;
+
+    return unique;
   }
-  
+
   async processDataEvent() {
-    
+
     try {
       const value = await AsyncStorage.getItem("@storage_Key");
       if (value !== null) {
         // We have data!!
         let data = JSON.parse(value)
         let userMd5 = md5(data.user)
-        let itemsRef = db.ref('/users/user' + userMd5 + '/' + 'eventReceived')
-      itemsRef.on('value', snapshot => {
-        let data = snapshot.val();
-        if(data != null){
-        let obj = Object.values(data)
-        console.log("eventos", obj)
-          this.preProcessingEvent(obj)
-        }
-      })
-       
+        let itemsRef = db.ref('/users/user' + userMd5 + '/' + 'events')
+        itemsRef.on('value', snapshot => {
+          let data = snapshot.val();
+          if (data != null) {
+            let obj = Object.values(data)
+            console.log("eventos", obj)
+            this.setState({ infotask: obj })
+            this.preProcessingEvent(obj)
+          }
+        })
+
       } else {
         console.log("nullstore");
       }
-      
+
     } catch (e) {
       // error reading value
       console.log("error en list eventos", e)
@@ -356,22 +342,21 @@ class Calendars extends React.Component {
     let task = {
       '2020-04-22': {
         periods: [
-          { color: '#ffa500',pos:1 },
-          { color: '#ffa500',pos:1 },
+          { color: '#ffa500', pos: 1 },
+          { color: '#ffa500', pos: 1 },
         ]
       },
       '2020-04-23': {
         periods: [
-          { color: '#ffa500',pos:1 },
-          { color: '#ffa500',pos:1 },
+          { color: '#ffa500', pos: 1 },
+          { color: '#ffa500', pos: 1 },
         ]
       },
-      
+
     }
     let json = JSON.stringify(task)
     let final = json.length
     let str = json.substring(1, final - 1)
-
     return (
       <Container>
         <Modal
@@ -429,12 +414,21 @@ class Calendars extends React.Component {
                 data={this.state.infotask}
                 nestedScrollEnabled={true}
                 renderItem={({ item }) =>
-                  <View style={{ width: '100%', height: 50, flexDirection: 'row' }}>
-                    <TouchableOpacity style={{ width: 5, height: 30, marginRight: 5, backgroundColor: [item.color] }}>
+                  <TouchableOpacity style={{marginBottom: 10 }} >
+                    <View style={{ width: '100%', height: 50, flexDirection: 'row' }}>
 
-                    </TouchableOpacity>
-                    <Text style={{ fontSize: 12 }} >{item.title}</Text>
-                  </View>
+
+
+                      <View style={{ width: 5, height: '100%', backgroundColor: [item.event.colorTag], marginRight: 10 }} />
+
+                      <View>
+                        <Text style={{ fontSize: 12 }} >{item.event.title}</Text>
+                        <Text style={{ fontSize: 12 }} >{item.event.dateStart}/{item.event.dateEnd}</Text>
+                        <Text style={{ fontSize: 12 }} >{item.event.note}</Text>
+                      </View>
+
+                    </View>
+                  </TouchableOpacity>
                 }
               />
             </View>
@@ -473,7 +467,8 @@ const styles = StyleSheet.create({
     flex: 3
   },
   notes_text: {
-    fontSize: 18
+    fontSize: 18,
+    marginBottom:20,
   },
   notes_selected_date: {
     flex: 1,

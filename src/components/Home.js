@@ -23,7 +23,7 @@ import { select_avatarUri } from './SqliteDateBase'
 
 import { withNavigation } from "react-navigation";
 import * as firebase from "firebase/app";
-let itemsRef = db.ref("/items");
+let itemsRef = db.ref("/songs");
 import { db } from "./firebase.js";
 
 import getTheme from "../../native-base-theme/components";
@@ -56,7 +56,7 @@ import { Col, Row, Grid } from "react-native-easy-grid";
 import SideBar from "./sidebar/Sidebar";
 import UserContext from "./UserContext";
 
-let songsRef = db.ref("/items");
+let songsRef = db.ref("/songs");
 var storageRef = firebase.storage().ref();
 var mountainImagesRef = storageRef.child("../img/icon.jpg");
 

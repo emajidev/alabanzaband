@@ -3,11 +3,19 @@ import { Text, View, TouchableOpacity, StyleSheet,ScrollView,Alert,TextInput,Tou
 import { db } from './firebase.js';
 
 let addItem = (name,category,lyrics) => {
-   db.ref('/items').push({
+   let postSong = db.ref('/songs')
+   postSong.push({
     name: name,
     category:category,
-    lyrics:lyrics
+    lyrics:lyrics,
+    likes:0,
+    visits:0
   })
+  .then((snapshot) => {
+   //buzon de envio 
+   postSong.child(snapshot.key).update({ "id": snapshot.key })
+
+});
 };
 class AddItem extends React.Component {
       state = {
@@ -81,7 +89,6 @@ class AddItem extends React.Component {
       fontSize: 16,
       borderWidth: 1,
       borderRadius: 8,
-      color: 'white'
     },
     itemInputArea:{
       height: 150,

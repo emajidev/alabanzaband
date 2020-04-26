@@ -1,72 +1,90 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet,StatusBar ,AsyncStorage} from 'react-native';
+import { View, Text, StyleSheet, StatusBar, AsyncStorage, SafeAreaView } from 'react-native';
 import ContactsComponent from './ContactsComponent';
 import { withNavigation } from 'react-navigation';
 import { withGlobalContext } from '../UserContext';
-
 import { db } from '../firebase.js';
-
-
+import {PreloadContacts} from '../preload/PreloadComponents'
+const Preload = () => (
+  <PreloadContacts />
+);
 class ListContacts extends Component {
   state = {
-    text:'',
-    
-   
+    text: '',
+
+
   };
-  constructor(props){
+  constructor(props) {
     super(props);
     this._isMounted = false;
 
-    this.state={
-      items: [],
+    this.state = {
+      items: false,
     }
   }
-componentWillUnmount() {
-   this._isMounted = false;
-}
-componentDidMount() {
+  componentWillUnmount() {
+    this._isMounted = false;
+  }
+  componentDidMount() {
     this._isMounted = true;
-  
-}
+
+  }
   getData = async () => {
-   let account = this.props.global.account
-      console.log("cuenta",account)
-   try {
-    let itemsRef = db.ref('/users/user'+account+'/contacts' );
-    itemsRef.on('value', snapshot => {
-    
+    let account = this.props.global.account
+    console.log("cuenta", account)
+    try {
+      let itemsRef = db.ref('/users/user' + account + '/contacts');
+        itemsRef.on('value', snapshot => {
         let data = snapshot.val();
-        let items = Object.values(data);
-        this.setState({ items });
-    })
- 
-  } catch(e) {
-    // error reading value
-    console.log("error en list constactos",e)
+        if(data != null){
+          let items = Object.values(data);
+          this.setState({ items:items });
+        }
+        else{
+          this.setState({ items:data });
+        }
+        console.log("contactos descargados")
 
+      })
+
+    } catch (e) {
+      // error reading value
+      console.log("error en list constactos", e)
+
+    }
   }
-  }
-componentDidMount() {
+  componentDidMount() {
     this.getData()
-   
+
   }
 
-render() {
-  let account = this.props.global.account
-
-   console.log("contactos ",account)
+  render() {
+    console.log("contactos ", this.state.items)
     return (
-     
+
       <View style={styles.container}>
-        {this.state.items.length > 0 ? (
-          
-          <ContactsComponent items={this.state.items} />
-        ) : (
-          <View style={styles.cont}>
-            <Text style={{margin:10}}>No hay contactos</Text>
-           
+        {this.state.items != false ? (
+          <View>
+          {
+            this.state.items != null ? (
+              <ContactsComponent items={this.state.items} />
+
+            ) : (
+                <View style={styles.cont}>
+                  <Text style={{ margin: 10 }}>No hay contactos</Text>
+
+                </View>
+              )
+          }
           </View>
-        )}
+        ) : (
+            <SafeAreaView style={styles.cont}>
+              <Preload />
+              <Preload />
+              <Preload />
+              <Preload />
+            </SafeAreaView>
+          )}
       </View>
     );
   }
@@ -77,12 +95,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'flex-start',
-    marginTop:StatusBar.currentHeight+15,
+    marginTop: StatusBar.currentHeight + 15,
 
   },
-  cont:{
-    height:'100%',
-    justifyContent:'center',
-    alignItems:'center'
+  cont: {
+    height: '100%',
+    alignItems: 'center',
+    padding: 10
   }
 });
