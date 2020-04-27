@@ -283,32 +283,32 @@ render() {
                     <View style={{width:'15%'}}>
                     <Icon 
                         name='music'
-                        color='#000'
+                        color='#717070'
                         size={30}
                         style={{paddingRight:15}}
                       />
                     </View>
                     <View style={{width:'60%'}}>
-                      <Text style={{fontSize:18}}>{item.name}</Text>
-                      <Text style={{fontSize:16}}>{item.category}</Text>
+                      <Text style={{fontSize:18,color:'#717070'}}>{item.name}</Text>
+                      <Text style={{fontSize:16,color:'#A0A0A0'}}>{item.category}</Text>
                     </View>
                     <View style={{width:'10%',justifyContent:'center'}}>
                       <Icon 
                         name='eye'
-                        color='#000'
+                        color='#717070'
                         size={20}
                         style={{textAlign:'center'}}
                       />
-                      <Text style={{fontSize:12,textAlign:'center'}}>{item.visits}</Text>
+                      <Text style={{fontSize:12,textAlign:'center',color:'#A0A0A0'}}>{item.visits}</Text>
                     </View>
                     <View style={{width:'10%',justifyContent:'center'}}>
                       <IconLike 
                         name='like2'
-                        color='#000'
+                        color='#717070'
                         size={20}
                         style={{textAlign:'center'}}
                       />
-                      <Text style={{fontSize:12,textAlign:'center'}}>{item.likes}</Text>
+                      <Text style={{fontSize:12,textAlign:'center',color:'#A0A0A0'}}>{item.likes}</Text>
                     </View>
         
                   </View>
@@ -360,7 +360,7 @@ const styles = StyleSheet.create ({
    songs: {
       width:'100%',
       height:80,
-      borderBottomColor:'#000',
+      borderBottomColor:'#DCDCDC',
       borderBottomWidth:1,
       justifyContent:'center'
    },

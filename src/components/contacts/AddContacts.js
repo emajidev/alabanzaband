@@ -67,7 +67,7 @@ class AddContacts extends Component {
       return (
          
          <Container>
-            <Header style={{ marginTop: 10 }}>
+            <Header >
                <Left>
                   <Button transparent
                   onPress={() => this.props.navigation.goBack()}

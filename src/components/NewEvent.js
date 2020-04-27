@@ -258,7 +258,7 @@ class NewEvent extends Component {
             </View>
           </View>
         </Modal>
-        <Header style={{ marginTop: 20 }}>
+        <Header>
 
           <Body>
             <Text>Programa tu evento</Text>

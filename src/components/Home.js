@@ -128,7 +128,7 @@ class Home extends React.Component {
           panCloseMask={0}
         >
           <Container>
-            <Header style={{ marginTop: 10 }}>
+            <Header>
               <Left style={{ flex: 0.5 }}>
                 <Button transparent onPress={() => this.openDrawer()}>
                   <Icon name="md-list" />

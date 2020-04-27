@@ -71,7 +71,7 @@ class ListContacts extends Component {
 
             ) : (
                 <View style={styles.cont}>
-                  <Text style={{ margin: 10 }}>No hay contactos</Text>
+                  <Text style={{ margin: 10 ,color:'#A0A0A0'}}>No hay contactos</Text>
 
                 </View>
               )

@@ -23,7 +23,7 @@ class Contacts extends React.Component{
             <TouchableOpacity style={styles.btn_nav}>
               <Icon 
                 name='person-add'
-                color='#000'
+                color='#A0A0A0'
                 onPress={() => this.props.navigation.navigate('AddContacts')}
                 size={30}
              
@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
   },
  
   title: {
-    color: '#777',
+    color: '#A0A0A0',
     fontSize:20,
     margin:10
    
