@@ -1,18 +1,19 @@
 import React from "react";
-import { StyleSheet, Image, View , AsyncStorage} from 'react-native';
+import { StyleSheet, Image, View, AsyncStorage } from 'react-native';
 import * as FileSystem from 'expo-file-system';
 import shorthash from 'shorthash';
-import {Spinner,} from "native-base";
-  import { withGlobalContext } from '../UserContext';
+import { Spinner, } from "native-base";
+import { withGlobalContext } from '../UserContext';
+import Icon from 'react-native-vector-icons/FontAwesome5';
 
 class CacheImage extends React.Component {
     state = {
         source: null,
         refresh: false,
-        uri:null
+        uri: null
     }
     async cache_img() {
-       let uri = this.props.uri
+        let uri = this.props.uri
         if (uri != null) {
             const email = this.props.global.account
 
@@ -37,68 +38,74 @@ class CacheImage extends React.Component {
                         this.setState({
                             source: { uri: uri }
                         })
-                    if(uri !=null){
-                        this.pushPersistense(uri)
-                    }
-                        
+                        if (uri != null) {
+                            this.pushPersistense(uri)
+                        }
+
                     })
                     .catch(error => {
                         console.error(error);
                     });
-                
+
 
 
             }
         }
     }
-    async pushPersistense(uri){
-        await AsyncStorage.setItem("avatar",uri)
-        .then((data)=>{
-            console.log("avatar put",data)
+    async pushPersistense(uri) {
+        await AsyncStorage.setItem("avatar", uri)
+            .then((data) => {
+                console.log("avatar put", data)
 
-        })
+            })
     }
-    async getPersistense(uri){
-       let daaPersist =  await AsyncStorage.getItem("avatar")
-       .then((uri)=>{
-           if(uri != null){}
-        this.setState({
-            source: { uri: uri }
-        })
-        console.log("avatar",uri)
-       })
+    async getPersistense(uri) {
+        let daaPersist = await AsyncStorage.getItem("avatar")
+            .then((uri) => {
+                if (uri != null) {
+                    this.setState({
+                        source: { uri: uri }
+                    })
+                }
+                console.log("avatar", uri)
+            })
     }
-    
-    componentDidMount(){
+
+    componentDidMount() {
         console.log("iniciado image")
-        if(this.props.uri== null){
+        if (this.props.uri == null) {
             this.getPersistense()
             console.log("esta vacio")
-        }else{ this.cache_img()}
-        
-      
+        } else { this.cache_img() }
+
+
     }
 
     render() {
 /*         "https://firebasestorage.googleapis.com/v0/b/alabanzaband.appspot.com/o/uploads%2Fphotof1d948141c3c7b78ff5d2fab5c0123ff.jpg?alt=media&token=ac5104b4-5250-4e6a-b126-bdb395aa35c8"
  */        const uri = this.props.uri
-            console.log("uri de galeria",uri)
+        console.log("uri de galeria", uri)
         console.log("url cache", this.state.source)
         return (
             <View>
                 {
-                    this.state.source!=null ? (
+                    this.state.source != null ? (
                         <Image style={{ width: 150, height: 150, borderRadius: 400 }} source={this.state.source} />
-                    ):(  
-                        <View style={{ width: 150, height: 150, borderRadius: 400, backgroundColor:"#fff" ,alignItems:'center',justifyContent:'center', opacity:0.8}} >
-                        <Spinner color="rgba(80,227,194,1)" />
-                        </View> 
-                    )
+                    ) : (
+                            <View style={{ width: 150, height: 150, borderRadius: 400, backgroundColor: "#fff", alignItems: 'center', justifyContent: 'center', opacity: 1 }} >
+                                {/*  <Spinner color="rgba(80,227,194,1)" /> */}
+                                <Icon
+                                    name='user-alt'
+                                    color='#717070'
+                                    size={80}
+                                />
+                            </View>
+                        )
 
-               }
-                
+                }
+
             </View>
-           
+
 
         )
     }

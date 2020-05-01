@@ -19,14 +19,10 @@ render() {
       <View style={{flex:1,width:'100%',height:'100%',position:'relative'}}>
         {this.props.songs != null  ? (
           <ItemComponent items={this.props.songs}/>
-
         ) : (
-          <SafeAreaView style={styles.cont}>
-              <Preload />
-              <Preload />
-              <Preload />
-              <Preload />
-          </SafeAreaView>
+          <View>
+            <Text>no found</Text>
+          </View>
         )}
       </View>
     );

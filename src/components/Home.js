@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   AsyncStorage,
   Alert,
-  TouchableHighlight
+  TouchableHighlight,SafeAreaView
 } from "react-native";
 
 import { YellowBox } from "react-native";
@@ -28,7 +28,10 @@ import { db } from "./firebase.js";
 
 import getTheme from "../../native-base-theme/components";
 
-
+import {PreloadContacts} from './preload/PreloadComponents'
+const Preload = () => (
+  <PreloadContacts />
+);
 import {
   Container,
   Content,
@@ -71,7 +74,7 @@ class Home extends React.Component {
       tab3: false,
       tab4: false,
       context: "",
-      songs: [],
+      songs: null,
       refreshCalendar: false
 
     };
@@ -115,8 +118,8 @@ class Home extends React.Component {
 
   render() {
     console.disableYellowBox = true;
-    const { user, setUser,calendar } = this.context;
-   /*  console.log("props refresh",calendar) */
+    const { user, setUser, calendar } = this.context;
+    /*  console.log("props refresh",calendar) */
     return (
       <StyleProvider style={getTheme(user.theme)}>
         <Drawer
@@ -149,7 +152,7 @@ class Home extends React.Component {
                   onPress={() => {
                     const newUser = { name: "pepe", loggedIn: true };
                     setUser(newUser);
-                    
+
                   }}
                 >
                   <Icon name="search" />
@@ -174,7 +177,7 @@ class Home extends React.Component {
                   </TabHeading>
                 }
               >
-               <CalendarEvents />
+                <CalendarEvents />
               </Tab>
               <Tab
                 heading={
@@ -201,7 +204,15 @@ class Home extends React.Component {
                   </TabHeading>
                 }
               >
-                <List songs={this.state.songs} />
+                {this.state.songs != null ? (<List songs={this.state.songs} />) :
+                  (
+                    <SafeAreaView style={styles.cont}>
+                      <Preload />
+                      <Preload />
+                      <Preload />
+                      <Preload />
+                    </SafeAreaView>
+                  )}
               </Tab>
               <Tab
                 heading={
@@ -220,3 +231,16 @@ class Home extends React.Component {
   }
 }
 export default withNavigation(Home);
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'flex-start',
+    marginTop: StatusBar.currentHeight + 15,
+
+  },
+  cont: {
+    height: '100%',
+    alignItems: 'center',
+    padding: 10
+  }
+});

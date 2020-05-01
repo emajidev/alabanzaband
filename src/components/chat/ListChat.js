@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet,TouchableOpacity,TextInput ,FlatList,  RefreshControl,ActivityIndicator} from 'react-native';
-import Icon from 'react-native-vector-icons/Feather';
+
 import IconLike from 'react-native-vector-icons/AntDesign';
 import md5 from 'md5';
 import {withNavigationFocus } from 'react-navigation'
@@ -8,11 +8,47 @@ import {withNavigationFocus } from 'react-navigation'
 import { withGlobalContext } from '../UserContext';
 import { db } from "../firebase";
 import * as firebase from "firebase/app";
+
+import {
+  Container,
+  Content,
+  Card,
+  Tabs,
+  Tab,
+  TabHeading,
+  CardItem,
+  Header,
+  Left,
+  Icon,
+  Body,
+  Right,
+  Button,
+  Title,
+  Badge,
+  FooterTab,
+  Footer,
+  StyleProvider,
+  Drawer
+} from "native-base";
 class FlatListChat extends Component{
     render(){
         const filtered = this.props.events
         return(
-        <View style={{flex:1,width:'100%',height:'100%',position:'relative'}}>
+        <Container>
+         <Header >
+               <Left>
+                  <Button transparent
+                  onPress={() => this.props.navigation.goBack()}
+                  >
+                     <Icon name='ios-arrow-back' />
+                  </Button>
+               </Left>
+               <Body>
+                  <Title>Chats de eventos</Title>
+               </Body>
+               <Right />
+            </Header>
+          
           <FlatList
           data={filtered}
           enableEmptySections={true}
@@ -23,11 +59,7 @@ class FlatListChat extends Component{
                   onPress={() => this.props.navigation.navigate('Chat',{item})}>
                   <View style={{paddingLeft:15, flexDirection:'row', alignItems:'center'}}>
                   {/* <Text style={{fontSize:18,paddingRight:10}}>{index+1}</Text> */}
-                    <View style={{width:'15%'}}>
-                    </View>
-                    <View style={{width:'60%'}}>
-                      <Text style={{fontSize:18}}>{item.director} epale</Text>
-                    </View>
+                    
                     
                   </View>
                   
@@ -35,7 +67,7 @@ class FlatListChat extends Component{
               
           )}
           /> 
-        </View>
+        </Container>
         )
     }
 }
@@ -100,7 +132,7 @@ const styles = StyleSheet.create ({
    listChat: {
       width:'100%',
       height:80,
-      borderBottomColor:'#000',
+      borderBottomColor:'#DCDCDC',
       borderBottomWidth:1,
       justifyContent:'center'
    },
