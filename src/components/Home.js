@@ -231,6 +231,7 @@ class Home extends React.Component {
   }
 }
 export default withNavigation(Home);
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,

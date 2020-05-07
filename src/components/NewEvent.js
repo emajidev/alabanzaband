@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Text,View,TouchableHighlight,Modal,FlatList,AsyncStorage} from "react-native";
+import { Text, View, TouchableHighlight, Modal, FlatList, AsyncStorage } from "react-native";
 import {
   Container,
   Header,
@@ -7,7 +7,7 @@ import {
   Form,
   Item,
   Input,
-  Button,
+  Button, Spinner
 } from "native-base";
 import { ListItem, Left, Icon, Body, Right, Switch } from "native-base";
 import { withGlobalContext } from './UserContext';
@@ -15,12 +15,14 @@ import DatePicker from "react-native-datepicker";
 import Icon2 from 'react-native-vector-icons/FontAwesome';
 import SelectFriends from './SelectFriends';
 import SelectSongs from './SelectSongs'
-import {pushEvent} from './functions/functionsFirebase'
+import { pushEvent } from './functions/functionsFirebase'
 
 class Date_picker extends Component {
   constructor(props) {
     super(props);
-    this.state = { date: '' };
+    this.state = {
+      date: '',
+    };
   }
 
   handlePress = () => {
@@ -50,7 +52,7 @@ class Date_picker extends Component {
     this.currentDate()
 
   }
-  
+
   render() {
     const iconDatePicker = this.props.icon;
     const formatChange = this.props.formatChange
@@ -60,13 +62,13 @@ class Date_picker extends Component {
 
       <DatePicker
         date={this.state.date}
-        style={{ 
-          width:140,
-          marginLeft:65,
+        style={{
+          width: 140,
+          marginLeft: 65,
           shadowColor: '#fff',
-            shadowRadius: 0,
-            shadowOpacity: 1,
-            shadowOffset: { height: 0, width: 0 },
+          shadowRadius: 0,
+          shadowOpacity: 1,
+          shadowOffset: { height: 0, width: 0 },
         }}
         format={formatChange}
         minDate={this.state.dateCurrent}
@@ -93,9 +95,9 @@ class Date_picker extends Component {
           },
           dateInput: {
             borderWidth: 0,
-            alignItems:'flex-start',
-            borderBottomWidth:1,
-            borderBottomColor:'#50e2c3ff'
+            alignItems: 'flex-start',
+            borderBottomWidth: 1,
+            borderBottomColor: '#50e2c3ff'
           }
 
 
@@ -130,11 +132,12 @@ class NewEvent extends Component {
       token: '',
       title: '',
       note: '',
-      friends:'',
+      friends: '',
       songs: [],
       groups: [],
       modalVisible: false,
-      modalMod:'',
+      modalMod: '',
+      uploadEvent: false
 
     }
   }
@@ -174,8 +177,7 @@ class NewEvent extends Component {
 /*     console.log(reformat);
  */ return reformat
   }
-  handleTask() {
-
+  postEvent() {
     let dateStart = this.reformat(this.state.dateStart);
     let dateEnd = this.reformat(this.state.dateEnd);
     let colorTag = this.state.colorTag;
@@ -187,31 +189,30 @@ class NewEvent extends Component {
     let uid = this.state.token;
 
     console.log("toke", this.state.token, colorTag)
-    let task = {
-      [dateStart]: {
-        periods: [
-          { startingDay: true, endingDay: false, color: '#ffa500' },
-        ]
-      },
-      [dateEnd]: {
-        periods: [
-          { startingDay: false, endingDay: true, color: '#ffa500' },
-        ]
-
-      },
-
-    }
     /* let jsonTask=JSON.stringify(task) */
-    console.log("data",title, dateStart, dateEnd, colorTag, uid, note, friends, "songs", "groups")
+    console.log("data", title, dateStart, dateEnd, colorTag, uid, note, friends, "songs", "groups")
     const members = this.props.global.friends
-    let event = {title:title, dateStart:dateStart, dateEnd:dateEnd, colorTag:colorTag,uid:uid,note:note,members:friends,songs:"songs", groups:"groups"}
+    let event = { title: title, dateStart: dateStart, dateEnd: dateEnd, colorTag: colorTag, uid: uid, note: note, members: friends, songs: "songs", groups: "groups" }
     this.props.global.setCalendar(true)
-   
-    this.props.navigation.navigate("Home")
-    
+
+
+
     const yourEmail = this.props.global.account
-    pushEvent(yourEmail, members, event)
-    
+    let push = pushEvent(yourEmail, members, event)
+      .then((resolve) => {
+        this.setState({ uploadEvent: false })
+
+        resolve(this.props.navigation.navigate("Home"))
+
+      })
+  }
+  handleTask() {
+    this.setState({ uploadEvent: true })
+    setTimeout(() => {
+      this.postEvent()
+    }, 200);
+
+
   }
 
   handleColorTag(color) {
@@ -223,7 +224,7 @@ class NewEvent extends Component {
   setModalVisible(visible) {
     this.setState({ modalVisible: visible });
   }
-  
+
   render() {
     const switchState = this.state.switch
     const formatChange = this.state.formatChange
@@ -233,28 +234,39 @@ class NewEvent extends Component {
 
     return (
       <Container>
+        {this.state.uploadEvent ?
+          (<View
+            style={{
+              flex: 1,
+              width: "100%",
+              height: "100%",
+              justifyContent: "center",
+              alignItems: "center",
+              position: "absolute",
+              zIndex: 2,
+              left: 0,
+              right: 0,
+              backgroundColor: "#ffffffcd"
+            }}
+          >
+            <Spinner color="rgba(80,227,194,1)" />
+          </View>) : (console.log("en curso"))
+        }
         <Modal
           visible={this.state.modalVisible}
           onRequestClose={() => {
             this.setModalVisible(false)
           }}>
           <View style={{ marginTop: 22 }}>
-            <View>
-              {/* <Text>Elige tus integrantes</Text> */}
 
-           {/*    <TouchableHighlight
-                onPress={() => {
-                  this.setModalVisible(!this.state.modalVisible);
-                }}>
-                <Text>volver</Text>
-              </TouchableHighlight> */}
+            <View>
               {this.state.modalMod == 'integrantes' ? (
-                  <SelectFriends  />
-                ):(
-                  <SelectSongs/>
+                <SelectFriends />
+              ) : (
+                  <SelectSongs />
                 )
               }
-             
+
             </View>
           </View>
         </Modal>
@@ -333,25 +345,7 @@ class NewEvent extends Component {
               />
             </Right>
           </ListItem>
-     {/*      <ListItem icon>
-            <Left>
-              <Button
-                trasnparent
-                style={{ backgroundColor: "#fff", elevation: 0 }}
-              >
-                <Icon
-                  size={30}
-                  style={{ color: "#50e2c3ff" }}
-                  name="ios-repeat"
-                />
-              </Button>
-            </Left>
-            <Body>
-              <Text>Sin repeticion</Text>
-            </Body>
-            <Right></Right>
-          </ListItem> */}
-          <ListItem icon style={{height:50}}>
+          <ListItem icon style={{ height: 50 }}>
             <Left>
               <Button
                 trasnparent
@@ -363,34 +357,34 @@ class NewEvent extends Component {
                   name="md-contacts"
                 />
               </Button>
-          
-            </Left>
-       
-            <Body>
-            <Button transparent onPress={()=>{
-              this.setModalVisible(true)
-              this.setState({modalMod:'integrantes'})
-              }}>
-              <Text>Integrantes</Text>
-              
-            </Button>
-            </Body>
-            
-            
-          </ListItem>
-          <View  style={{height:50,width:'100%'}}>
-              <FlatList
-              style={{height:50,width:'100%',marginLeft:20}}
-                        horizontal
-                        showsHorizontalScrollIndicator={false}
-                        data={friends}
-                        enableEmptySections={true}
-                        renderItem={({ item, index }) => (
-                            <Text style={{margin:10,fontSize:10}}>{item}</Text>
-                        )}
 
-                    />
-              </View>
+            </Left>
+
+            <Body>
+              <Button transparent onPress={() => {
+                this.setModalVisible(true)
+                this.setState({ modalMod: 'integrantes' })
+              }}>
+                <Text>Integrantes</Text>
+
+              </Button>
+            </Body>
+
+
+          </ListItem>
+          <View style={{ height: 50, width: '100%' }}>
+            <FlatList
+              style={{ height: 50, width: '100%', marginLeft: 20 }}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              data={friends}
+              enableEmptySections={true}
+              renderItem={({ item, index }) => (
+                <Text style={{ margin: 10, fontSize: 10 }}>{item}</Text>
+              )}
+
+            />
+          </View>
           <ListItem icon>
             <Left>
               <Button
@@ -405,12 +399,12 @@ class NewEvent extends Component {
               </Button>
             </Left>
             <Body>
-            <Button transparent onPress={()=>{
-              this.setModalVisible(true)
-              this.setState({modalMod:'canciones'})
+              <Button transparent onPress={() => {
+                this.setModalVisible(true)
+                this.setState({ modalMod: 'canciones' })
               }}>
-              <Text>Canciones</Text>
-            </Button>
+                <Text>Canciones</Text>
+              </Button>
             </Body>
             <Right></Right>
           </ListItem>
@@ -488,7 +482,7 @@ class NewEvent extends Component {
             </Button>
 
           </ListItem>
-         
+
         </Content>
       </Container>
     );
