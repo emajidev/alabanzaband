@@ -5,14 +5,14 @@ import CalendarTimeline from './calendar/CalendarTimeline';
 
 import { withGlobalContext } from './UserContext';
 import { db } from './firebase.js';
-import {PreloadContacts} from './preload/PreloadComponents'
+import { PreloadContacts } from './preload/PreloadComponents'
 const Preload = () => (
   <PreloadContacts />
 );
 class CalendarEvents extends Component {
   state = {
     text: '',
-
+   
 
   };
   constructor(props) {
@@ -20,7 +20,9 @@ class CalendarEvents extends Component {
     this._isMounted = false;
 
     this.state = {
-      items: false,
+      items: null,
+      waitTime: false,
+      loadEvents: false
     }
   }
   componentWillUnmount() {
@@ -35,13 +37,13 @@ class CalendarEvents extends Component {
     console.log("cuenta", account)
     try {
       let itemsRef = db.ref('/users/user' + account + '/events');
-        itemsRef.on('value', snapshot => {
+      itemsRef.on('value', snapshot => {
         let data = snapshot.val();
-        if(data != null){
+        if (data != null) {
           let items = Object.values(data);
-          this.setState({ items:items });
+          this.setState({ items: items });
         }
-  
+
         console.log("contactos descargados")
 
       })
@@ -52,36 +54,52 @@ class CalendarEvents extends Component {
 
     }
   }
- async componentDidMount() {
+  async componentDidMount() {
     this.getData()
     setTimeout(() => {
-        this.getData();
-      }, 1000);
+      this.getData();
+      this.setState({ waitTime: true })
+      this.checkLoad()
 
+      
+    }, 1000);
+  }
+  checkLoad() {
+    if (this.state.items == null) {
+      if (this.state.items == null && this.state.waitTime) {
+        console.log("loadEvent activado")
+        this.setState({ loadEvents: true })
+      } else {
+        console.log("loadEvent falso")
+
+        this.setState({ loadEvents: false })
+      }
+
+     
     }
+  }
 
-  
 
   render() {
-    console.log("contactos ", this.state.items)
+    console.log("contactos ", this.state.loadEvents)
+    const empty = { title: '', dateStart: '', dateEnd: '', colorTag: '', uid: '', note: '', members: '', songs: '', groups: '' }
+
     return (
 
       <View style={styles.container}>
-        {this.state.items != false ? (
+        {this.state.loadEvents != false ? (
           <View>
-          {
-            this.state.items != null ? (
+            {
+              this.state.items != null ? (
                 <View style={styles.cont}>
-                <CalendarTimeline items={this.state.items} />
-
+                  <CalendarTimeline items={this.state.items} />
                 </View>
-            ) : (
-                <View style={styles.cont}>
-                  <Text style={{ margin: 10 ,color:'#A0A0A0'}}>No hay data</Text>
-
-                </View>
-              )
-          }
+              ) : (
+                  <View style={styles.cont}>
+                  <CalendarTimeline items={this.state.items} />
+                  </View>
+                )
+            }
           </View>
         ) : (
             <SafeAreaView style={styles.cont}>

@@ -1,9 +1,5 @@
 {
   "expo": {
-    "androidStatusBar": {
-      "backgroundColor": "#fff",
-      "barStyle": "dark-content"
-    },
     "name": "alabanzaband",
     "slug": "alabanzaband-app",
     "privacy": "public",

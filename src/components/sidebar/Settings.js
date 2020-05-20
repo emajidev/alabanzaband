@@ -59,11 +59,21 @@ export default class Settings extends Component {
       <Container>
         <Content>
           <List>
-            <ListItem>
-              <Text>Simon Mignolet</Text>
+          <ListItem>
+              <Text>Actualizaciones</Text>
+          </ListItem>
+          <ListItem>
+              <Text>Descargas en segundo plano</Text>
+          </ListItem>
+          <ListItem>
+              <Text>Alertas</Text>
             </ListItem>
             <ListItem>
-              <Text>Nathaniel Clyne</Text>
+              <Text>Notificaciones</Text>
+            </ListItem>
+            
+            <ListItem>
+              <Text>Tema</Text>
             </ListItem>
             <ListItem>
             <Grid padder>

@@ -33,16 +33,14 @@ class Options extends Component {
           }}>
             <Text>Añadir Canciones</Text>
           </Button>
-          <Button transparent onPress={() => this.logOut()}>
-            <Text>Crear grupos</Text>
-          </Button>
           <Button transparent onPress={() =>
             this.props.navigation.navigate('ListChat')
           }>
             <Text>Chats</Text>
           </Button>
           <Button transparent onPress={() => this.logOut()}>
-            <Text>cerrar sesion</Text>
+            <Text style={{ color: '#000' ,fontSize: 16,fontWeight:'bold'}}
+            >cerrar sesion</Text>
           </Button>
           {/*      <Button transparent onPress={()=> delete_all_todo()}>
             <Text>borrar bd task</Text>

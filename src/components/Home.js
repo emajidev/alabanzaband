@@ -7,11 +7,11 @@ import {
   TouchableOpacity,
   AsyncStorage,
   Alert,
-  TouchableHighlight,SafeAreaView
+  TouchableHighlight, SafeAreaView
 } from "react-native";
 
 import { YellowBox } from "react-native";
-
+import Notifications from "./notification/Notifications"
 import List from "./List";
 import CalendarEvents from "./CalendarEvents";
 import ListNotification from "./ListNotification";
@@ -23,12 +23,12 @@ import { select_avatarUri } from './SqliteDateBase'
 
 import { withNavigation } from "react-navigation";
 import * as firebase from "firebase/app";
-let itemsRef = db.ref("/songs");
+
 import { db } from "./firebase.js";
 
 import getTheme from "../../native-base-theme/components";
 
-import {PreloadContacts} from './preload/PreloadComponents'
+import { PreloadContacts } from './preload/PreloadComponents'
 const Preload = () => (
   <PreloadContacts />
 );
@@ -81,23 +81,23 @@ class Home extends React.Component {
     this.lastId = 0;
   }
 
-
+  
   songsBd() {
+    let itemsRef = db.ref("/songs");
     itemsRef.on("value", snapshot => {
       let data = snapshot.val();
       if (data !== null) {
         let songs = Object.values(data);
         this.setState({ songs });
-        console.log("cancions", songs);
       }
     });
   }
+ 
   componentDidMount() {
     const user = this.context;
     this.setState({ context: user });
-    console.log("context", user); // { name: 'Tania', loggedIn: true }
+    //.log("context", user); // { name: 'Tania', loggedIn: true }
     this.songsBd();
-
 
   }
   closeDrawer() {
@@ -177,6 +177,8 @@ class Home extends React.Component {
                   </TabHeading>
                 }
               >
+                {/* //component A  */}
+
                 <CalendarEvents />
               </Tab>
               <Tab
@@ -186,6 +188,8 @@ class Home extends React.Component {
                   </TabHeading>
                 }
               >
+                {/* //component B */}
+
                 <ListNotification />
               </Tab>
               <Tab
@@ -204,6 +208,8 @@ class Home extends React.Component {
                   </TabHeading>
                 }
               >
+                {/*  //component C  */}
+
                 {this.state.songs != null ? (<List songs={this.state.songs} />) :
                   (
                     <SafeAreaView style={styles.cont}>
@@ -221,6 +227,8 @@ class Home extends React.Component {
                   </TabHeading>
                 }
               >
+                {/* //component D   */}
+
                 <Contacts theme={user.theme} />
               </Tab>
             </Tabs>

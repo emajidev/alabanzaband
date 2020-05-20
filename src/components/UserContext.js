@@ -1,22 +1,30 @@
 import React, { Component } from 'react'
 import turquesa from '../../native-base-theme/variables/turquesa';
-import {AsyncStorage } from 'react-native';
+import { AsyncStorage } from 'react-native';
 import md5 from 'md5';
 
 const UserContext = React.createContext(true)
 
 class UserProvider extends Component {
   async componentDidMount() {
-   await this.getStore();
+    await this.getStore();
+    this.songsBd()
   }
 
-  getUriCache(email){
-    console.log("vacio",email)
-    
-
-
-}
-
+  getUriCache(email) {
+    console.log("vacio", email)
+  }
+  songsBd() {
+    let itemsRef = db.ref("/songs");
+    itemsRef.on("value", snapshot => {
+      let data = snapshot.val();
+      if (data !== null) {
+        let songs = Object.values(data);
+        this.setState({ songsItems: songs });
+        console.log("canciones", songs)
+      }
+    });
+  }
   getStore = async () => {
     console.log("store llamado");
     try {
@@ -25,9 +33,9 @@ class UserProvider extends Component {
         // We have data!!
         let data = JSON.parse(value)
         let userMd5 = md5(data.user)
-        this.setState({ account:userMd5 });
-        this.setState({ friends:[data.user] });
-       
+        this.setState({ account: userMd5 });
+        this.setState({ friends: [data.user] });
+
       } else {
         console.log("nullstore");
       }
@@ -38,14 +46,15 @@ class UserProvider extends Component {
   // Context state
   state = {
     user: {
-        name:'',
-        theme:turquesa,
+      name: '',
+      theme: turquesa,
     },
-    calendar:false,
-    friends:[],
-    songs:[],
-    temporalGroup:''
-    
+    calendar: false,
+    friends: [],
+    songs: [],
+    temporalGroup: '',
+    songsItems:[]
+
   }
 
   // Method to update state
@@ -59,18 +68,30 @@ class UserProvider extends Component {
     this.setState(prevState => ({ temporalGroup }))
   }
   setFriends = friends => {
-    
-    friends.map((email)=>{
+
+    friends.map((email) => {
       this.state.friends.push(email)
-    }) 
-    Array.prototype.unique=function(a){
-      return function(){return this.filter(a)}}(function(a,b,c){return c.indexOf(a,b+1)<0
+    })
+    Array.prototype.unique = function (a) {
+      return function () { return this.filter(a) }
+    }(function (a, b, c) {
+      return c.indexOf(a, b + 1) < 0
     });
-    let newArray  = this.state.friends.unique()
-    this.setState(prevState => ({ friends:newArray}))
+    let newArray = this.state.friends.unique()
+    this.setState(prevState => ({ friends: newArray }))
   }
+
   setSongs = songs => {
-    this.setState(prevState => ({ songs }))
+    songs.map((item) => {
+      this.state.songs.push(item)
+    })
+    Array.prototype.unique = function (a) {
+      return function () { return this.filter(a) }
+    }(function (a, b, c) {
+      return c.indexOf(a, b + 1) < 0
+    });
+    let newArray = this.state.songs.unique()
+    this.setState(prevState => ({ songs: newArray }))
   }
 
   render() {
@@ -83,13 +104,13 @@ class UserProvider extends Component {
     const temporalGroup = this.state.temporalGroup
     return (
       <UserContext.Provider
-         value={{
+        value={{
           ...this.state,
           setUser: this.setUser,
-          setCalendar:this.setCalendar,
-          setFriends:this.setFriends,
-          setSongs:this.setFriends,
-          setTemporalGroup:this.setTemporalGroup,
+          setCalendar: this.setCalendar,
+          setFriends: this.setFriends,
+          setSongs: this.setSongs,
+          setTemporalGroup: this.setTemporalGroup,
           calendar,
           friends,
           songs,
@@ -106,10 +127,10 @@ class UserProvider extends Component {
 const withGlobalContext = ChildComponent => props => (
   <UserContext.Consumer>
     {
-      context => <ChildComponent {...props} global={context}  />
+      context => <ChildComponent {...props} global={context} />
     }
   </UserContext.Consumer>
 );
 export default UserContext
 
-export { UserProvider, withGlobalContext}
+export { UserProvider, withGlobalContext }

@@ -1,13 +1,10 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet,StatusBar ,ActivityIndicator,AsyncStorage,ScrollView} from 'react-native';
+import { View, StyleSheet,StatusBar ,ActivityIndicator,AsyncStorage,ScrollView} from 'react-native';
 import NotificationComponent from './NotificationComponent';
 import GroupComponent from './GroupComponent'
 import { db } from './firebase.js';
-import HeaderStandar from './HeaderStandar.js';
-import {ThemeContext, themes} from './conext/theme-context';
-import {ThemeProvider} from 'styled-components/native'
-import {TouchableOpacity} from 'react-native-gesture-handler';
 
+import { Container, Header, Tab, Tabs, TabHeading, Icon, Text } from 'native-base';
 
 
 let user;
@@ -152,42 +149,19 @@ render() {
     
 
     return (
-     
-      <View style={styles.container}>
-        <View style={styles.navbar}>
-          <View style={{width:'33%'}}>
-          <TouchableOpacity  
-          style={styles.button}
-          onPress={()=>this.setState({option:'recived'})}
-          >
-            <Text>Recibidos</Text>
-          </TouchableOpacity>
-          </View>
-          <View style={{width:'33%'}}>
-          <TouchableOpacity  
-          style={styles.button}
-          onPress={()=>this.setState({option:'groups'})}
-          >
-            <Text>Bandas</Text>
-          </TouchableOpacity>
-          </View>
-          <View style={{width:'33%'}}>
-          <TouchableOpacity  
-          style={styles.button}
-          onPress={()=>this.setState({option:'sent'})}
-          >
-            <Text>Enviados</Text>
-          </TouchableOpacity>
-          </View>
-        </View>
-        {(this.state.option =='recived')?(
+      <Container>
+      <Tabs>
+        <Tab heading={ <TabHeading><Icon name="ios-arrow-down" /><Text>Reicibidos</Text></TabHeading>}>
           <In_Notifications notifications={this.state.notifications_recived}/>
-        ):(this.state.option =='sent')?(
+        </Tab>
+        <Tab heading={ <TabHeading><Icon name="ios-arrow-up" /><Text>Enviados</Text></TabHeading>}>
           <Out_Notifications notifications={this.state.notifications_sent}/>
-        ):
-        (<Groups notifications={this.state.groups}/>)
-        }
-        </View>
+        </Tab>
+        <Tab heading={ <TabHeading><Icon name="md-contacts" /><Text>Grupos</Text></TabHeading>}>
+          <Groups notifications={this.state.groups}/>
+        </Tab>
+      </Tabs>
+    </Container>
     );
   }
 }

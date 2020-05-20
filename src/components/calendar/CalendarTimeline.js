@@ -3,31 +3,35 @@ import moment from "moment";
 import { FlatGrid } from 'react-native-super-grid';
 import { StyleSheet, View, FlatList, Text, Dimensions } from "react-native";
 
-const configLocal = {
-    dayNamesShort: ["Dom.", "Lun.", "Mar.", "Mie.", "Jue.", "Vie.", "Sab."],
-};
-var cells = ''
 class CalendarTimeline extends React.Component {
     constructor(props) {
 
         super(props);
         this.state = {
-            cells:[]
+            cells: []
         };
-  
-     }
-   
+
+    }
+
 
     componentDidMount() {
-        this.giveFormat(this.props.items)
-        console.log("props2",this.props.items)
-        
+
+        if (this.props.items !== null) {
+            console.log("nulo cell")
+            this.giveFormat(this.props.items)
+
+        } else {
+            this.showCells()
+        }
+
+        //console.log("props2",this.props.items)
+
     }
     giveFormat(events) {
-        console.log("llego", events)
+        //console.log("llego", events)
         let newObj = []
         events.map((item) => {
-            console.log("llego", item.event)
+            // console.log("llego", item.event)
 
             let dateStart = {
                 title: item.event.title,
@@ -45,13 +49,15 @@ class CalendarTimeline extends React.Component {
             }
             newObj.push(dateStart, dateEnd)
         })
-        console.log("nuevo elemento formateado", newObj)
-        if(newObj.length >0){
-            console.log("ejecucion",newObj)
-        this.orderEvents(newObj)
-        this.showCells()
-        this.dataLine(newObj)
+        //console.log("nuevo elemento formateado", newObj)
+        if (newObj.length > 0) {
+            //console.log("ejecucion",newObj)
+            this.showCells()
+            this.orderEvents(newObj)
+
+            this.dataLine(newObj)
         }
+
 
     }
     generateDates(monthToShow = moment()) {
@@ -68,11 +74,13 @@ class CalendarTimeline extends React.Component {
     showCells() {
         this.state.cells = this.generateDates(moment())
         //validation
-        console.log("celdas", this.state.cells)
+        //console.log("celdas", this.state.cells)
         if (this.state.cells === null) {
             console.log("error no es posible generar fechas")
             return
         }
+
+
     }
     convertDate(dateEvent) {
         let s = dateEvent.split('-')
@@ -96,25 +104,25 @@ class CalendarTimeline extends React.Component {
         }
     }
     orderEvents(events) {
-        console.log("orden de ventos",events)
+        // console.log("orden de ventos",events)
         let findStartFilter = events.filter(start => start.type === 'start');
-        console.log("findStartFilter",findStartFilter)
+        // console.log("findStartFilter",findStartFilter)
         let findStart = findStartFilter.sort(function (a, b) { if (a > b) return 1; return a.date < b.date ? -1 : 0 });
         //console.log("findStart3", findStart)
-        console.log("findStart",findStart)
+        // console.log("findStart",findStart)
 
         let orderPrority = []
         findStart.map(a => { let b = orderPrority.push(a), c = events.filter(b => b.key == a.key); c.map(b => { "start" != b.type && b.key == a.key && orderPrority.push(b) }) });
         //console.log("ordenamiento de prioridad", orderPrority)
         let ordered_events = orderPrority
-        console.log("ordered_events",ordered_events)
+        // console.log("ordered_events",ordered_events)
 
         return ordered_events
 
     }
     dataLine(events) {
         let ordered_events = this.orderEvents(events)
-        console.log("ordered_events2",ordered_events)
+        // console.log("ordered_events2",ordered_events)
         let listDates = []
         Array.prototype.unique = function (a) {
             return function () { return this.filter(a) }
@@ -126,7 +134,7 @@ class CalendarTimeline extends React.Component {
             let newDate = event.date
             listDates.push(newDate)
         })
-        console.log("listDates",listDates)
+        // console.log("listDates",listDates)
         let uniqueEvent = listDates.unique().sort()
         let newListEvent = []
         uniqueEvent.map(a => { var b = ordered_events.filter(b => -1 !== b.date.toLowerCase().indexOf(a.toLowerCase())); let c = []; b.map(a => { d = { color: a.color, title: a.title, type: a.type, key: a.key }, c.push(d) }); let d = { dateLine: c, date: a }; newListEvent.push(d) });
@@ -140,11 +148,11 @@ class CalendarTimeline extends React.Component {
     }
     corrector(listDateLines) {
         let n = 0; this.state.cells.map(a => { "" != a.dateLines && a.dateLines[0].map((b, c) => { if (b != null) { if ("" != listDateLines && listDateLines.pos != c && listDateLines.item.key == b.key) for (let b = { color: "#fff" }; n < listDateLines.pos;)n++ , a.dateLines[0].unshift(b); listDateLines = { item: b, pos: c } } }) });
-        console.log("listDateLines3",this.state.cells)
-        this.setState({cells:this.state.cells})
-    }   
+        // console.log("listDateLines3",this.state.cells)
+        this.setState({ cells: this.state.cells })
+    }
     render() {
-        console.log("correcion2",cells)
+        // console.log("correcion2",cells)
         const deviceDisplay = Dimensions.get("window");
         const deviceHeight = deviceDisplay.height;
         const deviceWidth = deviceDisplay.width;

@@ -170,30 +170,30 @@ export default {
   // FooterTab
   tabBarTextColor: platform === PLATFORM.IOS ? '#737373' : '#bfc6ea',
   tabBarTextSize: platform === PLATFORM.IOS ? 14 : 11,
-  activeTab: platform === PLATFORM.IOS ? '#007aff' : '#fff',
-  sTabBarActiveTextColor: '#007aff',
-  tabBarActiveTextColor: platform === PLATFORM.IOS ? '#2874F0' : '#fff',
-  tabActiveBgColor: platform === PLATFORM.IOS ? '#cde1f9' : '#3F51B5',
+  activeTab: platform === PLATFORM.IOS ? '#ffff' : '#000',
+  sTabBarActiveTextColor: '#fff',
+  tabBarActiveTextColor: platform === PLATFORM.IOS ? '#fff' : '#000',
+  tabActiveBgColor: platform === PLATFORM.IOS ? '#cde1f9' : '#fff',
 
   // Header
-  toolbarBtnColor: platform === PLATFORM.IOS ? '#007aff' : '#fff',
-  toolbarDefaultBg: platform === PLATFORM.IOS ? '#F8F8F8' : '#3F51B5',
+  toolbarBtnColor: platform === PLATFORM.IOS ? '#fff' : '#000',
+  toolbarDefaultBg: platform === PLATFORM.IOS ? '#000' : '#ffff',
   toolbarHeight: platform === PLATFORM.IOS ? 64 : 56,
   toolbarSearchIconSize: platform === PLATFORM.IOS ? 20 : 23,
   toolbarInputColor: platform === PLATFORM.IOS ? '#CECDD2' : '#fff',
   searchBarHeight: platform === PLATFORM.IOS ? 30 : 40,
   searchBarInputHeight: platform === PLATFORM.IOS ? 30 : 50,
-  toolbarBtnTextColor: platform === PLATFORM.IOS ? '#007aff' : '#fff',
+  toolbarBtnTextColor: platform === PLATFORM.IOS ? '#ffff' : '#000',
   iosStatusbar: 'dark-content',
-  toolbarDefaultBorder: platform === PLATFORM.IOS ? '#a7a6ab' : '#3F51B5',
+  toolbarDefaultBorder: platform === PLATFORM.IOS ? '#000' : '#ffff',
   get statusBarColor() {
     return color(this.toolbarDefaultBg)
-      .darken(0.2)
+      .darken(1)
       .hex();
   },
   get darkenHeader() {
     return color(this.tabBgColor)
-      .darken(0.03)
+      .darken(1)
       .hex();
   },
 

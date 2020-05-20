@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { Container, Header, Title,Text, Button, Left, Right, Body, Icon, Label, StyleProvider, Content, Form, Item, Input } from 'native-base';
-import { Alert,StatusBar,StyleSheet } from 'react-native'
+import { Container, Header, Title,Text, Button, Left, Right, Body, Icon, Label, Spinner, Content, Form, Item, Input } from 'native-base';
+import { Alert,StatusBar,StyleSheet ,View} from 'react-native'
 
 import UserContext from "../UserContext";
 import getTheme from "../../../native-base-theme/components";
@@ -18,7 +18,9 @@ class AddContacts extends Component {
          name:'',
          phone:'',
          band:'',
-         next:false
+         next:false,
+         uploadEvent: false
+
       };
 
    }
@@ -47,8 +49,15 @@ class AddContacts extends Component {
  };
    handleNext(email){
       if (this.validateEmail(email)) {
-         this.addItem(this.state.userName , this.state.name,this.state.phone,this.state.band);
-         alert('Notification saved successfully');
+         this.setState({ uploadEvent: true })
+         setTimeout(() => {
+           let pushContact = this.addItem(this.state.userName , this.state.name,this.state.phone,this.state.band)
+           .then((resolve) => {
+            this.setState({ uploadEvent: false })
+            resolve(this.props.navigation.goBack())
+          })
+         }, 200);
+      
 
       }else{
          Alert.alert("Formato de correo invalido")
@@ -67,6 +76,24 @@ class AddContacts extends Component {
       return (
          
          <Container>
+          {this.state.uploadEvent ?
+          (<View
+            style={{
+              flex: 1,
+              width: "100%",
+              height: "100%",
+              justifyContent: "center",
+              alignItems: "center",
+              position: "absolute",
+              zIndex: 2,
+              left: 0,
+              right: 0,
+              backgroundColor: "#ffffffcd"
+            }}
+          >
+            <Spinner color="rgba(80,227,194,1)" />
+          </View>) : (console.log("en curso"))
+        }
             <Header >
                <Left>
                   <Button transparent

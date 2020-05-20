@@ -25,7 +25,6 @@ import ShowProfile from './src/components/profile/ShowProfile.js'
 import AdminDashboard from './src/components/admin/AdminDashboard.js'
 import Suggestion from './src/components/Suggestion.js'
 import ShowSuggestion from './src/components/admin/ShowSuggestion.js'
-import Categories from './src/components/Categories.js'
 import Search from './src/components/Search.js'
 import NewEvent from './src/components/NewEvent.js'
 import Chat from './src/components/chat/Chat.js'
@@ -38,7 +37,6 @@ const AppNavigator = createStackNavigator(
   Home:{screen:Home},
   AddItem:{screen:AddItem},
   ContentItem:{screen:ContentItem},
-  Categories:{screen:Categories},
   Search:{screen:Search},
   AddNotification:{screen:AddNotification},
   NotificationComponent:{screen:NotificationComponent},

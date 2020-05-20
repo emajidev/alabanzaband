@@ -16,7 +16,6 @@ class CacheImage extends React.Component {
         let uri = this.props.uri
         if (uri != null) {
             const email = this.props.global.account
-
             const name = shorthash.unique(uri)
             console.log("nombre", name)
             const path = FileSystem.cacheDirectory + name
@@ -46,9 +45,6 @@ class CacheImage extends React.Component {
                     .catch(error => {
                         console.error(error);
                     });
-
-
-
             }
         }
     }

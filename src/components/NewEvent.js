@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Text, View, TouchableHighlight, Modal, FlatList, AsyncStorage } from "react-native";
+import { Text, View, TouchableHighlight, Modal, FlatList, AsyncStorage, TouchableOpacity } from "react-native";
 import {
   Container,
   Header,
@@ -14,8 +14,9 @@ import { withGlobalContext } from './UserContext';
 import DatePicker from "react-native-datepicker";
 import Icon2 from 'react-native-vector-icons/FontAwesome';
 import SelectFriends from './SelectFriends';
-import SelectSongs from './SelectSongs'
 import { pushEvent } from './functions/functionsFirebase'
+import SelectSongs from './songs/SelectSongs'
+import { withNavigation } from "react-navigation";
 
 class Date_picker extends Component {
   constructor(props) {
@@ -48,7 +49,9 @@ class Date_picker extends Component {
         date + '/' + month + '/' + year + ' ',
     });
   }
+
   componentDidMount() {
+
     this.currentDate()
 
   }
@@ -130,14 +133,15 @@ class NewEvent extends Component {
       dateEnd: '',
       colorTag: '#50e2c3ff',
       token: '',
-      title: '',
+      title: null,
       note: '',
       friends: '',
       songs: [],
       groups: [],
       modalVisible: false,
       modalMod: '',
-      uploadEvent: false
+      uploadEvent: false,
+      alert: false
 
     }
   }
@@ -192,6 +196,7 @@ class NewEvent extends Component {
     /* let jsonTask=JSON.stringify(task) */
     console.log("data", title, dateStart, dateEnd, colorTag, uid, note, friends, "songs", "groups")
     const members = this.props.global.friends
+    const ListSongs = this.props.global.ListSongs
     let event = { title: title, dateStart: dateStart, dateEnd: dateEnd, colorTag: colorTag, uid: uid, note: note, members: friends, songs: "songs", groups: "groups" }
     this.props.global.setCalendar(true)
 
@@ -201,16 +206,19 @@ class NewEvent extends Component {
     let push = pushEvent(yourEmail, members, event)
       .then((resolve) => {
         this.setState({ uploadEvent: false })
-
         resolve(this.props.navigation.navigate("Home"))
-
       })
   }
   handleTask() {
-    this.setState({ uploadEvent: true })
-    setTimeout(() => {
-      this.postEvent()
-    }, 200);
+    if (this.state.title != null) {
+      this.setState({ uploadEvent: true })
+      setTimeout(() => {
+        this.postEvent()
+      }, 200);
+
+    } else {
+      this.setState({ alert: true })
+    }
 
 
   }
@@ -226,12 +234,12 @@ class NewEvent extends Component {
   }
 
   render() {
+    const songs = this.props.global.songs;
     const switchState = this.state.switch
     const formatChange = this.state.formatChange
     const modeChange = this.state.modeChange
     let friends = this.props.global.friends;
-    console.log("globla props", friends)
-
+    console.log("list select songs", songs)
     return (
       <Container>
         {this.state.uploadEvent ?
@@ -252,17 +260,48 @@ class NewEvent extends Component {
             <Spinner color="rgba(80,227,194,1)" />
           </View>) : (console.log("en curso"))
         }
+        {this.state.alert ?
+          (<View
+            style={{
+              flex: 1,
+              width: "100%",
+              height: "100%",
+              justifyContent: "center",
+              alignItems: "center",
+              position: "absolute",
+              zIndex: 2,
+              left: 0,
+              right: 0,
+              backgroundColor: "#00000080",
+            }}
+          >
+            <View style={{ backgroundColor: '#fff', padding: 20, justifyContent: 'center', alignItems: 'center', borderRadius: 10 }}>
+              <Text  style={{ fontSize: 16}}>Los eventos requieren un titulo !</Text>
+              <Text style={{ marginTop: 10 }}>Por favor asigne uno...</Text>
+
+              <TouchableOpacity
+                style={{ marginTop: 25, }}
+                onPress={() => {
+                  this.setState({ alert: false })
+                }}
+              >
+                <Text style={{ color: '#50e2c3ff' ,fontSize: 16,fontWeight:'bold',borderBottomWidth:1,borderBottomColor:'#50e2c3ff'}}>Entiendo</Text>
+              </TouchableOpacity>
+            </View>
+
+          </View>) : (console.log("en curso"))
+        }
         <Modal
           visible={this.state.modalVisible}
           onRequestClose={() => {
             this.setModalVisible(false)
           }}>
           <View style={{ marginTop: 22 }}>
-
             <View>
-              {this.state.modalMod == 'integrantes' ? (
-                <SelectFriends />
-              ) : (
+              {this.state.modalMod == 'integrantes' ?
+                (
+                  <SelectFriends />
+                ) : (
                   <SelectSongs />
                 )
               }
@@ -372,11 +411,9 @@ class NewEvent extends Component {
 
 
           </ListItem>
-          <View style={{ height: 50, width: '100%' }}>
+          <View style={{ width: '100%' }}>
             <FlatList
-              style={{ height: 50, width: '100%', marginLeft: 20 }}
-              horizontal
-              showsHorizontalScrollIndicator={false}
+              style={{ width: '100%', marginLeft: 20 }}
               data={friends}
               enableEmptySections={true}
               renderItem={({ item, index }) => (
@@ -408,6 +445,18 @@ class NewEvent extends Component {
             </Body>
             <Right></Right>
           </ListItem>
+          <View style={{ width: '100%' }}>
+            <FlatList
+              style={{ width: '100%', marginLeft: 20 }}
+              data={songs}
+              enableEmptySections={true}
+              renderItem={({ item, index }) => (
+                <Text style={{ margin: 10, fontSize: 10 }}>{item}</Text>
+              )}
+
+            />
+
+          </View>
           <ListItem icon>
             <Left>
               <Button
@@ -488,4 +537,4 @@ class NewEvent extends Component {
     );
   }
 }
-export default withGlobalContext(NewEvent);
+export default withNavigation(withGlobalContext(NewEvent));
