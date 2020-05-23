@@ -11,7 +11,6 @@ import {
 } from "react-native";
 
 import { YellowBox } from "react-native";
-import Notifications from "./notification/Notifications"
 import List from "./List";
 import CalendarEvents from "./CalendarEvents";
 import ListNotification from "./ListNotification";

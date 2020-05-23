@@ -7,6 +7,7 @@ import * as firebase from "firebase/app";
 import {AsyncStorage} from 'react-native';
 import { insert_In_avatarUri, select_avatarUri } from './SqliteDateBase';
 import { withGlobalContext } from './UserContext';
+import SendNotifications from './notifications/Notifications'
 
 class Main extends React.Component {
   constructor() {
@@ -72,6 +73,7 @@ class Main extends React.Component {
         {this.state.loading == false
           ? this.Loading()
           : console.log("loading true")}
+        <SendNotifications />
         <Home />
       </UserProvider>
     );

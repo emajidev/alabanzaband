@@ -20,7 +20,6 @@ import ContactsComponent from './src/components/contacts/ContactsComponent.js'
 import ListContacts from './src/components/contacts/ListContacts.js'
 import Contacts from './src/components/contacts/Contacts.js'
 import LocalNotifications from './src/components/LocalNotifications.js'
-import Settings from './src/components/Settings.js'
 import ShowProfile from './src/components/profile/ShowProfile.js'
 import AdminDashboard from './src/components/admin/AdminDashboard.js'
 import Suggestion from './src/components/Suggestion.js'
@@ -56,7 +55,6 @@ const AppNavigator = createStackNavigator(
   Chat:{screen:Chat},
   LocalNotifications:{screen:LocalNotifications},
 
-  Settings:{screen:Settings},
   ShowProfile:{screen:ShowProfile},
   AdminDashboard:{screen:AdminDashboard},
 

@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import { Text, View, TouchableOpacity, StyleSheet,StatusBar,AsyncStorage,TextInput,TouchableHighlight} from 'react-native'
-import {ThemeContext, themes} from './conext/theme-context';
 import {withNavigation} from 'react-navigation';
 import ItemComponent from '../components/ItemComponent';
 

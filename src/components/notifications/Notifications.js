@@ -1,84 +1,110 @@
 import React from 'react';
-import { Text, View, Vibration, AppState, TouchableOpacity } from 'react-native';
-import { Constants, Notifications, Permissions } from 'expo';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { Notifications } from 'expo';
+import { Constants } from 'expo-constants';
 
-async function getiOSNotificationPermission() {
-    const { status } = await Permissions.getAsync(
-        Permissions.NOTIFICATIONS
-    );
-    if (status !== 'granted') {
-        await Permissions.askAsync(Permissions.NOTIFICATIONS);
-    }
-}
+import * as Permissions from 'expo-permissions';
 
-export default class Notifications extends React.Component {
+import { Text, View, Button } from 'react-native';
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            notification: {}
-        }
-    }
+export default class SendNotifications extends React.Component {
 
 
     componentDidMount() {
-        this._notificationSubscription = Notifications.addListener(
-            this._handleNotification
-        );
-        getiOSNotificationPermission();
-        this.listenForNotifications();
+        this.alertIfRemoteNotificationsDisabledAsync()
+        if (Platform.OS === 'android') {
+            Notifications.createChannelAndroidAsync('notifications-messages', {
+              name: 'notifications-messages',
+              sound: true,
+              priority: 'max',
+              vibrate: [0, 250, 250, 250],
+            });
+          }
+          Notifications.createCategoryAsync('categoryNot', [
+            {
+              actionId: 'vanillaButton',
+              buttonTitle: 'Plain Option',
+              isDestructive: false,
+              isAuthenticationRequired: false,
+            },
+            {
+              actionId: 'highlightedButton',
+              buttonTitle: 'Destructive!!!',
+              isDestructive: true,
+              isAuthenticationRequired: false,
+            },
+            {
+              actionId: 'requiredAuthenticationButton',
+              buttonTitle: 'Click to Authenticate',
+              isDestructive: false,
+              isAuthenticationRequired: true,
+            },
+            {
+              actionId: 'textResponseButton',
+              buttonTitle: 'Click to Respond with Text',
+              textInput: { submitButtonTitle: 'Send', placeholder: 'Type Something' },
+              isDestructive: false,
+              isAuthenticationRequired: false,
+            },
+          ]);  
     }
-
-    _handleNotification = notification => {
-        if (AppState.currentState == 'active' && notification.origin === 'received') {
-            Notifications.dismissNotificationAsync(notification.notificationId);
-        } else {
-            Vibration.vibrate()
-            this.setState({ notification: notification });
-        }
-    };
-
-    _handleButtonPress = () => {
-        const localnotification = {
-            title: 'Example Title!',
-            body: 'This is the body text of the local notification',
-            android: {
-                sound: true,
-            },
-            ios: {
-                sound: true,
-            },
-        };
-        let sendAfterFiveSeconds = Date.now();
-        sendAfterFiveSeconds += 5000;
-
-        const schedulingOptions = { time: sendAfterFiveSeconds };
-        let id = Notifications.scheduleLocalNotificationAsync(
-            localnotification,
-            schedulingOptions
-        );
-        this.setState({ id: id });
-        let NotId = this.state.id
-        console.log(NotId._55);
-    };
-    listenForNotifications = () => {
-        Notifications.addListener(notification => {
-            if (notification.origin === 'received' && Platform.OS === 'ios') {
-                Alert.alert(notification.title, notification.body);
-            }
-        });
-    };
-
-    render() {
-        return (
-            <View>
-                <TouchableOpacity
-                    onPress={this._handleButtonPress}
-                >
-                    <Text>Enviar notificacion</Text>
-                </TouchableOpacity>
-                <Text>Push Notifications Sample</Text></View>
-        );
+    async alertIfRemoteNotificationsDisabledAsync() {
+    const { status } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
+    if (status !== 'granted') {
+        alert('Hey! You might want to enable notifications for my app, they are good.');
     }
 }
+
+scheduleNotification = async () => {
+    const localNotification = {
+        title: 'Original Title',
+        body: 'And here is the body!',
+        categoryId:'categoryNot',
+        android: {
+            channelId: 'notifications-messages',
+            vibrate: [0, 250, 250, 250],
+            sound: true,
+            icon: './icon.png',
+
+          },
+          ios: {
+            sound: true
+          }
+
+    };
+
+    const schedulingOptions = {
+        time: (new Date()).getTime() + (500)
+    }
+    const id = await Notifications.scheduleLocalNotificationAsync(localNotification, schedulingOptions)
+    // If you want to react even when your app is still in the
+    // foreground, you can listen to the event like this:
+    Notifications.addListener(() => {
+        console.log('triggered!');
+    });
+};
+
+render() {
+    return (
+        <View
+            style={{
+                flex: 1,
+                alignItems: 'center',
+                justifyContent: 'space-around',
+            }}>
+
+            <Button
+                title={'Press to schedule notification in 2 minutes'}
+                onPress={() => this.scheduleNotification()}
+            />
+        </View>
+    );
+}
+}
+
+/*  TO GET PUSH RECEIPTS, RUN THE FOLLOWING COMMAND IN TERMINAL, WITH THE RECEIPTID SHOWN IN THE CONSOLE LOGS
+
+    curl -H "Content-Type: application/json" -X POST "https://exp.host/--/api/v2/push/getReceipts" -d '{
+      "ids": ["YOUR RECEIPTID STRING HERE"]
+      }'
+
+    */

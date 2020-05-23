@@ -1,22 +1,16 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet,TouchableOpacity,TextInput ,FlatList,  RefreshControl,
 ActivityIndicator} from 'react-native';
-import PropTypes from 'prop-types';
 import {withNavigation} from 'react-navigation';
-import {Container,Songs, Header} from './conext/themes/styled'
 import Icon from 'react-native-vector-icons/Feather';
 import IconLike from 'react-native-vector-icons/AntDesign';
 
-import {ThemeContext, themes} from './conext/theme-context';
-import {ThemeProvider} from 'styled-components/native'
-import PouchDB from 'pouchdb-react-native'
-import { TouchableHighlight } from 'react-native-gesture-handler';
+
 
 class ItemComponent extends React.Component{
 
   constructor(props){
     super(props)
-    this.song_DB = new PouchDB('songs')
 
     this.state={
       songsItems:this.props.items,
@@ -26,54 +20,21 @@ class ItemComponent extends React.Component{
       search_mod:this.props.search_mode
 
     }
-    this.GetData()
 
   }
   componentWillUnmount(){
     this.setState({search_mode:false})
   }
-  componentWillMount(){
-    
-  }
+
   componentDidMount(){
-    this.get_localdb("songs")
     console.log("songs items",this.state.songsItems)
     console.log("props pasado",this.state.search_mod)
 
   }
   
-  GetData = async() => {
-    //Service to get the data from the server to render
-
-    return  await this.get_localdb("songs")
-      .then(() => {
-        this.setState({
-          refreshing: false,
-          //Setting the data source for the list to render
-          dataSource: this.state.songsItems
-        });
-      })
-      .catch(error => {
-        console.error(error);
-      });
-  };
+  
  
 
-  get_localdb=async(name)=>{
-
-/*     try {
-      var doc = await this.song_DB.get('songs');
-      if(doc.data !=undefined){
-   
-       
-        console.log("cargando datos",doc)
-        this.setState({songsItems:doc.data})
-      }
-    } catch (err) {
-      console.log(err);
-    } */
- 
-  }
  async queryPouchDb(doc) {
     var searchterm = "coros";
     var doc = this.song_DB.get('songs');
@@ -121,7 +82,6 @@ class ItemComponent extends React.Component{
   onRefresh() {
     //Clear old data of the list
     this.setState({ dataSource: [] });
-    this.get_localdb("songs")
 
     //Call the Service to get the latest data
    
@@ -132,7 +92,6 @@ class ItemComponent extends React.Component{
 render() {
     /*  filter search coro  */
   if(this.state.songsItems==''){
-    this.GetData()
   return(
     <View>
       <Text>Cargando canciones</Text>
