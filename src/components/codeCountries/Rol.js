@@ -28,22 +28,22 @@ export default class Rol extends React.Component {
     let countries = RolJson;
     return (
       <View style={styles.container}>
-      <Text style={{fontSize:20,marginLeft:15,marginBottom:15,color:"#555"}}>Destreza Musical</Text>
+      <Text style={{fontSize:16,marginLeft:15,marginBottom:15,color:"#555"}}>Destreza Musical</Text>
         <View style={styles.selectRol}>
         
           <Picker
             placeholder="Selecciona tu Rol en la banda" 
             selectedValue={this.state.codeCountry}
-            itemStyle={{ fontSize: 20, textAlign: "center"}}
+            itemStyle={{ fontSize: 15, textAlign: "center"}}
             style={{
               height: 50,
               width: '85%',
-              fontSize: 15,
+              fontSize: 14,
               transform: [{ scaleX: 1.22 }, { scaleY: 1.2 }],
               textAlign: "flex-end",
-              color:this.state.colorSelect, 
+              color:"rgba(80,227,194,1)", 
             }}
-            textStyle={{ fontSize: 20 ,}}
+            textStyle={{ fontSize: 15 ,}}
             onValueChange={(itemValue, itemIndex) => {
               this.setState({ codeCountry: itemValue });
               this.handleChangeRol(itemValue)

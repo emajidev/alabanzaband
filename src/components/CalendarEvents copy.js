@@ -17,8 +17,7 @@ let itemsRef = db.ref("/items");
 import { db } from "./firebase.js";
 import getTheme from "../../native-base-theme/components";
 import { withGlobalContext } from './UserContext';
-import md5 from 'md5';
-
+import Base64 from 'Base64';
 import {
   Container,
   Content,
@@ -303,7 +302,7 @@ class Calendars extends React.Component {
       if (value !== null) {
         // We have data!!
         let data = JSON.parse(value)
-        let userMd5 = md5(data.user)
+        let userMd5 = Base64.btoa(data.user)
         let itemsRef = db.ref('/users/user' + userMd5 + '/' + 'events')
         itemsRef.on('value', snapshot => {
           let data = snapshot.val();
@@ -340,7 +339,7 @@ class Calendars extends React.Component {
   }
   render() {
     console.disableYellowBox = true;
-    let theme = this.props.global.user.theme;
+    let theme = this.props.global.color.theme;
     let task = {
       '2020-04-22': {
         periods: [

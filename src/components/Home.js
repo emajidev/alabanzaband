@@ -13,7 +13,6 @@ import {
 import { YellowBox } from "react-native";
 import List from "./List";
 import CalendarEvents from "./CalendarEvents";
-import ListNotification from "./ListNotification";
 import Contacts from "./contacts/Contacts";
 import Icon2 from "react-native-vector-icons/FontAwesome";
 import ItemComponent from "../components/ItemComponent";
@@ -21,11 +20,12 @@ import IconsV from "react-native-vector-icons/AntDesign";
 import { select_avatarUri } from './SqliteDateBase'
 
 import { withNavigation } from "react-navigation";
-import * as firebase from "firebase/app";
 
+import * as firebase from "firebase/app";
 import { db } from "./firebase.js";
 
 import getTheme from "../../native-base-theme/components";
+import Base64 from 'Base64'
 
 import { PreloadContacts } from './preload/PreloadComponents'
 const Preload = () => (
@@ -47,26 +47,28 @@ import {
   Button,
   Icon,
   Title,
-  Badge,
   FooterTab,
   Footer,
   StyleProvider,
-  Drawer
+  Drawer,
+  Badge
 } from "native-base";
 import { Col, Row, Grid } from "react-native-easy-grid";
 
 import SideBar from "./sidebar/Sidebar";
 import UserContext from "./UserContext";
-
+import ListNotification from "./ListNotification"
 let songsRef = db.ref("/songs");
 var storageRef = firebase.storage().ref();
 var mountainImagesRef = storageRef.child("../img/icon.jpg");
+import { withGlobalContext } from './UserContext';
 
 class Home extends React.Component {
   static contextType = UserContext;
 
   constructor(props) {
     super(props);
+    this.setBadge = this.setBadge.bind(this);
     this.state = {
       tab1: true,
       tab2: false,
@@ -74,13 +76,60 @@ class Home extends React.Component {
       tab4: false,
       context: "",
       songs: null,
-      refreshCalendar: false
+      refreshCalendar: false,
+      infoTask: '',
+      badge: false,
+      text: ''
 
     };
-    this.lastId = 0;
   }
 
-  
+  EventNotificationAlert() {
+    let user = { email: 'emanuelyul@hotmail.com' }
+    console.log("firebase", user)
+    let email
+    if (user != null) {
+      email = user.email;
+      let itemsRef = db.ref('/users/user' + Base64.btoa(email) + '/' + 'events')
+      itemsRef.limitToLast(1).on('child_added', snapshot => {
+        // console.log('A new node has been added2', snapshot.val().director)
+        console.log("child added")
+        this.events(itemsRef)
+      });
+      this.badged(itemsRef)
+     
+
+    }
+  }
+  async events(itemsRef) {
+    let data = []
+    try {
+      itemsRef.orderByChild("dateStart").once('value', snapshot => {
+        snapshot.forEach(child => {
+          //console.log("ordenados2", child.key, child.val());
+          data.push(child.val())
+        })
+        if (data != null) {
+          let obj = Object.values(data)
+          this.setState({ infoTask: obj, badge: true })
+
+        }
+      });
+    } catch (e) {
+
+    }
+
+  }
+  badged(itemsRef) {
+    itemsRef.limitToLast(1).on('child_changed', snapshot => {
+      // console.log('A new node has been added2', snapshot.val().director)
+      this.events(itemsRef)
+
+    });
+
+
+  }
+
   songsBd() {
     let itemsRef = db.ref("/songs");
     itemsRef.on("value", snapshot => {
@@ -91,12 +140,15 @@ class Home extends React.Component {
       }
     });
   }
- 
+
   componentDidMount() {
-    const user = this.context;
-    this.setState({ context: user });
+    console.log("evento comenzo")
+    this.EventNotificationAlert()
+    const color = this.context;
+    this.setState({ context: color });
     //.log("context", user); // { name: 'Tania', loggedIn: true }
     this.songsBd();
+
 
   }
   closeDrawer() {
@@ -114,13 +166,16 @@ class Home extends React.Component {
 
     }
   };
-
+  setBadge(e) {
+    this.setState({ badge: e });
+  }
   render() {
     console.disableYellowBox = true;
-    const { user, setUser, calendar } = this.context;
+    const { color } = this.context;
+    //console.log("evento enviado",this.state.infoTask)
     /*  console.log("props refresh",calendar) */
     return (
-      <StyleProvider style={getTheme(user.theme)}>
+      <StyleProvider style={getTheme(this.props.global.color.theme)}>
         <Drawer
           ref={ref => {
             this.drawer = ref;
@@ -149,8 +204,7 @@ class Home extends React.Component {
                 <Button
                   transparent
                   onPress={() => {
-                    const newUser = { name: "pepe", loggedIn: true };
-                    setUser(newUser);
+                    this.setState({ text: 'hola' })
 
                   }}
                 >
@@ -178,25 +232,30 @@ class Home extends React.Component {
               >
                 {/* //component A  */}
 
-                <CalendarEvents />
+                <CalendarEvents infoTask={this.state.infoTask} text={this.state.text} />
               </Tab>
               <Tab
+                onChangeTab={() => {
+                  this.setBadge(false)
+                }}
                 heading={
                   <TabHeading>
+                    {this.state.badge ? (
+                      <Badge style={{ height: 12 }} />
+                    ) : (
+                        console.log("")
+                      )}
                     <Icon name="md-bookmark" />
                   </TabHeading>
                 }
               >
                 {/* //component B */}
-
-                <ListNotification />
+                <ListNotification infoTask={this.state.infoTask} setBadge={this.setBadge}/>
               </Tab>
               <Tab
-                ref="tab3"
                 heading={
                   <Button transparent onPress={() => this.props.navigation.navigate("NewEvent")}>
-
-                    <Icon style={{ fontSize: 40 }} name="ios-add-circle" />
+                    <Icon style={{ fontSize: 40, color:[this.props.global.color.color] }} name="ios-add-circle" />
                   </Button>
                 }
               ></Tab>
@@ -228,7 +287,7 @@ class Home extends React.Component {
               >
                 {/* //component D   */}
 
-                <Contacts theme={user.theme} />
+                <Contacts theme={this.props.global.color.theme} />
               </Tab>
             </Tabs>
           </Container>
@@ -237,7 +296,7 @@ class Home extends React.Component {
     );
   }
 }
-export default withNavigation(Home);
+export default withGlobalContext(withNavigation(Home));
 
 const styles = StyleSheet.create({
   container: {

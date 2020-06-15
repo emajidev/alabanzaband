@@ -7,7 +7,7 @@ import {
   Form,
   Item,
   Input,
-  Button, Spinner,Footer,FooterTab
+  Button, Spinner, Footer, FooterTab, Thumbnail
 } from "native-base";
 import { ListItem, Left, Icon, Body, Right, Switch } from "native-base";
 import { withGlobalContext } from '../UserContext';
@@ -15,14 +15,31 @@ import DatePicker from "react-native-datepicker";
 import Icon2 from 'react-native-vector-icons/FontAwesome';
 import SelectFriends from '../SelectFriends';
 import { pushEvent } from '../functions/functionsFirebase'
+import { convertTimeStamp } from '../functions/FormatDate'
 import SelectSongs from '../songs/SelectSongs'
-import { withNavigation } from "react-navigation";
+import ModalComponent from '../modalComponent/ModalComponent'
+import { withNavigation } from 'react-navigation';
+import AvatarComponent from '../avatar/AvatarComponent';
+import {showSongs} from '../functions/showSongs'
+import moment from "moment";
+
+var colorTags = [
+  { color: "#50e2c3ff", theme: 'themeA' },
+  { color: "#ff9494", theme: 'themeB' },
+  { color: "#fff694", theme: 'themeC' },
+  { color: "#a4ff94", theme: 'themeD' },
+  { color: "#94c4ff", theme: 'themeE' },
+  { color: "#6047ff", theme: 'themeF' },
+  { color: "#a947ff", theme: 'themeG' },
+  { color: "#ff47f9", theme: 'themeH' },
+  { color: "#ed3169", theme: 'themeI' },
+]
 
 class Date_picker extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      date: '',
+      date: new Date().getDate(),
     };
   }
 
@@ -60,7 +77,7 @@ class Date_picker extends Component {
     const iconDatePicker = this.props.icon;
     const formatChange = this.props.formatChange
     const modeChange = this.props.modeChange
-    console.log("icon", iconDatePicker);
+    console.log("")
     return (
 
       <DatePicker
@@ -74,8 +91,6 @@ class Date_picker extends Component {
           shadowOffset: { height: 0, width: 0 },
         }}
         format={formatChange}
-        minDate={this.state.dateCurrent}
-        maxDate="01-06-2030"
         confirmBtnText="Confirm"
         cancelBtnText="Cancel"
         mode={modeChange}
@@ -83,7 +98,7 @@ class Date_picker extends Component {
         iconComponent={
           <Icon
             size={30}
-            style={{ color: "#50e2c3ff" }}
+            style={{ color: [this.props.colorTag] }}
             name={iconDatePicker}
           />
         }
@@ -100,7 +115,7 @@ class Date_picker extends Component {
             borderWidth: 0,
             alignItems: 'flex-start',
             borderBottomWidth: 1,
-            borderBottomColor: '#50e2c3ff'
+            borderBottomColor: [this.props.colorTag]
           }
 
 
@@ -109,10 +124,11 @@ class Date_picker extends Component {
         ref={component => (this._datePicker = component)}
         locale={"es"}
         onDateChange={date => {
-
           if (this.props.modDate == "start") {
             this.setState({ date: date })
             this.props.respStart(date)
+
+
           } else {
             this.setState({ date: date })
             this.props.respEnd(date)
@@ -124,7 +140,11 @@ class Date_picker extends Component {
 }
 class ScheduleTypeA extends Component {
   constructor() {
-    super()
+    super();
+    this._isMounted = false;
+    this.handleModal = this.handleModal.bind(this)
+    this.setTheme = this.setTheme.bind(this)
+    this.setModalVisible = this.setModalVisible.bind(this)
     this.state = {
       switch: false,
       formatChange: "DD-MM-YYYY ",
@@ -141,9 +161,23 @@ class ScheduleTypeA extends Component {
       modalVisible: false,
       modalMod: '',
       uploadEvent: false,
-      alert: false
-
+      alert: false,
+      dateCurrent: '',
+      modalText: {},
     }
+  }
+  currentDate() {
+    var date = new Date().getDate(); //Current Date
+    var month = new Date().getMonth() + 1; //Current Month
+    var year = new Date().getFullYear(); //Current Year
+    var hours = new Date().getHours(); //Current Hours
+    var min = new Date().getMinutes(); //Current Minutes
+    var sec = new Date().getSeconds(); //Current Seconds 
+    let newDate = ('0' + date).slice(-2) + '-' + ('0' + (month + 1)).slice(-2) + '-' + year
+    this.setState({ dateStart: newDate })
+    this.setState({ dateEnd: newDate })
+
+
   }
   onChangeState(isActive) {
     this.setState({ switch: isActive })
@@ -157,8 +191,14 @@ class ScheduleTypeA extends Component {
     this.setState({ formatChange: format })
     this.setState({ modeChange: mode })
   }
-  handleDateStart = (e) => { this.setState({ dateStart: e }); console.log("fecha de inicio", e) };
-  handleDateEnd = (e) => { this.setState({ dateEnd: e }); console.log("fecha de final", e) };
+  handleDateStart = (e) => {
+    this.setState({ dateStart: e });
+    //console.log("fecha de inicio", this.reformat(e))
+
+  };
+  handleDateEnd = (e) => {
+    this.setState({ dateEnd: e }); //console.log("fecha de final", e)
+  };
 
   generate_token(length) {
     //edit the token allowed characters
@@ -173,73 +213,115 @@ class ScheduleTypeA extends Component {
   }
 
   reformat = (date) => {
-
     var newDate = date.split(" ")[0];
     var format = newDate.split("-");
-    var reformat = format[2] + '-' + format[1] + '-' + format[0]
+    var reformat = format[2] + '-' + (format[1]) + '-' + format[0] + 'T' + '07:00';
+    //console.log("reformat", reformat)
 
-/*     console.log(reformat);
- */ return reformat
+    return reformat
+  }
+  pushEvent(members, event) {
+    const yourEmail = this.props.global.account
+    let push = pushEvent(yourEmail, members, event)
+      .then((resolve) => {
+        this.setState({ uploadEvent: false })
+        resolve(this.props.navigation.goBack())
+
+      })
+  }
+  handleTextModal(advice, comment) {
+    this.setState({
+      modalText: {
+        advice: advice,
+        comment: comment
+      }
+    })
+    this.setState({ alert: true })
   }
   postEvent() {
+    //console.log("state.dateStart", this.state.dateStart)
     let dateStart = this.reformat(this.state.dateStart);
     let dateEnd = this.reformat(this.state.dateEnd);
     let colorTag = this.state.colorTag;
     let title = this.state.title;
     let note = this.state.note;
     let friends = this.state.friends;
-    let songs = this.state.songs;
+    let songs = this.props.global.songs;
     let groups = this.state.groups;
     let uid = this.state.token;
 
-    console.log("toke", this.state.token, colorTag)
-    /* let jsonTask=JSON.stringify(task) */
-    console.log("data", title, dateStart, dateEnd, colorTag, uid, note, friends, "songs", "groups")
+    //console.log("toke", this.state.token, colorTag)
+    //let jsonTask=JSON.stringify(task)
+    //console.log("data", title, dateStart, dateEnd, colorTag, uid, note, friends, "songs", "groups")
     const members = this.props.global.friends
     const ListSongs = this.props.global.ListSongs
-    let event = { title: title, dateStart: dateStart, dateEnd: dateEnd, colorTag: colorTag, uid: uid, note: note, members: friends, songs: "songs", groups: "groups" }
+
+    //console.log("this.state.dateStart", dateStart, dateEnd)
+    let event = { title: title, dateStart: convertTimeStamp(dateStart), dateEnd: convertTimeStamp(dateEnd), colorTag: colorTag, uid: uid, note: note, members: friends, songs: songs }
     this.props.global.setCalendar(true)
-
-
-
-    const yourEmail = this.props.global.account
-    let push = pushEvent(yourEmail, members, event)
-      .then((resolve) => {
-        this.setState({ uploadEvent: false })
-        resolve(this.props.navigation.navigate("Home"))
-      })
+    this.pushEvent(members, event)
   }
   handleTask() {
     if (this.state.title != null) {
-      this.setState({ uploadEvent: true })
-      setTimeout(() => {
-        this.postEvent()
-      }, 200);
+      if (this.state.dateStart >= this.state.dateStart) {
+        this.setState({ uploadEvent: true })
+        setTimeout(() => {
+          this.postEvent()
+        }, 200);
+      } else {
+        this.handleTextModal(
+          'Advertencia',
+          'La fecha en que inicia el evento no puede ser mayor a la de fecha en que termina...'
 
+        );
+      }
     } else {
-      this.setState({ alert: true })
+      this.handleTextModal(
+        'Los eventos requieren un titulo !',
+        'Por favor asigne uno...'
+      );
     }
-
-
   }
 
-  handleColorTag(color) {
+  handleColorTag(color, theme) {
     this.setState({ colorTag: color })
+    this.setTheme(theme, color)
+  }
+  setTheme(theme, color) {
+    this.props.setTheme(theme, color)
   }
   componentDidMount() {
-    this.generate_token(8);
+
+    this._isMounted = true;
+
+    if (this._isMounted) {
+      this.currentDate()
+
+      this.generate_token(8);
+    }
+  }
+  componentWillUnmount() {
+    this._isMounted = false;
   }
   setModalVisible(visible) {
     this.setState({ modalVisible: visible });
   }
+  handleModal(event) {
+    //console.log("evento hijo", event);
+    this.setState({ alert: event })
 
+  }
+  
   render() {
+
+    const currentDate = this.state.dateCurrent
     const songs = this.props.global.songs;
+    const songsDb = this.props.global.songsDb;
     const switchState = this.state.switch
     const formatChange = this.state.formatChange
     const modeChange = this.state.modeChange
     let friends = this.props.global.friends;
-    console.log("list select songs", songs)
+    /* console.log("currentDate", this.state.dateStart) */
     return (
       <Container>
         {this.state.uploadEvent ?
@@ -257,39 +339,15 @@ class ScheduleTypeA extends Component {
               backgroundColor: "#ffffffcd"
             }}
           >
-            <Spinner color="rgba(80,227,194,1)" />
-          </View>) : (console.log("en curso"))
+            <Spinner color={this.state.colorTag} />
+          </View>) : (console.log(""))
         }
         {this.state.alert ?
-          (<View
-            style={{
-              flex: 1,
-              width: "100%",
-              height: "100%",
-              justifyContent: "center",
-              alignItems: "center",
-              position: "absolute",
-              zIndex: 2,
-              left: 0,
-              right: 0,
-              backgroundColor: "#00000080",
-            }}
-          >
-            <View style={{ backgroundColor: '#fff', padding: 20, justifyContent: 'center', alignItems: 'center', borderRadius: 10 }}>
-              <Text  style={{ fontSize: 16}}>Los eventos requieren un titulo !</Text>
-              <Text style={{ marginTop: 10 }}>Por favor asigne uno...</Text>
-
-              <TouchableOpacity
-                style={{ marginTop: 25, }}
-                onPress={() => {
-                  this.setState({ alert: false })
-                }}
-              >
-                <Text style={{ color: '#50e2c3ff' ,fontSize: 16,fontWeight:'bold',borderBottomWidth:1,borderBottomColor:'#50e2c3ff'}}>Entiendo</Text>
-              </TouchableOpacity>
-            </View>
-
-          </View>) : (console.log("en curso"))
+          (<ModalComponent
+            handleModal={this.handleModal}
+            advice={this.state.modalText.advice}
+            comment={this.state.modalText.comment}
+          />) : (console.log("en curso"))
         }
         <Modal
           visible={this.state.modalVisible}
@@ -300,47 +358,44 @@ class ScheduleTypeA extends Component {
             <View>
               {this.state.modalMod == 'integrantes' ?
                 (
-                  <SelectFriends />
+                  <SelectFriends setModalVisible={this.setModalVisible} />
                 ) : (
-                  <SelectSongs />
+                  <SelectSongs setModalVisible={this.setModalVisible} />
                 )
               }
 
             </View>
           </View>
         </Modal>
-   
+
         <Content>
-          <Form>
-            <Item >
+          <Form >
+            <Item style={{ borderColor: 'transparent' }}>
               <Input
+
                 onChangeText={title => this.setState({ title })}
                 placeholder="Título" />
             </Item>
           </Form>
-          <ListItem icon>
+
+          <Date_picker icon={"ios-arrow-forward"} formatChange={formatChange} modeChange={modeChange} modDate={'start'} respStart={this.handleDateStart} colorTag={this.state.colorTag} />
+          <Date_picker icon={"ios-arrow-back"} formatChange={formatChange} modeChange={modeChange} modDate={'end'} respEnd={this.handleDateEnd} colorTag={this.state.colorTag} />
+          <ListItem icon style={{ marginTop: 20 }} noBorder>
             <Left>
               <Button
                 trasnparent
                 style={{ backgroundColor: "#fff", elevation: 0 }}
               >
-                <Icon
-                  size={30}
-                  style={{ color: "#50e2c3ff" }}
-                  name="md-timer"
-                />
+                <Text style={{ color: [this.state.colorTag], fontWidth: 'bold' }}>id</Text>
+
               </Button>
             </Left>
-            <Body>
-              <Text>Todo el dia</Text>
+            <Body style={{ backgroundColor: [this.state.colorTag], borderBottomLeftRadius: 50, borderTopLeftRadius: 50 }}>
+              <Text style={{ textAlign: 'center', color: "#fff", fontWidth: 'bold', margin: 5, }}>{this.state.token}</Text>
             </Body>
-            <Right>
-              <Switch onValueChange={(e) => this.onChangeState(e)} value={switchState} />
-            </Right>
+
           </ListItem>
-          <Date_picker icon={"ios-arrow-forward"} formatChange={formatChange} modeChange={modeChange} modDate={'start'} respStart={this.handleDateStart} />
-          <Date_picker icon={"ios-arrow-back"} formatChange={formatChange} modeChange={modeChange} modDate={'end'} respEnd={this.handleDateEnd} />
-          <ListItem icon>
+          <ListItem icon noBorder>
             <Left>
               <Button
                 trasnparent
@@ -348,7 +403,7 @@ class ScheduleTypeA extends Component {
               >
                 <Icon
                   size={30}
-                  style={{ color: "#50e2c3ff" }}
+                  style={{ color: [this.state.colorTag] }}
                   name="ios-notifications"
                 />
               </Button>
@@ -359,12 +414,12 @@ class ScheduleTypeA extends Component {
             <Right>
               <Icon
                 size={30}
-                style={{ color: "#50e2c3ff" }}
+                style={{ color: [this.state.colorTag] }}
                 name="close-circle"
               />
             </Right>
           </ListItem>
-          <ListItem icon style={{ height: 50 }}>
+          <ListItem icon style={{ height: 50 }} noBorder >
             <Left>
               <Button
                 trasnparent
@@ -372,7 +427,7 @@ class ScheduleTypeA extends Component {
               >
                 <Icon
                   size={30}
-                  style={{ color: "#50e2c3ff" }}
+                  style={{ color: [this.state.colorTag] }}
                   name="md-contacts"
                 />
               </Button>
@@ -397,12 +452,11 @@ class ScheduleTypeA extends Component {
               data={friends}
               enableEmptySections={true}
               renderItem={({ item, index }) => (
-                <Text style={{ margin: 10, fontSize: 10 }}>{item}</Text>
+                <AvatarComponent email={item} showUserName={true} />
               )}
-
             />
           </View>
-          <ListItem icon>
+          <ListItem icon noBorder>
             <Left>
               <Button
                 trasnparent
@@ -410,7 +464,7 @@ class ScheduleTypeA extends Component {
               >
                 <Icon
                   size={30}
-                  style={{ color: "#50e2c3ff" }}
+                  style={{ color: [this.state.colorTag] }}
                   name="md-musical-note"
                 />
               </Button>
@@ -426,18 +480,10 @@ class ScheduleTypeA extends Component {
             <Right></Right>
           </ListItem>
           <View style={{ width: '100%' }}>
-            <FlatList
-              style={{ width: '100%', marginLeft: 20 }}
-              data={songs}
-              enableEmptySections={true}
-              renderItem={({ item, index }) => (
-                <Text style={{ margin: 10, fontSize: 10 }}>{item}</Text>
-              )}
-
-            />
+            {showSongs(songs,songsDb)}
 
           </View>
-          <ListItem icon>
+          <ListItem icon noBorder>
             <Left>
               <Button
                 trasnparent
@@ -445,7 +491,7 @@ class ScheduleTypeA extends Component {
               >
                 <Icon
                   size={30}
-                  style={{ color: "#50e2c3ff" }}
+                  style={{ color: [this.state.colorTag] }}
                   name="ios-pricetag"
                 />
               </Button>
@@ -457,76 +503,37 @@ class ScheduleTypeA extends Component {
               <Icon2 name='circle' size={30} color={this.state.colorTag} />
             </Right>
           </ListItem>
-          <ListItem>
-            <Button
-              trasnparent
-              style={{ backgroundColor: "#50e2c3ff", elevation: 0, margin: 5, width: 30, height: 30, borderRadius: 20 }}
-              onPress={() => this.handleColorTag("#50e2c3ff")}
-            >
-            </Button>
-            <Button
-              trasnparent
-              style={{ backgroundColor: "#ff9494", elevation: 0, margin: 5, width: 30, height: 30, borderRadius: 20 }}
-              onPress={() => this.handleColorTag("#ff9494")}
-            >
-            </Button>
-            <Button
-              trasnparent
-              style={{ backgroundColor: "#fff694", elevation: 0, margin: 5, width: 30, height: 30, borderRadius: 20 }}
-              onPress={() => this.handleColorTag("#fff694")}
-            >
-            </Button>
-            <Button
-              trasnparent
-              style={{ backgroundColor: "#a4ff94", elevation: 0, margin: 5, width: 30, height: 30, borderRadius: 20 }}
-              onPress={() => this.handleColorTag("#a4ff94")}
-            >
-            </Button>
-            <Button
-              trasnparent
-              style={{ backgroundColor: "#94c4ff", elevation: 0, margin: 5, width: 30, height: 30, borderRadius: 20 }}
-              onPress={() => this.handleColorTag("#94c4ff")}
-            >
-            </Button>
-            <Button
-              trasnparent
-              style={{ backgroundColor: "#6047ff", elevation: 0, margin: 5, width: 30, height: 30, borderRadius: 20 }}
-              onPress={() => this.handleColorTag("#6047ff")}
-            >
-            </Button>
-            <Button
-              style={{ backgroundColor: "#a947ff", elevation: 0, margin: 5, width: 30, height: 30, borderRadius: 20 }}
-              onPress={() => this.handleColorTag("#a947ff")}
-            >
-            </Button>
-            <Button
-              style={{ backgroundColor: "#ff47f9", elevation: 0, margin: 5, width: 30, height: 30, borderRadius: 20 }}
-              onPress={() => this.handleColorTag("#ff47f9")}
-            >
-            </Button>
-            <Button
-              style={{ backgroundColor: "#ed3169", elevation: 0, margin: 5, width: 30, height: 30, borderRadius: 20 }}
-              onPress={() => this.handleColorTag("#ed3169")}
-            >
-            </Button>
+          <ListItem noBorder>
 
+            <FlatList
+              style={{ width: '100%', marginLeft: 20 }}
+              showsHorizontalScrollIndicator={false}
+              horizontal={true}
+              data={colorTags}
+              enableEmptySections={true}
+              renderItem={({ item, index }) => (
+                <Button
+                  style={{ backgroundColor: [item.color], elevation: 0, margin: 5, width: 30, height: 30, borderRadius: 20 }}
+                  onPress={() => this.handleColorTag(item.color, item.theme)}
+                >
+                </Button>
+              )}
+            />
           </ListItem>
-        <Footer>
-        <FooterTab>
 
-          <Button
+        </Content>
+        <Footer>
+          <FooterTab>
+
+            <Button
               trasnparent
-              style={{ backgroundColor: "#fff", elevation: 0 }}
+              style={{ backgroundColor: [this.state.colorTag], elevation: 0 }}
               onPress={() => this.handleTask()}
             >
-              <Icon
-                style={{ color: "#50e2c3ff", fontSize: 40 }}
-                name="md-checkmark"
-              />
+              <Text style={{ color: '#fff', fontSize: 20 }}>Enviar</Text>
             </Button>
-            </FooterTab>
+          </FooterTab>
         </Footer>
-        </Content>
       </Container>
     );
   }

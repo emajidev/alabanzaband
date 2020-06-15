@@ -3,12 +3,13 @@ import {createStackNavigator} from 'react-navigation-stack';
 import Loading from './src/components/Loading.js'
 import Main from './src/components/Main.js'// create our app's navigation stack
 import List from './src/components/List.js'
+import ListNotification from "./src/components/ListNotification"
+
 import AddItem from './src/components/AddItem.js'
 import Home from './src/components/Home.js'
 import ContentItem from './src/components/ContentItem.js'
 import AddNotification from './src/components/AddNotification.js'
 import NotificationComponent from './src/components/NotificationComponent.js'
-import ListNotification from './src/components/ListNotification.js'
 import AddContacts from './src/components/contacts/AddContacts.js'
 import AddGroups from './src/components/contacts/AddGroups.js'
 import CreateGroups from './src/components/contacts/CreateGroups.js'
@@ -28,18 +29,20 @@ import Search from './src/components/Search.js'
 import NewEvent from './src/components/NewEvent.js'
 import Chat from './src/components/chat/Chat.js'
 import ListChat from './src/components/chat/ListChat.js'
+import ViewerNotification from './src/components/notifications/ViewerNotification'
 const AppNavigator = createStackNavigator(
 {
   Loading:{screen:Loading},
   Main: {screen: Main},
   List:{screen:List},
+  ListNotification:{screen:ListNotification},
   Home:{screen:Home},
   AddItem:{screen:AddItem},
   ContentItem:{screen:ContentItem},
   Search:{screen:Search},
   AddNotification:{screen:AddNotification},
   NotificationComponent:{screen:NotificationComponent},
-  ListNotification:{screen:ListNotification},
+  ViewerNotification:{screen:ViewerNotification},
   NewEvent:{screen:NewEvent},
   SendNotification:{screen:SendNotification},
   AddContacts:{screen:AddContacts},

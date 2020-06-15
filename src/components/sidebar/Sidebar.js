@@ -31,7 +31,7 @@ import { AppLoading } from 'expo';
 
 import getTheme from "../../../native-base-theme/components";
 import Options from "./Options";
-import { StyleSheet, StatusBar, AsyncStorage,Image,View } from "react-native";
+import { StyleSheet, StatusBar, AsyncStorage, Image, View } from "react-native";
 import Settings from "./Settings";
 import { insert_In_avatarUri, select_avatarUri } from '../SqliteDateBase';
 
@@ -46,7 +46,7 @@ class Sidebar extends Component {
       dataUser: [],
       source: null,
       refreshAvatar: false,
-      uploadStatus:false
+      uploadStatus: false
     };
   }
 
@@ -82,7 +82,7 @@ class Sidebar extends Component {
     });
   };
   uploadToFirebase = (blob, email) => {
-    
+
     return new Promise((resolve, reject) => {
       var storageRef = firebase.storage().ref();
       storageRef
@@ -93,14 +93,14 @@ class Sidebar extends Component {
         .then(snapshot => {
           blob.close();
           resolve(snapshot);
-          this.setState({uploadStatus:true})
+          this.setState({ uploadStatus: true })
         })
         .catch(error => {
           reject(error);
         });
     });
   };
- 
+
 
   handleGetImages = (email) => {
 
@@ -133,9 +133,9 @@ class Sidebar extends Component {
           }, 200)
           setTimeout(() => {
             this.setState({ refreshAvatar: false })
-            this.setState({uploadStatus:false})
+            this.setState({ uploadStatus: false })
           }, 200)
-          
+
 
         })
         .catch(error => console.log("error", error))
@@ -158,13 +158,13 @@ class Sidebar extends Component {
     const source = this.state.source;
     const email = this.props.global.account
     const uridefault = require("./icon.jpg");
-    const { user, setUser } = this.context;
+    const { color, setColor } = this.context;
     const refreshAvatar = this.state.refreshAvatar
     console.log("refre", this.state.refresh);
     return (
-      <StyleProvider style={getTheme(user.theme)}>
+      <StyleProvider style={getTheme(color.theme)}>
         <Container>
-          <Header style={{ backgroundColor: "#50e2c3ff", height: 300 }}>
+          <Header style={{ backgroundColor: [this.props.global.color.color], height: 300 }}>
             <Content contentContainerStyle={{ flex: 1 }}>
               <Grid style={{ marginTop: StatusBar.currentHeight + 15 }}>
                 <Row>
@@ -177,20 +177,17 @@ class Sidebar extends Component {
                   >
                     {refreshAvatar == false ? (
                       <View>
-                    {   this.state.uploadStatus == true ? (
-                      
-                      <View style={{ position: "absolute",zIndex: 2,width: 150, height: 150, borderRadius: 400, backgroundColor:"#fff" ,alignItems:'center',justifyContent:'center', opacity:0.8}} >
-                        <Spinner color="rgba(80,227,194,1)" />
+                        {this.state.uploadStatus == true ? (
+                          <View style={{ position: "absolute", zIndex: 2, width: 150, height: 150, borderRadius: 400, backgroundColor: "#fff", alignItems: 'center', justifyContent: 'center', opacity: 0.8 }} >
+                            <Spinner color={this.props.global.color.color} />
+                          </View>
+                        ) : (
+                            console.log("")
+                          )}
+                        <CacheImage uri={this.state.source} />
                       </View>
-                      ):(
-                        
-                        console.log("")
-                      )  }
-                      <CacheImage uri={this.state.source} /> 
-                      </View>
-                     
                     ) : (
-                    console.log("refresh")
+                        console.log("refresh")
                       )
                     }
 
@@ -201,7 +198,7 @@ class Sidebar extends Component {
                       onPress={() => this.handleGetImages(email)}
                     >
                       <Icon
-                        style={{ color: "#50e2c3ff", fontSize: 25 }}
+                        style={{ color:[this.props.global.color.color], fontSize: 25 }}
                         name="md-camera"
                       />
                     </Button>
@@ -231,7 +228,7 @@ class Sidebar extends Component {
             </Content>
           </Header>
 
-          <Tabs>
+          <Tabs tabContainerStyle={{elevation: 0}}>
             <Tab
               heading={
                 <TabHeading>

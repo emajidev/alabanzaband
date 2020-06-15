@@ -12,7 +12,7 @@ const Preload = () => (
 class CalendarEvents extends Component {
   state = {
     text: '',
-   
+
 
   };
   constructor(props) {
@@ -22,47 +22,22 @@ class CalendarEvents extends Component {
     this.state = {
       items: null,
       waitTime: false,
-      loadEvents: false
+      loadEvents: false,
+      text: ''
     }
   }
   componentWillUnmount() {
     this._isMounted = false;
   }
-  componentDidMount() {
-    this._isMounted = true;
 
-  }
   getData = async () => {
-    let account = this.props.global.account
-    console.log("cuenta", account)
-    try {
-      let itemsRef = db.ref('/users/user' + account + '/events');
-      itemsRef.on('value', snapshot => {
-        let data = snapshot.val();
-        if (data != null) {
-          let items = Object.values(data);
-          this.setState({ items: items });
-        }
-
-        console.log("contactos descargados")
-
-      })
-
-    } catch (e) {
-      // error reading value
-      console.log("error en list constactos", e)
-
-    }
+    this.setState({ items: this.props.infoTask });
   }
-  async componentDidMount() {
-    this.getData()
-    setTimeout(() => {
-      this.getData();
-      this.setState({ waitTime: true })
-      this.checkLoad()
 
-      
-    }, 1000);
+  async componentDidMount() {
+    this._isMounted = true;
+    this.getData();
+
   }
   checkLoad() {
     if (this.state.items == null) {
@@ -75,40 +50,20 @@ class CalendarEvents extends Component {
         this.setState({ loadEvents: false })
       }
 
-     
-    }
+
+    } else {
+      this.setState({ loadEvents: true })
+/*       console.log("eventos",this.state.items)
+ */    }
   }
 
 
   render() {
-    console.log("contactos ", this.state.loadEvents)
-    const empty = { title: '', dateStart: '', dateEnd: '', colorTag: '', uid: '', note: '', members: '', songs: '', groups: '' }
 
     return (
 
       <View style={styles.container}>
-        {this.state.loadEvents != false ? (
-          <View>
-            {
-              this.state.items != null ? (
-                <View style={styles.cont}>
-                  <CalendarTimeline items={this.state.items} />
-                </View>
-              ) : (
-                  <View style={styles.cont}>
-                  <CalendarTimeline items={this.state.items} />
-                  </View>
-                )
-            }
-          </View>
-        ) : (
-            <SafeAreaView style={styles.cont}>
-              <Preload />
-              <Preload />
-              <Preload />
-              <Preload />
-            </SafeAreaView>
-          )}
+        <CalendarTimeline infoTask={this.props.infoTask} />
       </View>
     );
   }
@@ -122,7 +77,6 @@ const styles = StyleSheet.create({
   },
   cont: {
     height: '100%',
-    alignItems: 'center',
     padding: 5
   }
 });

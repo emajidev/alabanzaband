@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Container, Grid,Col,Row,Header,Button, Content, Badge, Text, Icon,List ,ListItem} from 'native-base';
+import { Container, Grid, Col, Row, Header, Button, Content, Badge, Text, Icon, List, ListItem, Right, Left, Body } from 'native-base';
 import { clearThemeCache } from 'native-base-shoutem-theme'
 
 import Icon2 from 'react-native-vector-icons/FontAwesome';
@@ -9,131 +9,118 @@ import themeA from '../../../native-base-theme/variables/themeA';
 import themeB from '../../../native-base-theme/variables/themeB';
 import themeC from '../../../native-base-theme/variables/themeC';
 import themeD from '../../../native-base-theme/variables/themeD';
+import themeE from '../../../native-base-theme/variables/themeE';
+import themeF from '../../../native-base-theme/variables/themeF';
+import themeG from '../../../native-base-theme/variables/themeG';
+import themeH from '../../../native-base-theme/variables/themeH';
+import themeI from '../../../native-base-theme/variables/themeI';
 
 export default class Settings extends Component {
-    static contextType = UserContext
+  static contextType = UserContext
 
-    constructor(props) {
+  constructor(props) {
     super(props);
     this.state = {
-      theme:'',
-        };
-    }
-    themeA(user, setUser) {
-    clearThemeCache();
-    this.setState({
-      theme:themeA
-    });
-    const newUser = { name: 'themeA', loggedIn: true ,theme:themeA}
-    setUser(newUser)
+      theme: '',
+    };
   }
-  themeB(user, setUser) {
+  theme(setColor, colorTheme, name, color, theme) {
     clearThemeCache();
     this.setState({
-      theme:themeB
+      theme: theme
     });
-    const newUser = { name: 'themeB', loggedIn: true ,theme:themeB}
-    setUser(newUser)
+    const newUser = { name: name, loggedIn: true, theme: theme, color: colorTheme }
+    setColor(newUser)
+    console.log("el tema elegido es ", color)
+  }
+
+  componentDidMount() {
+    const color = this.context
 
   }
-  themeC() {
-    clearThemeCache();
-    this.setState({
-      theme:themeC
-    });
-  }
-  themeD() {
-    clearThemeCache();
-    this.setState({
-      theme:themeD
-    });
-  }
-  componentDidMount() {
-    const user = this.context
-  
-  }
   render() {
-    const { user, setUser } = this.context
+    const { setColor, color } = this.context
 
     return (
       <Container>
         <Content>
-          <List>
-          <ListItem>
+            <ListItem>
               <Text>Actualizaciones</Text>
-          </ListItem>
-          <ListItem>
+            </ListItem>
+            <ListItem>
               <Text>Descargas en segundo plano</Text>
-          </ListItem>
-          <ListItem>
+            </ListItem>
+            <ListItem>
               <Text>Alertas</Text>
             </ListItem>
             <ListItem>
               <Text>Notificaciones</Text>
             </ListItem>
-            
+
             <ListItem>
               <Text>Tema</Text>
             </ListItem>
+            <ListItem icon noBorder style={{marginTop:20}}>
+                    <Body>
+                      <Text>Tema seleccionado</Text>
+                    </Body>
+                    <Right>
+                      <Icon2 name='circle' size={30} color={color.color} />
+                    </Right>
+                  </ListItem>
             <ListItem>
-            <Grid padder>
-          <Row>
-            <Col>
-              <Button vertical transparent onPress={() => this.themeA(user, setUser)}>
-                <Icon2 name='circle' size={30} color="#00ffc0" />
-              </Button>
-            </Col>
-            <Col>
-              <Button vertical transparent onPress={() => this.themeB(user, setUser)}>
-                <Icon2 name='circle' size={30} color="#00e241" />
-              </Button>
-            </Col>
-            <Col>
-              <Button vertical transparent onPress={() => this.themeC(user, setUser)}>
-                <Icon2 name='circle' size={30} color="#0a86d8" />
-              </Button>
-            </Col>
-            <Col>
-            <Button vertical transparent onPress={() => this.themeD(user, setUser)}>
-              <Icon2 name='circle' size={30} color="#7d392f" />
-            </Button>
-            </Col>
-            <Col>
-            <Button vertical transparent >
-              <Icon2 name='circle' size={30} color="#000" />
-            </Button>
-            </Col>
-          </Row>
-          <Row>
-            <Col>
-              <Button vertical transparent >
-                <Icon2 name='circle' size={30} color="#ff0800" />
-              </Button>
-            </Col>
-            <Col>
-              <Button vertical transparent >
-                <Icon2 name='circle' size={30} color="#ff0048" />
-              </Button>
-            </Col>
-            <Col>
-              <Button vertical transparent >
-                <Icon2 name='circle' size={30} color="#ff4300" />
-              </Button>
-            </Col>
-            <Col>
-            <Button vertical transparent >
-              <Icon2 name='circle' size={30} color="#ffa000" />
-            </Button>
-            </Col>
-            <Col>
-            <Button vertical transparent>
-              <Icon2 name='circle' size={30} color="#a566ce" />
-            </Button>
-            </Col>
-          </Row>
-        </Grid>
+              <Grid padder>
+                
+                <Row>
+                  <Col>
+                    <Button vertical transparent onPress={() => this.theme(setColor, "rgba(80,227,194,1)", 'themeA', color, themeA)}>
+                      <Icon2 name='circle' size={30} color="rgba(80,227,194,1)" />
+                    </Button>
+                  </Col>
+                  <Col>
+                    <Button vertical transparent onPress={() => this.theme(setColor, "#ff9494", 'themeB', color, themeB)}>
+                      <Icon2 name='circle' size={30} color="#ff9494" />
+                    </Button>
+                  </Col>
+                  <Col>
+                    <Button vertical transparent onPress={() => this.theme(setColor, "#fff694", 'themeC', color, themeC)}>
+                      <Icon2 name='circle' size={30} color="#fff694" />
+                    </Button>
+                  </Col>
+                  <Col>
+                    <Button vertical transparent onPress={() => this.theme(setColor, "#a4ff94", 'themeD', color, themeD)}>
+                      <Icon2 name='circle' size={30} color="#a4ff94" />
+                    </Button>
+                  </Col>
+                  <Col>
+                    <Button vertical transparent onPress={() => this.theme(setColor, "#94c4ff", 'themeE', color, themeE)}>
+                      <Icon2 name='circle' size={30} color="#94c4ff" />
+                    </Button>
+                  </Col>
+                  <Col>
+                    <Button vertical transparent onPress={() => this.theme(setColor, "#6047ff", 'themeF', color, themeF)}>
+                      <Icon2 name='circle' size={30} color="#6047ff" />
+                    </Button>
+                  </Col>
+                  <Col>
+                    <Button vertical transparent onPress={() => this.theme(setColor, "#a947ff", 'themeG', color, themeG)}>
+                      <Icon2 name='circle' size={30} color="#a947ff" />
+                    </Button>
+                  </Col>
+                  <Col>
+                    <Button vertical transparent onPress={() => this.theme(setColor, "#ff47f9", 'themeH', color, themeH)}>
+                      <Icon2 name='circle' size={30} color="#ff47f9" />
+                    </Button>
+                  </Col>
+                  <Col>
+                    <Button vertical transparent onPress={() => this.theme(setColor, "#ed3169", 'themeI', color, themeI)} >
+                      <Icon2 name='circle' size={30} color="#ed3169" />
+                    </Button>
+                  </Col>
+                </Row>
+
+              </Grid>
             </ListItem>
-          </List>
         </Content>
       </Container>
     );

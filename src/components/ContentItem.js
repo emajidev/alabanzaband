@@ -107,7 +107,8 @@ class ContentItem extends React.Component {
    }
    render() {
       const { item } = this.props.navigation.state.params;
-      const FortmatLyrics = item.lyrics.replace(/\+/g, "\n");
+      const FortmatLyrics = item.lyrics.replace(/\./g, c =>"\n\n");
+      
       console.log("info songs", this.state.infoSong)
       return (
 
@@ -193,8 +194,8 @@ class ContentItem extends React.Component {
 
                </View>
                <View style={styles.lyrics}>
-               <Text style={{textAlign:'center',color:'#A5A5A5',marginBottom:15,letterSpacing:5}}>LETRA</Text>
-                  <Text style={{color:'#A0A0A0'}}>{FortmatLyrics}</Text>
+               <Text style={{textAlign:'center',color:'#A5A5A5',marginBottom:20,letterSpacing:5}}>LETRA</Text>
+                  <Text style={{color:'#A0A0A0',fontSize:15,textAlign:'center'}}>{FortmatLyrics}</Text>
                </View>
 
 

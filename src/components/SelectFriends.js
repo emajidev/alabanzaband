@@ -2,6 +2,8 @@ import React from 'react';
 import { Text, View, AsyncStorage, TouchableOpacity, StyleSheet, FlatList, ScrollView, StatusBar, TextInput, TouchableHighlight } from 'react-native'
 import { withNavigation } from 'react-navigation'
 import { withGlobalContext } from './UserContext';
+import AvatarComponent from './avatar/AvatarComponent';
+
 import {
     Container,
     Content,
@@ -32,7 +34,7 @@ class Option extends React.Component {
     render() {
         const { name, email } = this.props;
 
-        console.log("select =>", this.state.selectThis)
+        /* console.log("select =>", this.state.selectThis) */
         return (
             <Button
                 onPress={() => {
@@ -42,22 +44,9 @@ class Option extends React.Component {
                 style={this.state.selectThis == true ? (styles.select) : (styles.unselect)}
             >
                 <Content>
-                    <Text style={styles.textContact}>{name}</Text>
-                    <Text style={styles.textContact}>{email}</Text>
+                    <AvatarComponent email={email} name={name} showUserName={true} />
                 </Content>
-                {this.state.selectThis ? (
-                    <Icon
-                        style={{
-                            color: "rgb(255, 209, 41)",
-                            fontSize: 30,
-                            textAlign: "center",
-                            marginTop: 10
-                        }}
-                        name="ios-checkmark"
-                    />
-                ) : (console.log("unselect"))
 
-                }
             </Button>
         )
     }
@@ -72,11 +61,12 @@ class SelectFriends extends React.Component {
         };
 
         this.isSelected = this.isSelected.bind(this);
+        this.setModalVisible = this.setModalVisible.bind(this);
     }
 
     toggleStyles(el, index) {
         const { selected } = this.state;
-        console.log("sleccion", selected)
+        /*console.log("sleccion", selected)*/
         return selected.indexOf(index) !== -1;
     }
 
@@ -92,10 +82,9 @@ class SelectFriends extends React.Component {
     }
     getData = async () => {
 
-
-        let account = this.props.global.account
-        console.log("cuenta2", account)
         try {
+            let account = this.props.global.account
+            console.log("cuenta2", account)
             let itemsRef = db.ref('/users/user' + account + '/contacts');
             itemsRef.on('value', snapshot => {
 
@@ -112,14 +101,39 @@ class SelectFriends extends React.Component {
         }
     }
 
-    componentDidMount() {
-        let account = this.props.global.account
-        console.log("cuenta1", account)
-        this.getData(account)
+    async componentDidMount() {
+      
+        this.getData()
+    }
+    setModalVisible(e){
+        this.props.setModalVisible(e)
     }
     setFriends(list) {
-        console.log("list amigos",list)
+        console.log("list amigos", list)
         this.props.global.setFriends(list)
+        if(list.length > 0){
+            this.setModalVisible(false)
+        }
+    }
+    showAvatar(){
+        if(this.state.selected.length > 0 ){
+            return(
+                <View style={{ flexDirection: 'row', height: 50, marginTop: 20, margin:10 }}>
+
+                <FlatList
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                data={this.state.selected}
+                enableEmptySections={true}
+                renderItem={({ item, index }) => (
+                    <View>
+                        <AvatarComponent email={item} onlyImg={true} />
+                    </View>
+                )}
+            />
+            </View>
+            )
+        }
     }
     render() {
         /*   console.log(this.state.items) */
@@ -127,7 +141,15 @@ class SelectFriends extends React.Component {
         return (
 
             <View style={{ flex: 1, justifyContent: 'flex-start', width: '100%' }}>
-               <Button
+
+                <View style={{ flexDirection: 'row', width: '100%', height: 40, alignItems: 'center' }}>
+                    <View style={{ justifyContent: 'center', width: '80%' }}>
+                        <Text style={{ color: '#50e2c3ff', fontSize: 20, marginLeft: 15 }}>Selecciona tus amigos</Text>
+
+                    </View>
+                    <View style={{ justifyContent: 'center', width: '20%' }}>
+
+                        <Button
                             trasnparent
                             style={{ backgroundColor: "#fff", elevation: 0 }}
                             onPress={() => this.setFriends(this.state.selected)}
@@ -137,19 +159,10 @@ class SelectFriends extends React.Component {
                                 name="md-checkmark"
                             />
                         </Button>
-                <View style={{ flexDirection: 'row', height: 50, marginBottom: 20, marginTop: 20 }}>
-
-                    <FlatList
-                        horizontal
-                        showsHorizontalScrollIndicator={false}
-                        data={this.state.selected}
-                        enableEmptySections={true}
-                        renderItem={({ item, index }) => (
-                            <Text style={styles.selectPhone}>{item}</Text>
-                        )}
-
-                    />
+                    </View>
                 </View>
+
+                {this.showAvatar()}                 
                 <View style={{ flex: 1 }}>
                     {this.state.items.map((item, index) => (
                         <Option
@@ -189,27 +202,14 @@ const styles = StyleSheet.create({
 
 
     },
-    btn_primary_light: {
 
-        borderColor: '#5f25fe',
-        borderWidth: 2,
-        borderRadius: 50,
-        marginTop: 40,
-        padding: 20,
-        height: 50,
-        borderRadius: 50,
-        justifyContent: "center",
-        alignItems: 'center',
-        flexDirection: 'row',
-
-    },
     buttonText: {
         fontSize: 18,
         color: '#000',
     },
 
     select: {
-        width: '80%',
+        width: '100%',
         height: 60,
         margin: 10,
         backgroundColor: "#b8ffc1",
@@ -219,10 +219,8 @@ const styles = StyleSheet.create({
         borderRadius: 10
     },
     selectPhone: {
-        color: '#3e64ef',
         height: 40,
         margin: 8,
-        borderColor: '#3e64ef',
         borderWidth: 1,
         borderRadius: 10,
         padding: 10,
@@ -231,10 +229,10 @@ const styles = StyleSheet.create({
         width: 150
     },
     unselect: {
+        backgroundColor:'#fff',
         width: '100%',
         height: 60,
         margin: 10,
-        backgroundColor: "#d6f9ff",
         flexDirection: 'row',
         elevation: 0,
         padding: 10,
@@ -244,22 +242,3 @@ const styles = StyleSheet.create({
 
     },
 })
-/*
- <TouchableOpacity
- key = {index}
- style = {styles.TouchableOpacity}
- onPress={() => alert(item.name)}
->
-<View style={styles.boxContact} key={index}>
-
-<Icon
-name='md-contact'
-color='#5f25fe'
-size={40}
-/>
-<Text style={styles.itemtext} >{item.name} </Text>
-
-</View>
-</TouchableOpacity> */
-
-/* <ItemContact key={index} item={item.name}/> */

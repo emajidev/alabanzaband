@@ -1,14 +1,14 @@
 import React, { Component } from 'react'
 import turquesa from '../../native-base-theme/variables/turquesa';
 import { AsyncStorage } from 'react-native';
-import md5 from 'md5';
-
+import * as firebase from "firebase/app";
+import { db } from "./firebase.js";
 const UserContext = React.createContext(true)
+import Base64 from 'Base64';
 
 class UserProvider extends Component {
   async componentDidMount() {
     await this.getStore();
-    this.songsBd()
   }
 
   getUriCache(email) {
@@ -20,19 +20,20 @@ class UserProvider extends Component {
       let data = snapshot.val();
       if (data !== null) {
         let songs = Object.values(data);
-        this.setState({ songsItems: songs });
+        this.setState({ songsDb: songs });
         console.log("canciones", songs)
       }
     });
   }
   getStore = async () => {
     console.log("store llamado");
+    this.songsBd()
     try {
       const value = await AsyncStorage.getItem("@storage_Key");
       if (value !== null) {
         // We have data!!
         let data = JSON.parse(value)
-        let userMd5 = md5(data.user)
+        let userMd5 = Base64.btoa(data.user)
         this.setState({ account: userMd5 });
         this.setState({ friends: [data.user] });
 
@@ -45,21 +46,30 @@ class UserProvider extends Component {
   };
   // Context state
   state = {
-    user: {
+    color: {
       name: '',
       theme: turquesa,
+      color:'rgba(80,227,194,1)'
     },
+    text:'',
     calendar: false,
     friends: [],
     songs: [],
+    events:[],
     temporalGroup: '',
-    songsItems:[]
+    songsDb:[]
 
   }
 
   // Method to update state
-  setUser = user => {
-    this.setState(prevState => ({ user }))
+  setColor = color => {
+    this.setState(prevState => ({ color }))
+  }
+  setText = text => {
+    this.setState(prevState => ({ text }))
+  }
+  setAccount = account => {
+    this.setState(prevState => ({ account }))
   }
   setCalendar = calendar => {
     this.setState(prevState => ({ calendar }))
@@ -80,7 +90,9 @@ class UserProvider extends Component {
     let newArray = this.state.friends.unique()
     this.setState(prevState => ({ friends: newArray }))
   }
-
+  setEvents = events => {
+    this.setState(prevState => ({ events: events }))
+  }
   setSongs = songs => {
     songs.map((item) => {
       this.state.songs.push(item)
@@ -96,24 +108,33 @@ class UserProvider extends Component {
 
   render() {
     const { children } = this.props
-    const { user } = this.state
-    const { setUser } = this
+    const color= this.state.color
+    const { setColor } = this
     const calendar = this.state.calendar
     const friends = this.state.friends
     const songs = this.state.songs
+    const events = this.state.events
+    const text = this.state.text
     const temporalGroup = this.state.temporalGroup
+    const songsDb = this.state.songsDb
     return (
       <UserContext.Provider
         value={{
           ...this.state,
-          setUser: this.setUser,
+          setColor: this.setColor,
+          setAccount:this.setAccount,
           setCalendar: this.setCalendar,
           setFriends: this.setFriends,
           setSongs: this.setSongs,
+          setEvents:this.setEvents,
+          setText:this.setText,
           setTemporalGroup: this.setTemporalGroup,
+          color,
           calendar,
           friends,
           songs,
+          songsDb,
+          events,
           temporalGroup
 
         }}

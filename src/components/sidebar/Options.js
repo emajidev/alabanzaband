@@ -3,6 +3,7 @@ import { AsyncStorage } from 'react-native'
 import * as firebase from "firebase/app";
 import { withNavigation } from 'react-navigation';
 import { delete_all_todo } from '../SqliteDateBase'
+import { withGlobalContext } from '../UserContext';
 
 import { Container, Header, Content, Button, Text } from 'native-base';
 class Options extends Component {
@@ -14,8 +15,10 @@ class Options extends Component {
       .auth()
       .signOut()
       .then(() => {
-        console.log('cerrar')
+        console.log('cerrar',this.props.global.account)
         AsyncStorage.clear().then(() => console.log('Cleared'))
+  
+
       }
       )
       .catch(error => console.log("error en cerrar sesion", error)
@@ -25,7 +28,7 @@ class Options extends Component {
     return (
       <Container>
         <Content>
-          <Button transparent onPress={() => this.logOut()}>
+          <Button transparent >
             <Text>Noticias</Text>
           </Button>
           <Button transparent onPress={() => {
@@ -38,8 +41,11 @@ class Options extends Component {
           }>
             <Text>Chats</Text>
           </Button>
+          <Button transparent >
+            <Text>Ayuda</Text>
+          </Button>
           <Button transparent onPress={() => this.logOut()}>
-            <Text style={{ color: '#000' ,fontSize: 16,fontWeight:'bold'}}
+            <Text style={{ color: [this.props.global.color.color] ,fontSize: 16}}
             >cerrar sesion</Text>
           </Button>
           {/*      <Button transparent onPress={()=> delete_all_todo()}>
@@ -51,4 +57,4 @@ class Options extends Component {
     );
   }
 }
-export default withNavigation(Options);
+export default withGlobalContext(withNavigation(Options));

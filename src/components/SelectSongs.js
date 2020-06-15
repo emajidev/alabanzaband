@@ -51,7 +51,7 @@ class SelectSongs extends React.Component{
     }
 }
 
-componentDidMount() {
+async componentDidMount() {
     this.getData()
 }
 

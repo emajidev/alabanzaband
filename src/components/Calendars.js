@@ -109,7 +109,7 @@ class Calendars extends React.Component {
  */    let dateToDo = select()
  .then((data)=>{
   this.setState({dataSourceTask:data})
-  console.log("bd task",data)
+  //console.log("bd task",data)
 })
 
        
@@ -119,11 +119,11 @@ class Calendars extends React.Component {
   onDayPress(e) {
     this.setModalVisible(true)
     this.setState({ dataAgenda: e.day })
-    console.log("dia", e);
+    //console.log("dia", e);
   }
   render() {
     console.disableYellowBox = true;
-    let theme=this.props.global.user.theme;
+    let theme=this.props.global.color.theme;
     let task=this.state.dataSourceTask;
     console.log("task",task)
     return (

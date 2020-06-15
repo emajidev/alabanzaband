@@ -32,8 +32,9 @@ class Option extends React.Component {
     state = {
         selectThis: false
     }
+
     render() {
-        const { name, category,visits,likes } = this.props;
+        const { name, category, visits, likes } = this.props;
 
         console.log("select =>", this.state.selectThis)
         return (
@@ -80,41 +81,46 @@ class Option extends React.Component {
 
                 </View>
 
-            </TouchableOpacity>   
-           
+            </TouchableOpacity>
+
         )
     }
 }
 class SelectSongs extends React.Component {
     constructor(props) {
         super(props);
+        this.setModalVisible = this.setModalVisible.bind(this);
+        this.isSelected = this.isSelected.bind(this);
+
         this.state = {
             open: false,
             selected: [],
             items: [],
         };
 
-        this.isSelected = this.isSelected.bind(this);
     }
 
     toggleStyles(el, index) {
         const { selected } = this.state;
-        console.log("sleccion", selected)
+        console.log("seleccion", selected)
         return selected.indexOf(index) !== -1;
     }
 
-    isSelected(i) {
+    isSelected(name, category, lyrics) {
+        // send data of songs selected
         let { selected } = this.state;
-        if (selected.indexOf(i) === -1) {
-            selected.push(i);
+        console.log("loca", name)
+
+        if (selected.indexOf(name) === -1) {
+            selected.push(name);
         } else {
-            selected = selected.filter(index => index !== i);
+            selected = selected.filter(index => index !== name);
         }
         this.setState({ selected });
 
     }
     getData = async () => {
-      
+
         try {
             let itemsRef = db.ref('/songs');
             itemsRef.on('value', snapshot => {
@@ -132,45 +138,80 @@ class SelectSongs extends React.Component {
     }
 
     componentDidMount() {
-      this.getData()
+        this.getData()
     }
     setSongs(list) {
         console.log("list canciones", list)
         this.props.global.setSongs(list)
         console.log("subido", this.props.global.songs)
+        if (list.length > 0) {
+            this.setModalVisible(false)
+
+        }
     }
-    render() {
-        /*   console.log(this.state.items) */
+    setModalVisible(e) {
+        this.props.setModalVisible(e)
+    }
+    showSongs() {
+        var songs = []
+        if (this.state.selected.length > 0) {
+            this.state.selected.map((id, index) => {
+                let song = this.props.global.songsDb.find(item => item.id === id)
 
-        return (
 
-            <View style={{ flex: 1, justifyContent: 'flex-start', width: '100%' }}>
-                <Button
-                    trasnparent
-                    style={{ backgroundColor: "#fff", elevation: 0 }}
-                    onPress={() => {
-                        console.log("enviar selecion",this.state.selected)
-                        this.setSongs(this.state.selected)
-                        }}
-                >
-                    <Icon
-                        style={{ color: "#50e2c3ff", fontSize: 40 }}
-                        name="md-checkmark"
-                    />
-                </Button>
-                <View style={{ flexDirection: 'row', height: 50, marginBottom: 20, marginTop: 20 }}>
+                songs.push(song)
+            })
+            console.log("canciones", songs)
+
+            return (
+                <View style={{ flexDirection: 'row', height: 50, margin: 10 }}>
 
                     <FlatList
                         horizontal
                         showsHorizontalScrollIndicator={false}
-                        data={this.state.selected}
+                        data={songs}
                         enableEmptySections={true}
                         renderItem={({ item, index }) => (
-                            <Text style={styles.selectPhone}>{item}</Text>
+                            <View style={styles.selectSong}>
+                                <Text style={{color:'#50e2c3ff'}}>{item.name}</Text>
+                            </View>
                         )}
-
                     />
                 </View>
+            )
+        }
+    }
+    render() {
+
+        return (
+
+            <View style={{ flex: 1, justifyContent: 'flex-start', width: '100%' }}>
+
+
+                <View style={{ flexDirection: 'row', height: 50, marginBottom: 20, marginTop: 20 }}>
+                    <View style={{ justifyContent: 'center', width: '80%' }}>
+                        <Text style={{ color: '#50e2c3ff', fontSize: 20, marginLeft: 15 }}>Selecciona tus canciones</Text>
+
+                    </View>
+                    <View style={{ justifyContent: 'center', width: '20%' }}>
+                        <Button
+                            trasnparent
+                            style={{ backgroundColor: "#fff", elevation: 0 }}
+                            onPress={() => {
+                                console.log("enviar selecion", this.state.selected)
+                                this.setSongs(this.state.selected)
+                            }}
+                        >
+                            <Icon
+                                style={{ color: "#50e2c3ff", fontSize: 40 }}
+                                name="md-checkmark"
+                            />
+                        </Button>
+                    </View>
+
+
+                </View>
+                {this.showSongs()}
                 <View style={{ flex: 1 }}>
                     {this.state.items.map((item, index) => (
                         <Option
@@ -179,7 +220,9 @@ class SelectSongs extends React.Component {
                             visits={item.visits}
                             likes={item.likes}
                             key={index}
-                            onPress={() => this.isSelected(item.name)}
+                            onPress={() => this.isSelected(
+                                item.id
+                            )}
                             selected={this.toggleStyles(item.id)}
                         />
 
@@ -241,11 +284,11 @@ const styles = StyleSheet.create({
         padding: 10,
         borderRadius: 10
     },
-    selectPhone: {
-        color: '#3e64ef',
+    selectSong: {
+        color: '#50e2c3ff',
         height: 40,
         margin: 8,
-        borderColor: '#3e64ef',
+        borderColor: '#50e2c3ff',
         borderWidth: 1,
         borderRadius: 10,
         padding: 10,
@@ -264,10 +307,10 @@ const styles = StyleSheet.create({
         borderRadius: 10
     },
     songs: {
-        width:'100%',
-        height:80,
-        borderBottomColor:'#DCDCDC',
-        borderBottomWidth:1,
-        justifyContent:'center'
-     },
+        width: '100%',
+        height: 80,
+        borderBottomColor: '#DCDCDC',
+        borderBottomWidth: 1,
+        justifyContent: 'center'
+    },
 })
