@@ -25,7 +25,7 @@ import ShowProfile from './src/components/profile/ShowProfile.js'
 import AdminDashboard from './src/components/admin/AdminDashboard.js'
 import Suggestion from './src/components/Suggestion.js'
 import ShowSuggestion from './src/components/admin/ShowSuggestion.js'
-import Search from './src/components/Search.js'
+import Searcher from './src/components/searcher/Searcher.js'
 import NewEvent from './src/components/NewEvent.js'
 import Chat from './src/components/chat/Chat.js'
 import ListChat from './src/components/chat/ListChat.js'
@@ -39,7 +39,7 @@ const AppNavigator = createStackNavigator(
   Home:{screen:Home},
   AddItem:{screen:AddItem},
   ContentItem:{screen:ContentItem},
-  Search:{screen:Search},
+  Searcher:{screen:Searcher},
   AddNotification:{screen:AddNotification},
   NotificationComponent:{screen:NotificationComponent},
   ViewerNotification:{screen:ViewerNotification},

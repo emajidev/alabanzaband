@@ -4,7 +4,8 @@ import {
   Text, 
   StyleSheet, 
   TouchableOpacity, 
-  TextInput, 
+  TextInput,
+  ActivityIndicator, 
   FlatList, 
 } from 'react-native';
 import { withNavigation } from 'react-navigation';
@@ -32,150 +33,25 @@ class ItemComponent extends React.Component {
   componentWillUnmount() {
     this.setState({ search_mode: false })
   }
+  componentDidMount(){
+    
+  }
 
 
   render() {
     /*  filter search coro  */
     if (this.state.songsItems == '') {
       return (
-        <View>
-          <Text>Cargando canciones</Text>
+        <View style={{margin:50,}}>
+          <Text style={{textAlign:'center',fontSize:20,color: '#d3d3d3',margin:10}}>" ¡Lo sentimos!, no se encontraron resultados ;( "</Text>
         </View>
       )
-    } else {
-      if (this.state.typeOfSearch == 'temas') {
-        /*  console.log("category") */
-        let coros = this.props.items.filter(
-          (item) => {
-            return item.category.toLowerCase().indexOf(this.state.typeOfSearch.toLowerCase()) !== -1;
-          }
-        );
-        var filtered = coros.filter(
-          (item) => {
-            /* console.log(item) */
-            /* console.log("temas") */
-            return item.name.toLowerCase().indexOf(this.state.search.toLowerCase()) !== -1;
-          }
-        );
-
-      }
-      if (this.state.typeOfSearch == 'notas') {
-        /* console.log("category") */
-        let coros = this.props.items.filter(
-          (item) => {
-            return item.notes.toLowerCase().indexOf(this.state.typeOfSearch.toLowerCase()) !== -1;
-          }
-        );
-        var filtered = coros.filter(
-          (item) => {
-            /* console.log(item) */
-            /*  console.log("notas") */
-            return item.name.toLowerCase().indexOf(this.state.search.toLowerCase()) !== -1;
-          }
-        );
-
-      }
-      if (this.state.typeOfSearch == 'coros') {
-        /*  console.log("category") */
-        let coros = this.props.items.filter(
-          (item) => {
-            return item.category.toLowerCase().indexOf(this.state.typeOfSearch.toLowerCase()) !== -1;
-          }
-        );
-        var filtered = coros.filter(
-          (item) => {
-            /* console.log(item) */
-            /* console.log("coros") */
-            return item.name.toLowerCase().indexOf(this.state.search.toLowerCase()) !== -1;
-          }
-        );
-
-      }
-      if (this.state.typeOfSearch == 'titulo') {
-        /* console.log("category") */
-        let coros = this.props.items.filter(
-          (item) => {
-            return item.category.toLowerCase().indexOf(this.state.typeOfSearch.toLowerCase()) !== -1;
-          }
-        );
-        var filtered = coros.filter(
-          (item) => {
-            /* console.log(item) */
-            /* console.log("titulo") */
-            return item.name.toLowerCase().indexOf(this.state.search.toLowerCase()) !== -1;
-          }
-        );
-
-      }
-      if (this.state.typeOfSearch == 'name') {
-        var filtered = this.props.items.filter(
-          (item) => {
-            return item.name.toLowerCase().indexOf(this.state.search.toLowerCase()) !== -1;
-          }
-        );
-      }
-
     }
-
     return (
 
-      <View style={styles.itemsList}>
-        {this.props.search_mode == true ? (
-          <View >
-            <TextInput
-              style={{ height: 40, backgroundColor: '#e3e3e3', paddingLeft: 10 }}
-              onChangeText={search => this.setState({ search })}
-              value={this.state.search}
-              placeholder='Escribe aqui para buscar...'
-            />
-            <View style={{ flexDirection: 'row' }}>
-              <TouchableOpacity
-                style={
-                  this.state.typeOfSearch == 'temas'
-                    ? styles.buttonPress
-                    : styles.btnfilter
-                }
-                onPress={() => this.setState({ typeOfSearch: "temas" })}
-              >
-                <Text style={styles.txtFilter}>temas</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={
-                  this.state.typeOfSearch == 'notas'
-                    ? styles.buttonPress
-                    : styles.btnfilter
-                }
-                onPress={() => this.setState({ typeOfSearch: "notas" })}
-              >
-                <Text style={styles.txtFilter}>notas</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={
-                  this.state.typeOfSearch == 'coros'
-                    ? styles.buttonPress
-                    : styles.btnfilter
-                }
-                onPress={() => this.setState({ typeOfSearch: "coros" })}
-              >
-                <Text style={styles.txtFilter}>coros</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={
-                  this.state.typeOfSearch == 'name'
-                    ? styles.buttonPress
-                    : styles.btnfilter
-                }
-                onPress={() => this.setState({ typeOfSearch: "name" })}
-              >
-                <Text style={styles.txtFilter}>titulo</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        ) : (<View>
-        </View>)}
-
+      <View >
         <FlatList
-          data={filtered}
+          data={this.state.songsItems }
           enableEmptySections={true}
           renderItem={({ item, index }) => (
 

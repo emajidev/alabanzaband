@@ -20,7 +20,7 @@ import SelectSongs from '../songs/SelectSongs'
 import ModalComponent from '../modalComponent/ModalComponent'
 import { withNavigation } from 'react-navigation';
 import AvatarComponent from '../avatar/AvatarComponent';
-import {showSongs} from '../functions/showSongs'
+import { showSongs } from '../functions/showSongs'
 import moment from "moment";
 
 var colorTags = [
@@ -75,8 +75,6 @@ class Date_picker extends Component {
 
   render() {
     const iconDatePicker = this.props.icon;
-    const formatChange = this.props.formatChange
-    const modeChange = this.props.modeChange
     console.log("")
     return (
 
@@ -90,10 +88,10 @@ class Date_picker extends Component {
           shadowOpacity: 1,
           shadowOffset: { height: 0, width: 0 },
         }}
-        format={formatChange}
+        format={'DD-MM-YYYY HH:mm'}
         confirmBtnText="Confirm"
         cancelBtnText="Cancel"
-        mode={modeChange}
+        mode={"date"}
         //onDateChange={}
         iconComponent={
           <Icon
@@ -147,8 +145,6 @@ class ScheduleTypeA extends Component {
     this.setModalVisible = this.setModalVisible.bind(this)
     this.state = {
       switch: false,
-      formatChange: "DD-MM-YYYY ",
-      modeChange: "date",
       dateStart: '',
       dateEnd: '',
       colorTag: '#50e2c3ff',
@@ -178,18 +174,6 @@ class ScheduleTypeA extends Component {
     this.setState({ dateEnd: newDate })
 
 
-  }
-  onChangeState(isActive) {
-    this.setState({ switch: isActive })
-    if (isActive) {
-      this.onChangeFormat("DD-MM-YYYY HH:mm", "datetime")
-    } else {
-      this.onChangeFormat("DD-MM-YYYY", "date")
-    }
-  }
-  onChangeFormat(format, mode) {
-    this.setState({ formatChange: format })
-    this.setState({ modeChange: mode })
   }
   handleDateStart = (e) => {
     this.setState({ dateStart: e });
@@ -311,15 +295,21 @@ class ScheduleTypeA extends Component {
     this.setState({ alert: event })
 
   }
-  
+  datesPicker() {
+    return (
+      <View>
+        <Date_picker icon={"ios-arrow-forward"} modDate={'start'} respStart={this.handleDateStart} colorTag={this.state.colorTag} />
+        <Date_picker icon={"ios-arrow-back"} modDate={'end'} respEnd={this.handleDateEnd} colorTag={this.state.colorTag} />
+      </View>
+    )
+  }
+
   render() {
 
     const currentDate = this.state.dateCurrent
     const songs = this.props.global.songs;
     const songsDb = this.props.global.songsDb;
     const switchState = this.state.switch
-    const formatChange = this.state.formatChange
-    const modeChange = this.state.modeChange
     let friends = this.props.global.friends;
     /* console.log("currentDate", this.state.dateStart) */
     return (
@@ -377,9 +367,7 @@ class ScheduleTypeA extends Component {
                 placeholder="Título" />
             </Item>
           </Form>
-
-          <Date_picker icon={"ios-arrow-forward"} formatChange={formatChange} modeChange={modeChange} modDate={'start'} respStart={this.handleDateStart} colorTag={this.state.colorTag} />
-          <Date_picker icon={"ios-arrow-back"} formatChange={formatChange} modeChange={modeChange} modDate={'end'} respEnd={this.handleDateEnd} colorTag={this.state.colorTag} />
+          {this.datesPicker}
           <ListItem icon style={{ marginTop: 20 }} noBorder>
             <Left>
               <Button
@@ -480,7 +468,7 @@ class ScheduleTypeA extends Component {
             <Right></Right>
           </ListItem>
           <View style={{ width: '100%' }}>
-            {showSongs(songs,songsDb)}
+            {showSongs(songs, songsDb)}
 
           </View>
           <ListItem icon noBorder>
