@@ -93,17 +93,22 @@ class UserProvider extends Component {
   setEvents = events => {
     this.setState(prevState => ({ events: events }))
   }
-  setSongs = songs => {
-    songs.map((item) => {
-      this.state.songs.push(item)
-    })
-    Array.prototype.unique = function (a) {
-      return function () { return this.filter(a) }
-    }(function (a, b, c) {
-      return c.indexOf(a, b + 1) < 0
-    });
-    let newArray = this.state.songs.unique()
-    this.setState(prevState => ({ songs: newArray }))
+  setSongs = (songs) => {
+    
+    if(songs == 'clear'){
+      this.setState({ songs: [] })
+    }else{
+      songs.map((item) => {
+        this.state.songs.push(item)
+      })
+      Array.prototype.unique = function (a) {
+        return function () { return this.filter(a) }
+      }(function (a, b, c) {
+        return c.indexOf(a, b + 1) < 0
+      });
+      let newArray = this.state.songs.unique()
+      this.setState(prevState => ({ songs: newArray }))
+   }
   }
 
   render() {

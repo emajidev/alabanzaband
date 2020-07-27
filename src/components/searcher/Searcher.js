@@ -47,8 +47,9 @@ export default class Searcher extends Component {
   };
   render() {
     return (
-      <View style={{ marginLeft: 15, marginRight: 15 }} >
-
+      <View>
+      {this.props.hide == false ? (
+        <View style={{ marginLeft: 15, marginRight: 15 }} >
         <Item rounded >
           <Input placeholder='Buscar'
             placeholderTextColor={'#d3d3d3'}
@@ -79,7 +80,12 @@ export default class Searcher extends Component {
           )}
         />
       </View>
-
+      ):(
+        console.log('')
+      )
+    }
+     
+</View>
 
 
     )

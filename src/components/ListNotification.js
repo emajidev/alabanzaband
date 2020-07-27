@@ -6,13 +6,14 @@ import {
   TouchableOpacity,
   FlatList,
   Text,
-  Image
+  Image,
+  Alert
 
 } from "react-native";
 import { withNavigation } from "react-navigation";
 
 import { withGlobalContext } from './UserContext';
-
+import {chanelNotifications,SendNotifications} from './notifications/Notifications'
 import {
   Container,
   Content,
@@ -156,6 +157,7 @@ class ListNotification extends React.Component {
   this.props.setBadge(false)
 }
   componentDidMount() {
+    chanelNotifications()
     this.setState({infoTask:this.props.infoTask})
     this.setBadge()
     this.currentDate()
@@ -178,6 +180,15 @@ class ListNotification extends React.Component {
 }
   viewerNotifications(info){
     this.props.navigation.navigate("ViewerNotification",{infoEvent:info});
+  }
+  async successful(item){
+    try {
+      let response = await changeStatus(this.props.global.account,item.id,'accept');
+      SendNotifications()
+    } catch(e) {
+      console.log(e); // 30
+      Alert.alert("ha ocurrido un error en la conexion! ");
+    }
   }
   
   render() {
@@ -227,9 +238,11 @@ class ListNotification extends React.Component {
                       <Text style={{marginBottom:3,color:[item.colorTag]}}>Participar</Text>
                       <View style={{flexDirection:'row'}}>
                       <TouchableOpacity style={{height:40,width:40,justifyContent:'center',alignItems:'center',backgroundColor:[item.colorTag],borderBottomLeftRadius:10,borderTopLeftRadius:10}}
-                      onPress={()=>changeStatus(this.props.global.account,item.id,'accept')}
+                      onPress={()=>{
+                        this.successful(item)
+                        }}
                       > 
-                        <Text style={{color:'#f5f5f5'}}>Si</Text>
+                      <Text style={{color:'#fff'}}>si</Text>
                       </TouchableOpacity>
                       <TouchableOpacity style={{height:40,width:40,justifyContent:'center',alignItems:'center',borderWidth:1,borderColor:[item.colorTag]}}
                       onPress={()=>changeStatus(this.props.global.account,item.id,'denied')}

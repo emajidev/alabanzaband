@@ -6,7 +6,6 @@ import ScheduleTypeA from './scheduledEvents/ScheduleTypeA'
 import ScheduleTypeB from './scheduledEvents/ScheduleTypeB'
 import getTheme from "../../native-base-theme/components";
 import Icon from 'react-native-vector-icons/Feather';
-
 import themeA from '../../native-base-theme/variables/themeA';
 import themeB from '../../native-base-theme/variables/themeB';
 import themeC from '../../native-base-theme/variables/themeC';
@@ -89,45 +88,8 @@ class NewEvent extends Component {
           </Body>
 
         </Header>
-        <Tabs tabContainerStyle={{ elevation: 0 }}>
-          <Tab
-            heading={
-              <TabHeading >
-                <View style={{ alignItems: 'center' }}>
+        <ScheduleTypeA setTheme={this.setTheme} />
 
-                  <Text>Continuo</Text>
-                  <Icon
-                    size={25}
-                    style={{ color: [this.state.colorTag] }}
-                    name={'minus'}
-                  />
-                </View>
-              </TabHeading>
-            }
-          >
-            <ScheduleTypeA setTheme={this.setTheme} />
-
-          </Tab>
-          <Tab
-            heading={
-              <TabHeading>
-                <View style={{ alignItems: 'center' }}>
-
-                  <Text>Intermitente</Text>
-                  <Icon
-                    size={25}
-                    style={{ color: [this.state.colorTag] }}
-                    name={'more-horizontal'}
-                  />
-                </View>
-              </TabHeading>
-            }
-          >
-            <ScheduleTypeB />
-          </Tab>
-
-
-        </Tabs>
       </Container>
     );
   }

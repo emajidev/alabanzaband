@@ -23,6 +23,7 @@
     "expo-font": "~8.1.0",
     "expo-image-picker": "~8.1.0",
     "expo-sqlite": "~8.1.0",
+    "fetch": "^1.1.0",
     "firebase": "^7.1.0",
     "jshashes": "^1.0.8",
     "lodash.range": "^3.2.0",

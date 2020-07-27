@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { View, Text, FlatList, StyleSheet } from "react-native";
-import List from "../List";
+import ShowSongsComponent from "./ShowSongsComponent";
 
 export function showSongs(selected, songsDb, mod) {
     console.log("showSongs", selected, songsDb)
@@ -22,12 +22,12 @@ export function showSongs(selected, songsDb, mod) {
                     enableEmptySections={true}
                     renderItem={({ item, index }) => (
                         <View style={styles.selectSong}>
-                            <Text style={{ color: '#50e2c3ff' }}>{item.name}</Text>
+                            <Text style={{ color: '#50e2c3ff' }}>hola{item.name}</Text>
                         </View>
                     )}
                 />
             ) : (
-                <List songs={songs} />
+                <ShowSongsComponent songs={songs} />
                 )
 
             }

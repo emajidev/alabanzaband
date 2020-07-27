@@ -6,11 +6,10 @@ import * as Permissions from 'expo-permissions';
 
 import { Text, View, Button } from 'react-native';
 
-export default class SendNotifications extends React.Component {
 
 
-    componentDidMount() {
-        this.alertIfRemoteNotificationsDisabledAsync()
+export function chanelNotifications() {
+       alertIfRemoteNotificationsDisabledAsync()
         if (Platform.OS === 'android') {
             Notifications.createChannelAndroidAsync('notifications-messages', {
               name: 'notifications-messages',
@@ -20,7 +19,7 @@ export default class SendNotifications extends React.Component {
             });
           }
           Notifications.createCategoryAsync('categoryNot', [
-            {
+          /*   {
               actionId: 'vanillaButton',
               buttonTitle: 'Plain Option',
               isDestructive: false,
@@ -45,20 +44,21 @@ export default class SendNotifications extends React.Component {
               isDestructive: false,
               isAuthenticationRequired: false,
             },
+            */ 
           ]);  
     }
-    async alertIfRemoteNotificationsDisabledAsync() {
+async function alertIfRemoteNotificationsDisabledAsync() {
     const { status } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
     if (status !== 'granted') {
         alert('Hey! You might want to enable notifications for my app, they are good.');
     }
 }
 
-scheduleNotification = async () => {
+export async function SendNotifications() {
     const localNotification = {
-        title: 'Original Title',
-        body: 'And here is the body!',
-        categoryId:'categoryNot',
+        title: 'Felicitaciones!...',
+        body: 'Se enviado tu respuesta con Exito! ',
+       
         android: {
             channelId: 'notifications-messages',
             vibrate: [0, 250, 250, 250],
@@ -83,23 +83,6 @@ scheduleNotification = async () => {
     });
 };
 
-render() {
-    return (
-        <View
-            style={{
-                flex: 1,
-                alignItems: 'center',
-                justifyContent: 'space-around',
-            }}>
-
-            <Button
-                title={'Press to schedule notification in 2 minutes'}
-                onPress={() => this.scheduleNotification()}
-            />
-        </View>
-    );
-}
-}
 
 /*  TO GET PUSH RECEIPTS, RUN THE FOLLOWING COMMAND IN TERMINAL, WITH THE RECEIPTID SHOWN IN THE CONSOLE LOGS
 

@@ -7,6 +7,8 @@ import Loading from './src/components/Loading.js'
 import SignUp from './src/components/SignUp.js'
 import Login from './src/components/Login.js'
 import FormProfile from './src/components/FormProfile'
+import Director from './src/components/kindProfile/Director'
+import Performer from './src/components/kindProfile/Performer'
 
 const AuthNavigation = createStackNavigator(
 {
@@ -15,8 +17,8 @@ const AuthNavigation = createStackNavigator(
   SignUp:{screen:SignUp},
   Login: {screen: Login },
   FormProfile:{screen:FormProfile},
-
-
+  Performer:{screen:Performer},
+  Director:{screen:Director}
 },
 {headerMode: 'none',
   initialRouteName: 'Presentation',

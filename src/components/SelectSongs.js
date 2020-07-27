@@ -9,7 +9,6 @@ import IconLike from 'react-native-vector-icons/AntDesign';
 
 import {ThemeContext, themes} from './conext/theme-context';
 import {ThemeProvider} from 'styled-components/native'
-import PouchDB from 'pouchdb-react-native'
 import { TouchableHighlight } from 'react-native-gesture-handler';
 import { db } from './firebase.js';
 

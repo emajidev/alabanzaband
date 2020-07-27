@@ -40,7 +40,7 @@ class ItemComponent extends React.Component {
 
   render() {
     /*  filter search coro  */
-    if (this.state.songsItems == '') {
+    if (this.state.songsItems == '' && this.props.mode == 'listSongs') {
       return (
         <View style={{margin:50,}}>
           <Text style={{textAlign:'center',fontSize:20,color: '#d3d3d3',margin:10}}>" ¡Lo sentimos!, no se encontraron resultados ;( "</Text>

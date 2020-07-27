@@ -201,7 +201,7 @@ class Home extends React.Component {
                 <Title style={{ letterSpacing: 5 }}>alabanzaband</Title>
               </Body>
               <Right style={{ flex: 0.5 }}>
-                <Button
+               {/*  <Button
                   transparent
                   onPress={() => {
                     this.setState({ text: 'hola' })
@@ -209,7 +209,7 @@ class Home extends React.Component {
                   }}
                 >
                   <Icon name="search" />
-                </Button>
+                </Button> */}
               </Right>
             </Header>
 
@@ -252,6 +252,7 @@ class Home extends React.Component {
                 {/* //component B */}
                 <ListNotification infoTask={this.state.infoTask} setBadge={this.setBadge}/>
               </Tab>
+           
               <Tab
                 heading={
                   <Button transparent onPress={() => this.props.navigation.navigate("NewEvent")}>
@@ -268,7 +269,7 @@ class Home extends React.Component {
               >
                 {/*  //component C  */}
 
-                {this.state.songs != null ? (<List songs={this.state.songs} />) :
+                {this.state.songs != null ? (<List songs={this.state.songs} hide={false}  category={true}/>) :
                   (
                     <SafeAreaView style={styles.cont}>
                       <Preload />

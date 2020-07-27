@@ -286,6 +286,9 @@ class ScheduleTypeA extends Component {
   }
   componentWillUnmount() {
     this._isMounted = false;
+    this.props.global.setSongs('clear')
+
+    
   }
   setModalVisible(visible) {
     this.setState({ modalVisible: visible });
@@ -367,7 +370,7 @@ class ScheduleTypeA extends Component {
                 placeholder="Título" />
             </Item>
           </Form>
-          {this.datesPicker}
+          {this.datesPicker()}
           <ListItem icon style={{ marginTop: 20 }} noBorder>
             <Left>
               <Button
@@ -383,30 +386,7 @@ class ScheduleTypeA extends Component {
             </Body>
 
           </ListItem>
-          <ListItem icon noBorder>
-            <Left>
-              <Button
-                trasnparent
-                style={{ backgroundColor: "#fff", elevation: 0 }}
-              >
-                <Icon
-                  size={30}
-                  style={{ color: [this.state.colorTag] }}
-                  name="ios-notifications"
-                />
-              </Button>
-            </Left>
-            <Body>
-              <Text>Ninguna notificacion</Text>
-            </Body>
-            <Right>
-              <Icon
-                size={30}
-                style={{ color: [this.state.colorTag] }}
-                name="close-circle"
-              />
-            </Right>
-          </ListItem>
+         
           <ListItem icon style={{ height: 50 }} noBorder >
             <Left>
               <Button

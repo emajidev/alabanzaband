@@ -6,10 +6,17 @@ import { withNavigation } from 'react-navigation'
 import { AsyncStorage } from 'react-native';
 import { insert_In_avatarUri, select_avatarUri } from './SqliteDateBase';
 import { withGlobalContext } from './UserContext';
-import SendNotifications from './notifications/Notifications'
+import { Notifications } from 'expo';
+import * as Permissions from 'expo-permissions';
+import Constants from 'expo-constants';
+import { TouchableOpacity } from "react-native-gesture-handler";
 
+import * as firebase from "firebase/app";
+
+import { PushNotifications } from "./notifications/PushNotifications"
 
 class Main extends React.Component {
+
   constructor() {
     super();
     this._isMounted = false;
@@ -33,12 +40,15 @@ class Main extends React.Component {
       // Error retrieving data
     }
   }
+  pushFetch() {
+    PushNotifications("ExponentPushToken[BY6vrdFmBIE5ihdUq2PDiL]")
+  }
   componentDidMount() {
     this._isMounted = true;
     if (this._isMounted) {
+      this.registerForPushNotificationsAsync()
       this.getStore()
       setTimeout(() => {
-        console.log("hola");
         this.setState({ loading: true });
       }, 5000);
 
@@ -47,6 +57,35 @@ class Main extends React.Component {
   componentWillUnmount() {
     this._isMounted = false;
   }
+  registerForPushNotificationsAsync = async () => {
+    if (Constants.isDevice) {
+      const { status: existingStatus } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
+      let finalStatus = existingStatus;
+      if (existingStatus !== 'granted') {
+        const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+        finalStatus = status;
+      }
+      if (finalStatus !== 'granted') {
+        return;
+      }
+      const token = await Notifications.getExpoPushTokenAsync();
+      console.log(token);
+      this.setState({ expoPushToken: token });
+      var updates = {}
+      updates['/expoToken'] = token
+      await firebase.database().ref('/userss/' + currentUser.uid).update(updates)
+    } else {
+    }
+    if (Platform.OS === 'android') {
+      Notifications.createChannelAndroidAsync('push-notification', {
+        name: 'push-notification',
+        sound: true,
+        priority: 'max',
+        vibrate: [0, 250, 250, 250],
+      });
+    }
+
+  };
   Loading = () => {
     return (
       <View
@@ -63,21 +102,28 @@ class Main extends React.Component {
           backgroundColor: "#fff"
         }}
       >
-        
+
         <Text style={{ fontSize: 20, margin: 20, letterSpacing: 15, color: "rgba(80,227,194,1)" }}>
           iniciando
         </Text>
       </View>
     );
   };
+  addRow(data) {
+
+    var key = firebase.database().ref('/contacts').push().key
+    firebase.database().ref('/contacts').child(key).set({ name: data })
+  }
   render() {
     const user = { name: "Tania", loggedIn: true };
-    /* <SendNotifications /> */
     return (
       <UserProvider value={user}>
         {this.state.loading == false
           ? this.Loading()
           : console.log("loading true")}
+        {/* <TouchableOpacity onPress={() => this.pushFetch()}>
+          <Text style={{ margin: 50 }}>agregar</Text>
+        </TouchableOpacity> */}
         <Home />
       </UserProvider>
     );
