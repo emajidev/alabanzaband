@@ -51,7 +51,7 @@ class Sidebar extends Component {
   }
 
   getStore = async () => {
-    console.log("store llamado");
+    //console.log("store llamado");
     try {
       const value = await AsyncStorage.getItem("@storage_Key");
       if (value !== null) {
@@ -123,10 +123,10 @@ class Sidebar extends Component {
 
     }).then((snapshot) => {
 
-      console.log("File uploaded");
+      //console.log("File uploaded");
       firebase.storage().ref().child("uploads/photo" + email + ".jpg").getDownloadURL()
         .then(response => {
-          console.log("url", response)
+          //console.log("url", response)
           this.setState({ source: response })
           setTimeout(() => {
             this.setState({ refreshAvatar: true })
@@ -164,9 +164,9 @@ class Sidebar extends Component {
     return (
       <StyleProvider style={getTheme(color.theme)}>
         <Container>
-          <Header style={{ backgroundColor: [this.props.global.color.color], height: 300 }}>
+          <Header style={{ backgroundColor: [this.props.global.color.color], height: 450, paddingLeft: 0, paddingRight: 0, paddingBottom: 0 }}>
             <Content contentContainerStyle={{ flex: 1 }}>
-              <Grid style={{ marginTop: StatusBar.currentHeight + 15 }}>
+              <Grid style={{ marginTop: StatusBar.currentHeight + 5 }}>
                 <Row>
                   <Col
                     style={{
@@ -198,27 +198,43 @@ class Sidebar extends Component {
                       onPress={() => this.handleGetImages(email)}
                     >
                       <Icon
-                        style={{ color:[this.props.global.color.color], fontSize: 25 }}
+                        style={{ color: [this.props.global.color.color], fontSize: 25 }}
                         name="md-camera"
                       />
                     </Button>
                   </Col>
                 </Row>
                 <Row>
-                  <Col
-                    style={{ alignItems: "center", justifyContent: "center" }}
-                  >
-                    <Text
-                      style={{ color: "#fff", marginTop: 30, fontSize: 15 }}
-                    >
-                      BIENVENIDO
+                  <Col style={{ alignItems: "center", justifyContent: "space-between" }} >
+                    <View style={{ alignItems: "center", justifyContent: "center", marginTop: 10 }} >
+                      <Text
+                        style={{ color: "#000", fontWeight: 'bold', opacity: .3, fontSize: 15 }}
+                      >
+                        BIENVENIDO
                     </Text>
-                    <Text style={{ color: "#fff", marginTop: 5, fontSize: 14 }}>
-                      {this.state.dataUser.nick}
-                    </Text>
-                    <Text style={{ color: "#fff", marginTop: 5, fontSize: 14 }}>
-                      user: {this.state.dataUser.user}
-                    </Text>
+                      <Text style={{ color: "#000", fontWeight: 'bold', opacity: .3, marginTop: 1, fontSize: 14 }}>
+                        {this.state.dataUser.nick}
+                      </Text>
+                    </View>
+
+                    <View style={{ width: '100%', padding: 10, backgroundColor: 'rgba(255, 255, 255, 0.16)', marginTop: 5 }}>
+                      <Text style={{ color: "#000", opacity: .3, fontWeight: 'bold',marginBottom: 5, fontSize: 14 }}>
+                        Datos de perfil
+                      </Text>
+                      <Text style={{ color: "#000", opacity: .3, marginTop: 2, fontSize: 14 }}>
+                        * Director {this.state.dataUser.directorName}
+                      </Text>
+                      <Text style={{ color: "#000", opacity: .3, marginTop: 2, fontSize: 14 }}>
+                        * Iglesia {this.state.dataUser.church}
+                      </Text>
+                      <Text style={{ color: "#000", opacity: .3, marginTop: 2, fontSize: 14 }}>
+                        * Destreza: {this.state.dataUser.rol}
+                      </Text>
+                      <Text style={{ color: "#000", opacity: .3, marginTop: 2, fontSize: 14 }}>
+                        * cuenta: {this.state.dataUser.user}
+                      </Text>
+                    </View>
+
                     {/*         <Text style={{ color: "#fff", marginTop: 5, fontSize: 12 }}>
                       telefono: {phone}
                     </Text> */}
@@ -228,7 +244,7 @@ class Sidebar extends Component {
             </Content>
           </Header>
 
-          <Tabs tabContainerStyle={{elevation: 0}}>
+          <Tabs tabContainerStyle={{ elevation: 0 }}>
             <Tab
               heading={
                 <TabHeading>
@@ -260,7 +276,7 @@ export default withGlobalContext(Sidebar);
 const styles = StyleSheet.create({
   imageSelect: {
     position: "absolute",
-    top: 150 - 55,
+    bottom: 0,
     elevation: 5,
     padding: 0,
     width: 55,

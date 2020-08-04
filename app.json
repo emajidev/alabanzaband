@@ -19,7 +19,7 @@
     },
     "notification": {
       "icon": "./assets/icons/icon.png",
-      "color": "#a649f2"
+      "color": "#2ffff2"
     },
     "updates": {
       "fallbackToCacheTimeout": 0

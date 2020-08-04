@@ -125,7 +125,7 @@ class Calendars extends React.Component {
     console.disableYellowBox = true;
     let theme=this.props.global.color.theme;
     let task=this.state.dataSourceTask;
-    console.log("task",task)
+    //console.log("task",task)
     return (
       <StyleProvider style={getTheme(theme)}>
         <Container>
@@ -158,7 +158,7 @@ class Calendars extends React.Component {
               refreshing={true}
               // Add a custom RefreshControl component, used to provide pull-to-refresh functionality for the ScrollView.
               onVisibleMonthsChange={months => {
-                console.log("now these months are visible", months);
+                //console.log("now these months are visible", months);
               }}
               // Max amount of months allowed to scroll to the past. Default = 50
               pastScrollRange={5}

@@ -13,7 +13,7 @@ import {
 import { withNavigation } from "react-navigation";
 
 import { withGlobalContext } from './UserContext';
-import {chanelNotifications,SendNotifications} from './notifications/Notifications'
+import { chanelNotifications, SendNotificationSchedule } from './notifications/Notifications'
 import {
   Container,
   Content,
@@ -28,7 +28,6 @@ import {
   Right,
   Button,
   Title,
-  Badge,
   FooterTab,
   Footer,
   StyleProvider,
@@ -89,7 +88,6 @@ class ListNotification extends React.Component {
 
   constructor(props) {
     super(props);
-    this.setBadge = this.setBadge.bind(this)
     this.state = {
       isModalVisible: false,
       dataAgenda: 'No hay programacion para hoy',
@@ -153,13 +151,11 @@ class ListNotification extends React.Component {
 
     return unique;
   }
-  setBadge(){
-  this.props.setBadge(false)
-}
+ 
+  
   componentDidMount() {
     chanelNotifications()
     this.setState({infoTask:this.props.infoTask})
-    this.setBadge()
     this.currentDate()
     this.intervalID = setInterval(
       () => this.clock(),
@@ -175,8 +171,19 @@ class ListNotification extends React.Component {
   componentWillReceiveProps(e) {
     this.setState({infoTask:e.infoTask})
     //console.log("componentWillReceiveProps is triggered", e.infoTask)
+    e.infoTask.forEach((task)=>{
+      console.log("task",task)
+      //LocalNotificationEventsSchedule()
+    })
 
     
+}
+LocalNotificationEventsSchedule(propsInfoTask) {
+  chanelNotifications();
+  let msg;
+  let infoTask = propsInfoTask
+  msg = infoTask.title
+  SendNotificationSchedule(infoTask.dateEnd, msg)
 }
   viewerNotifications(info){
     this.props.navigation.navigate("ViewerNotification",{infoEvent:info});
@@ -184,9 +191,9 @@ class ListNotification extends React.Component {
   async successful(item){
     try {
       let response = await changeStatus(this.props.global.account,item.id,'accept');
-      SendNotifications()
+      SendNotifications();
     } catch(e) {
-      console.log(e); // 30
+      //console.log(e); // 30
       Alert.alert("ha ocurrido un error en la conexion! ");
     }
   }

@@ -1,9 +1,10 @@
 import React from "react";
 import moment from "moment";
 import { FlatGrid } from 'react-native-super-grid';
-import { StyleSheet, View, FlatList, Text, Dimensions } from "react-native";
+import { StyleSheet, View, FlatList, Text, Dimensions, TouchableOpacity, } from "react-native";
 import { formatToProcess, convertTimeStamp } from "../functions/FormatDate"
 import { withGlobalContext } from '../UserContext';
+import Icon from 'react-native-vector-icons/AntDesign';
 
 
 import * as firebase from "firebase/app";
@@ -13,55 +14,75 @@ class CalendarTimeline extends React.Component {
     constructor(props) {
 
         super(props);
+
         this._isMounted = false;
         this.state = {
             cells: [],
-            infoTask:[]
+            infoTask: [],
+            currentMonth: moment()
         };
 
     }
 
 
-     componentDidMount() {
+    async componentDidMount() {
 
         this._isMounted = true;
         if (this._isMounted) {
-            //console.log("props2",this.props.items)
-            cells = this.generateDates(moment())
+            
+            setTimeout(() => {
+                cells = this.generateDates(this.state.currentMonth)
+                this.postProcessing(this.props.infoTask, cells)
+            }, 200)
+
+
+
+
 
         }
-
-
     }
+    showCells() {
+        cells = this.generateDates(this.state.currentMonth)
+    }
+    changeMonth(next = false) {
+        this.setState({ currentMonth: this.state.currentMonth })
 
-    postProcessing(infoTask) {
-        //console.log("props info task",infoTask)
+        if (next) {
+            cells = this.generateDates(this.state.currentMonth.add(1, 'months'))
+            this.postProcessing(this.props.infoTask, cells)
 
-        if (infoTask.length > 0 ) {
-            // console.log("nulo cell")
-            let format = this.giveFormat(infoTask)
+        } else {
+            cells = this.generateDates(this.state.currentMonth.subtract(1, 'months'))
+            this.postProcessing(this.props.infoTask, cells)
+
+
+        }
+    }
+    postProcessing(infoTask, cellProps) {
+        if (infoTask.length > 0) {
+
+            let format = this.giveFormat(infoTask, cellProps)
             return format
 
-        } 
-        if(infoTask == null){
-        let cells = this.generateDates(moment())
+        }
+        if (infoTask == null) {
+            let cells = this.generateDates(cellProps)
             //validation
             return cells
         }
     }
     componentWillReceiveProps(e) {
         //this.setState({infoTask:e.infoTask})
-        //console.log("componentWillReceiveProps is triggered", e.infoTask)
-        this.postProcessing(e.infoTask)
-
-        
+        //console.log("componentWillReceiveProps is triggered", e)
+        let cellProps = this.generateDates(this.state.currentMonth)
+        this.postProcessing(e.infoTask, cellProps)
     }
+
     componentWillUnmount() {
         this._isMounted = false;
     }
-    intermediateDays(a, b, uid,colorTag,type) {
-        let dateStart = a
-        let dateEnd = b
+
+    intermediateDays(dateStart, dateEnd, uid, colorTag, type) {
         let dates = []
         // find last date to the month
         // (días * 24 horas * 60 minutos * 60 segundos * 1000 milésimas de segundo) 
@@ -83,39 +104,40 @@ class CalendarTimeline extends React.Component {
             } else {
                 break
             }
-          
 
         }
-        //console.log("suma dias2 ", dates)
+        //* console.log("suma dias2 ", dates)
         return dates
 
 
     }
-    giveFormat(events) {
+    giveFormat(events, cellProps) {
+
         //console.log("llego", events)
         let newObj = []
         let newObj2 = []
 
         events.map((item) => {
-            // console.log("llego", item.event)
-
+            let formatDateStart = formatToProcess(item.dateStart);
+            let formatDateEnd = formatToProcess(item.dateEnd);
             let dateStart = {
                 title: item.title,
-                date: formatToProcess(item.dateStart),
+                date: formatDateStart,
                 color: item.colorTag,
                 type: 'start',
                 key: item.uid
             }
             let dateEnd = {
                 title: '',
-                date: formatToProcess(item.dateEnd),
+                date: formatDateEnd,
                 color: item.colorTag,
                 type: 'end',
                 key: item.uid
             }
-            let interDays = this.intermediateDays(item.dateStart,item.dateEnd,item.uid,item.colorTag,'interDay')
-            let object = [].concat(dateStart,dateEnd ,interDays);
-            object.map((item)=>{
+            let interDays = this.intermediateDays(item.dateStart, item.dateEnd, item.uid, item.colorTag, 'interDay')
+            let object = [].concat(dateStart, dateEnd, interDays);
+            //console.log("this is object",object)
+            object.map((item) => {
                 newObj.push(item)
             })
 
@@ -124,16 +146,11 @@ class CalendarTimeline extends React.Component {
         //console.log("nuevo elemento formateado", newObj)
         if (newObj.length > 0) {
             //console.log("ejecucion",newObj)
-            cells = this.generateDates(moment())
 
-            return this.dataLine(newObj, cells)
-
-
+            return this.dataLine(newObj, cellProps)
         }
-
-
     }
-    generateDates(monthToShow = moment()) {
+    generateDates(monthToShow) {
         if (!moment.isMoment(monthToShow)) {
             return null;
         }
@@ -152,14 +169,15 @@ class CalendarTimeline extends React.Component {
         d.setMonth(s[1] - 1);
         d.setDate(s[2]);
         let newDate = moment(d).format('YYYY-MM-DD')
+        //console.log("newDate",newDate)
         return newDate
     }
 
 
 
-    dataLine(events, propsCells) {
-        let ordered_events = events
-        // console.log("ordered_events2",ordered_events)
+    dataLine(events, cellProps) {
+
+        //console.log("ordered_events2",ordered_events)
         let listDates = []
         Array.prototype.unique = function (a) {
             return function () { return this.filter(a) }
@@ -167,22 +185,53 @@ class CalendarTimeline extends React.Component {
             return c.indexOf(a, b + 1) < 0
         });
         // ordenar fecha de eventos 
-        ordered_events.map((event) => {
+        events.map((event) => {
             let newDate = event.date
             listDates.push(newDate)
+            //console.log("newDate",newDate)
         })
-        // console.log("listDates",listDates)
+        //console.log("listDates",listDates)
         let uniqueEvent = listDates.unique().sort()
+        //console.log("uniqueEvent",uniqueEvent)
         let newListEvent = []
-        uniqueEvent.map(a => { var b = ordered_events.filter(b => -1 !== b.date.toLowerCase().indexOf(a.toLowerCase())); let c = []; b.map(a => { d = { color: a.color, title: a.title, type: a.type, key: a.key }, c.push(d) }); let d = { dateLine: c, date: a }; newListEvent.push(d) });
-        //console.log("filtro", newListEvent);
-        propsCells.map(a => { newListEvent.map(b => { const c = a.date.format("YYYY-MM-DD"); let d = this.convertDate(b.date); if (d == c) { let c = Object.values(b.dateLine); a.dateLines.splice(1, 1, c) } }) });
+        uniqueEvent.map((itemEvent) => {
+
+            var filtered = events.filter(item => item.date === itemEvent);
+            //console.log("filtered",filtered)
+            let newList = []
+            filtered.map((item) => {
+                data = {
+                    color: item.color,
+                    title: item.title,
+                    type: item.type,
+                    key: item.key
+                }
+                newList.push(data)
+                //console.log("filtro", newList);
+            })
+            let data = { dateLine: newList, date: itemEvent }
+            newListEvent.push(data)
+        })
+        cellProps.map(a => {
+            newListEvent.map(b => {
+                const c = a.date.format("YYYY-M-D")
+                let d = b.date
+                //console.log("match2",d ,c  ); 
+
+                if (d == c) {
+                    let c = Object.values(b.dateLine);
+                    a.dateLines.splice(1, 1, c)
+
+                }
+            })
+        });
+
         let listDateLines = []
         // algoritmo de reordenamiento de espacios entre start y end
         ///////////////////////////////////////////////////////////
         // se mapea las posiciones en que quedaron los timelines sin correcion
 
-        for (var i = 0; i < events.length; i++) { return this.corrector(propsCells) };
+        for (var i = 0; i < events.length; i++) { return this.corrector(cellProps) };
     }
     corrector(listDateLines) {
         let i = 0;
@@ -192,7 +241,8 @@ class CalendarTimeline extends React.Component {
             if (dataLines.dateLines != '') {
                 //console.log("eventos", index, timeline.dateLines[0])
                 //console.log("evento anterior", this.state.cells[index - 1].dateLines[0])
-                const arrayParent = listDateLines[index - 1].dateLines[0];
+                let newIndex = index == 0 ? 1 : index;
+                const arrayParent = listDateLines[newIndex - 1].dateLines[0];
                 if (arrayParent != undefined) {
 
                     dataLines.dateLines[0].map((item, indexChild) => {
@@ -207,8 +257,19 @@ class CalendarTimeline extends React.Component {
 
                                 if (indexChild != indexParent) {
                                     let initial = indexChild;
-                                    while (initial < indexParent) {
-                                        dataLines.dateLines[0].unshift(space)
+
+                                    while (indexParent > initial) {
+                                        let newLine = []
+                                        dataLines.dateLines[0].forEach((itemLine, index) => {
+                                            if (index === initial) {
+                                                newLine.push(itemLine)
+                                                newLine.splice(index, 0, space)
+                                            } else {
+                                                newLine.push(itemLine)
+                                            }
+
+                                        })
+                                        dataLines.dateLines[0] = newLine
                                         initial++
                                     }
 
@@ -222,20 +283,39 @@ class CalendarTimeline extends React.Component {
 
             }
         })
-
+    }
+    monthSrt(n) {
+        let month = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
+        return month[n]
     }
     renderLines(dateline, index) {
         if (dateline[0] != undefined) {
             return dateline[0].map((item) => {
-                return (
-                    <View style={{ position: 'relative', width: '100%', height: 15, backgroundColor: [item.color], marginBottom: 2 }}>
-                        <Text style={{ fontSize: 9, color: '#fff', textAlign: 'center' }}>{item.title} {/* {index} */}</Text>
-                    </View>
-                )
+                //console.log("item", item)
+                if (item.type == 'start') {
+                    return (
+                        <View style={{ position: 'relative', width: '100%', height: 15, backgroundColor: [item.color], marginBottom: 2, borderBottomLeftRadius: 50, borderTopLeftRadius: 50 }}>
+                            <Text style={{ fontSize: 9, marginLeft: 10, color: '#fff', textAlign: 'center' }}>{item.title}</Text>
+                        </View>
+                    )
+                } else if (item.type == "end") {
+                    return (
+                        <View style={{ position: 'relative', width: '100%', height: 15, backgroundColor: [item.color], marginBottom: 2, borderBottomRightRadius: 50, borderTopRightRadius: 50 }}>
+                        </View>
+                    )
+                } else {
+                    return (
+                        <View style={{ position: 'relative', width: '100%', height: 15, backgroundColor: [item.color], marginBottom: 2, }}>
+                        </View>
+                    )
+                }
+
             })
         }
     }
+
     render() {
+        //console.log("fecha", cells)
         const deviceDisplay = Dimensions.get("window");
         const deviceHeight = deviceDisplay.height;
         const deviceWidth = deviceDisplay.width;
@@ -244,10 +324,28 @@ class CalendarTimeline extends React.Component {
 
         return (
             <View style={{ flex: 1, justifyContent: 'flex-start', }}>
-                <View style={{ height: 50 }}>
-                    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                        <Text>celendario</Text>
-                    </View>
+                <View style={{ height: 50, flexDirection: 'row', width: '100%', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <TouchableOpacity
+                        style={{ Width: 100, height: 50, justifyContent: 'center', alignItems: 'center' }}
+                        onPress={() => {
+                            this.changeMonth(false)
+                        }}
+                    >
+                        <View style={{ width: 60, justifyContent: 'center', alignItems: 'center' }}>
+                            <Icon name='caretleft' size={20} />
+                        </View>
+                    </TouchableOpacity>
+                    <Text> {this.monthSrt(this.state.currentMonth.month())} de {this.state.currentMonth.year()} </Text>
+                    <TouchableOpacity
+                        style={{ Width: 100, height: 50, justifyContent: 'center', alignItems: 'center' }}
+                        onPress={() => {
+                            this.changeMonth(true)
+                        }}>
+                        <View style={{ width: 60, justifyContent: 'center', alignItems: 'center' }}>
+                            <Icon name='caretright' size={20} />
+                        </View>
+                    </TouchableOpacity>
+
                 </View>
                 <View>
                     <FlatGrid
@@ -267,15 +365,14 @@ class CalendarTimeline extends React.Component {
                         renderItem={({ item, index }) => (
                             <View style={{ height: 100 }}>
                                 {!item.IsInCurrentMonth ? (
-                                    <View style={{ textAlign: 'center', backgroundColor: '#F7F7F7', color: '#C0C0C0' }}>
-                                        <Text style={{ textAlign: 'center', borderColor: '#F7F7F7', borderWidth: 1, color: '#C0C0C0' }}>{item.date.date()}</Text>
+                                    <View style={{ textAlign: 'center', backgroundColor: '#F7F7F7', color: '#C0C0C0', width: 50 }}>
+                                        <Text style={{ textAlign: 'center', borderColor: '#F7F7F7', borderBottomWidth: 1, color: '#C0C0C0' }}>{item.date.date()}</Text>
                                     </View>
 
                                 ) : (
-                                        <View style={{ textAlign: 'center', backgroundColor: '#F7F7F7', color: '#C0C0C0' }}>
+                                        <View style={{ textAlign: 'center', backgroundColor: '#F7F7F7', color: '#C0C0C0', width: 50 }}>
                                             <Text style={{ textAlign: 'center', borderColor: '#F7F7F7', borderBottomWidth: 1 }}>{item.date.date()}</Text>
                                         </View>
-
                                     )
                                 }
                                 <View>

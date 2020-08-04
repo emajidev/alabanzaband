@@ -86,7 +86,6 @@ class NewEvent extends Component {
           <Body style={{ alignItems: 'center', }} >
             <Text style={{ color: [this.state.colorTag], fontSize: 20 }}>Programa tu evento</Text>
           </Body>
-
         </Header>
         <ScheduleTypeA setTheme={this.setTheme} />
 

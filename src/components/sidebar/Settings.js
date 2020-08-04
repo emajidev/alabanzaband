@@ -31,7 +31,7 @@ export default class Settings extends Component {
     });
     const newUser = { name: name, loggedIn: true, theme: theme, color: colorTheme }
     setColor(newUser)
-    console.log("el tema elegido es ", color)
+    //console.log("el tema elegido es ", color)
   }
 
   componentDidMount() {

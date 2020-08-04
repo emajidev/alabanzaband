@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Text, View, TouchableHighlight, Modal, FlatList, AsyncStorage, TouchableOpacity } from "react-native";
+import { Text, View, TouchableHighlight, Modal, FlatList, AsyncStorage, TouchableOpacity, StyleSheet } from "react-native";
 import {
   Container,
   Header,
@@ -15,7 +15,7 @@ import DatePicker from "react-native-datepicker";
 import Icon2 from 'react-native-vector-icons/FontAwesome';
 import SelectFriends from '../SelectFriends';
 import { pushEvent } from '../functions/functionsFirebase'
-import { convertTimeStamp } from '../functions/FormatDate'
+import { convertTimeStamp, showFormatHumman } from '../functions/FormatDate'
 import SelectSongs from '../songs/SelectSongs'
 import ModalComponent from '../modalComponent/ModalComponent'
 import { withNavigation } from 'react-navigation';
@@ -35,6 +35,7 @@ var colorTags = [
   { color: "#ed3169", theme: 'themeI' },
 ]
 
+
 class Date_picker extends Component {
   constructor(props) {
     super(props);
@@ -44,7 +45,6 @@ class Date_picker extends Component {
   }
 
   handlePress = () => {
-    // Redacted: animation related code
     this._datePicker.setNativeProps({ modalVisible: true });
   };
   respStart(dete) {
@@ -61,16 +61,13 @@ class Date_picker extends Component {
     var min = new Date().getMinutes(); //Current Minutes
     var sec = new Date().getSeconds(); //Current Seconds
     this.setState({
-      //Setting the value of the date time
       dateCurrent:
         date + '/' + month + '/' + year + ' ',
     });
   }
 
   componentDidMount() {
-
     this.currentDate()
-
   }
 
   render() {
@@ -80,15 +77,8 @@ class Date_picker extends Component {
 
       <DatePicker
         date={this.state.date}
-        style={{
-          width: 140,
-          marginLeft: 65,
-          shadowColor: '#fff',
-          shadowRadius: 0,
-          shadowOpacity: 1,
-          shadowOffset: { height: 0, width: 0 },
-        }}
-        format={'DD-MM-YYYY HH:mm'}
+        style={styles.formatPicker}
+        format={'DD-MM-YYYY'}
         confirmBtnText="Confirm"
         cancelBtnText="Cancel"
         mode={"date"}
@@ -115,9 +105,6 @@ class Date_picker extends Component {
             borderBottomWidth: 1,
             borderBottomColor: [this.props.colorTag]
           }
-
-
-          // ... You can check the source to find the other keys.
         }}
         ref={component => (this._datePicker = component)}
         locale={"es"}
@@ -125,24 +112,27 @@ class Date_picker extends Component {
           if (this.props.modDate == "start") {
             this.setState({ date: date })
             this.props.respStart(date)
-
-
           } else {
             this.setState({ date: date })
             this.props.respEnd(date)
+
           }
         }}
       />
     );
   }
 }
+
 class ScheduleTypeA extends Component {
+
   constructor() {
     super();
     this._isMounted = false;
+    this.DatePicker
     this.handleModal = this.handleModal.bind(this)
     this.setTheme = this.setTheme.bind(this)
     this.setModalVisible = this.setModalVisible.bind(this)
+
     this.state = {
       switch: false,
       dateStart: '',
@@ -160,6 +150,8 @@ class ScheduleTypeA extends Component {
       alert: false,
       dateCurrent: '',
       modalText: {},
+      showClock: false,
+      time: ''
     }
   }
   currentDate() {
@@ -170,14 +162,14 @@ class ScheduleTypeA extends Component {
     var min = new Date().getMinutes(); //Current Minutes
     var sec = new Date().getSeconds(); //Current Seconds 
     let newDate = ('0' + date).slice(-2) + '-' + ('0' + (month + 1)).slice(-2) + '-' + year
+    let newTime = hours + ':' + min
     this.setState({ dateStart: newDate })
     this.setState({ dateEnd: newDate })
-
+    this.setState({ time: newTime })
 
   }
   handleDateStart = (e) => {
     this.setState({ dateStart: e });
-    //console.log("fecha de inicio", this.reformat(e))
 
   };
   handleDateEnd = (e) => {
@@ -197,11 +189,12 @@ class ScheduleTypeA extends Component {
   }
 
   reformat = (date) => {
-    var newDate = date.split(" ")[0];
-    var format = newDate.split("-");
-    var reformat = format[2] + '-' + (format[1]) + '-' + format[0] + 'T' + '07:00';
-    //console.log("reformat", reformat)
-
+    let newDate = date.split(" ")[0];
+    let format = newDate.split("-");
+    let tm = this.state.time.split(":");
+    let hh = tm[0]
+    let mm = tm[1]
+    let reformat = format[2] + '-' + (format[1]) + '-' + format[0] + 'T' + hh + ':' + mm;
     return reformat
   }
   pushEvent(members, event) {
@@ -233,15 +226,10 @@ class ScheduleTypeA extends Component {
     let songs = this.props.global.songs;
     let groups = this.state.groups;
     let uid = this.state.token;
-
-    //console.log("toke", this.state.token, colorTag)
-    //let jsonTask=JSON.stringify(task)
-    //console.log("data", title, dateStart, dateEnd, colorTag, uid, note, friends, "songs", "groups")
     const members = this.props.global.friends
     const ListSongs = this.props.global.ListSongs
 
-    //console.log("this.state.dateStart", dateStart, dateEnd)
-    let event = { title: title, dateStart: convertTimeStamp(dateStart), dateEnd: convertTimeStamp(dateEnd), colorTag: colorTag, uid: uid, note: note, members: friends, songs: songs }
+    let event = { title: title, dateStart: (moment(dateStart).unix() * 1000), dateEnd: (moment(dateEnd).unix() * 1000), colorTag: colorTag, uid: uid, note: note, members: friends, songs: songs }
     this.props.global.setCalendar(true)
     this.pushEvent(members, event)
   }
@@ -280,15 +268,12 @@ class ScheduleTypeA extends Component {
 
     if (this._isMounted) {
       this.currentDate()
-
       this.generate_token(8);
     }
   }
   componentWillUnmount() {
     this._isMounted = false;
     this.props.global.setSongs('clear')
-
-    
   }
   setModalVisible(visible) {
     this.setState({ modalVisible: visible });
@@ -296,13 +281,39 @@ class ScheduleTypeA extends Component {
   handleModal(event) {
     //console.log("evento hijo", event);
     this.setState({ alert: event })
+  }
 
+  async showClock() {
+    await this.setState({ showClock: true })
+    this.refComponent.onPressDate()
   }
   datesPicker() {
+
     return (
-      <View>
-        <Date_picker icon={"ios-arrow-forward"} modDate={'start'} respStart={this.handleDateStart} colorTag={this.state.colorTag} />
-        <Date_picker icon={"ios-arrow-back"} modDate={'end'} respEnd={this.handleDateEnd} colorTag={this.state.colorTag} />
+      <View style={{ flexDirection: 'row', width: '100%', height: 80 }}>
+        <View style={{ width: '40%', justifyContent: 'center', alignItems: 'flex-end' }}>
+          <Date_picker icon={"ios-arrow-forward"} modDate={'start'} respStart={this.handleDateStart} colorTag={this.state.colorTag} />
+          <Date_picker icon={"ios-arrow-back"} modDate={'end'} respEnd={this.handleDateEnd} colorTag={this.state.colorTag} />
+        </View>
+        <View style={{ flex: 1, width: '60%', marginLeft: 10 }}>
+          <Button style={{ height: '100%', backgroundColor: [this.state.colorTag], justifyContent: 'center' }} onPress={() => { this.showClock() }} >
+            <Text style={{ fontSize: 25, color: '#fff' }}>{this.state.time}</Text>
+          </Button>
+        </View>
+        {this.state.showClock && (
+          <DatePicker
+            date={this.state.time}
+            style={{ display: 'none' }}
+            testID="dateTimePicker"
+            mode={'time'}
+            hideText={true}
+            androidMode={'spinner'}
+            showIcon={false}
+            is24Hour={true}
+            ref={component => this.refComponent = component}
+            onDateChange={(t) => { this.setState({ time: t }), console.log("tiempo selecionado", t) }}
+          />
+        )}
       </View>
     )
   }
@@ -373,12 +384,8 @@ class ScheduleTypeA extends Component {
           {this.datesPicker()}
           <ListItem icon style={{ marginTop: 20 }} noBorder>
             <Left>
-              <Button
-                trasnparent
-                style={{ backgroundColor: "#fff", elevation: 0 }}
-              >
+              <Button trasnparent style={{ backgroundColor: "#fff", elevation: 0 }}>
                 <Text style={{ color: [this.state.colorTag], fontWidth: 'bold' }}>id</Text>
-
               </Button>
             </Left>
             <Body style={{ backgroundColor: [this.state.colorTag], borderBottomLeftRadius: 50, borderTopLeftRadius: 50 }}>
@@ -386,7 +393,7 @@ class ScheduleTypeA extends Component {
             </Body>
 
           </ListItem>
-         
+
           <ListItem icon style={{ height: 50 }} noBorder >
             <Left>
               <Button
@@ -449,7 +456,6 @@ class ScheduleTypeA extends Component {
           </ListItem>
           <View style={{ width: '100%' }}>
             {showSongs(songs, songsDb)}
-
           </View>
           <ListItem icon noBorder>
             <Left>
@@ -507,3 +513,13 @@ class ScheduleTypeA extends Component {
   }
 }
 export default withNavigation(withGlobalContext(ScheduleTypeA));
+const styles = StyleSheet.create({
+
+  formatPicker: {
+    width: 90,
+    shadowColor: '#fff',
+    shadowRadius: 0,
+    shadowOpacity: 1,
+    shadowOffset: { height: 0, width: 0 },
+  }
+})

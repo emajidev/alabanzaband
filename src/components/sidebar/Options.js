@@ -15,7 +15,7 @@ class Options extends Component {
       .auth()
       .signOut()
       .then(() => {
-        console.log('cerrar',this.props.global.account)
+        //console.log('cerrar',this.props.global.account)
         AsyncStorage.clear().then(() => console.log('Cleared'))
   
 
@@ -45,8 +45,8 @@ class Options extends Component {
             <Text>Ayuda</Text>
           </Button>
           <Button transparent onPress={() => this.logOut()}>
-            <Text style={{ color: [this.props.global.color.color] ,fontSize: 16}}
-            >cerrar sesion</Text>
+            <Text style={{ color: [this.props.global.color.color] ,fontSize: 18}}
+            >Salir</Text>
           </Button>
           {/*      <Button transparent onPress={()=> delete_all_todo()}>
             <Text>borrar bd task</Text>

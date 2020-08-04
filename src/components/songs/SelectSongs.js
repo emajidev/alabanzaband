@@ -36,7 +36,7 @@ class Option extends React.Component {
     render() {
         const { name, category, visits, likes } = this.props;
 
-        console.log("select =>", this.state.selectThis)
+        //console.log("select =>", this.state.selectThis)
         return (
 
             <TouchableOpacity
@@ -102,14 +102,14 @@ class SelectSongs extends React.Component {
 
     toggleStyles(el, index) {
         const { selected } = this.state;
-        console.log("seleccion", selected)
+        //console.log("seleccion", selected)
         return selected.indexOf(index) !== -1;
     }
 
     isSelected(name, category, lyrics) {
         // send data of songs selected
         let { selected } = this.state;
-        console.log("loca", name)
+        //console.log("loca", name)
 
         if (selected.indexOf(name) === -1) {
             selected.push(name);
@@ -141,9 +141,9 @@ class SelectSongs extends React.Component {
         this.getData()
     }
     setSongs(list) {
-        console.log("list canciones", list)
+        //console.log("list canciones", list)
         this.props.global.setSongs(list)
-        console.log("subido", this.props.global.songs)
+        //console.log("subido", this.props.global.songs)
         if (list.length > 0) {
             this.setModalVisible(false)
 
@@ -161,7 +161,7 @@ class SelectSongs extends React.Component {
 
                 songs.push(song)
             })
-            console.log("canciones", songs)
+            //console.log("canciones", songs)
 
             return (
                 <View style={{ flexDirection: 'row', height: 50, margin: 10 }}>
@@ -198,7 +198,7 @@ class SelectSongs extends React.Component {
                             trasnparent
                             style={{ backgroundColor: "#fff", elevation: 0 }}
                             onPress={() => {
-                                console.log("enviar selecion", this.state.selected)
+                                //console.log("enviar selecion", this.state.selected)
                                 this.setSongs(this.state.selected)
                             }}
                         >

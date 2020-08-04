@@ -51,12 +51,15 @@ export default class Performer extends Component {
     });
   };
 
-  storeData = async (phone, nick, user, rol) => {
+  storeData = async (phone, nick, user, rol, data) => {
     data = {
       phone: phone,
       user: user,
       nick: nick,
-      rol: rol
+      rol: rol,
+      director:data.director,
+      church:data.church,
+      directorName:data.nick
     };
     try {
       await AsyncStorage.setItem("@storage_Key", JSON.stringify(data));
@@ -77,6 +80,11 @@ export default class Performer extends Component {
         li.push({
           key: child.key,
           church: child.val().church,
+          address: child.val().address,
+          nick: child.val().nick,
+          code: child.val().code,
+          director:child.val().user,
+
         })
       })
       console.log('li', snapshot)
@@ -89,23 +97,44 @@ export default class Performer extends Component {
     this.setState({ phone: currentUser.phoneNumber });
     console.log("datos de cuenta iniciada", currentUser);
   }
-  addUser = (user, rol) => {
+  addUser = (user, rol,data) => {
     var currentUser = firebase.auth().currentUser;
     let convertMd5 = Base64.btoa(currentUser.email)
     db.ref("/users/user" + convertMd5 + "/profile").set({
       user: currentUser.email,
       nick: user,
       numberPhone: currentUser.phoneNumber,
-      rol: rol
+      rol: rol,
+      director:data.director,
+      church:data.church,
+      directorName:data.nick
     })
   };
+  addMember = (data,name,user) => {
+    let convertMd5Member = Base64.btoa(user)
+    let convertMd5Director = Base64.btoa(data.director)
+    db.ref("/churches/user" + convertMd5Director+'/members/user'+convertMd5Member+'/').set({
+      name:name,
+      userName:user
+    });
+  }
+  makeRandomColor() {
+    let symbols = "0123456789ABCDEF";
+    let color = "#";
+    for (var i = 0; i < 6; i++) {
+      color = color + symbols[Math.floor(Math.random() * 16)];
+    }
+    return color
+  }
+ 
 
   handleNext = () => {
     this.setState({ loading: true });
     setTimeout(() => {
-      this.storeData(this.state.phone, this.state.name, this.state.user, this.state.rol);
-      this.addUser(this.state.name, this.state.rol),
-        this.props.navigation.navigate("Main");
+      this.storeData(this.state.phone, this.state.name, this.state.user, this.state.rol,this.state.selectedChurch);
+      this.addUser(this.state.name, this.state.rol,this.state.selectedChurch),
+      this.props.navigation.navigate("Main");
+      this.addMember(this.state.selectedChurch,this.state.name,this.state.user)
       //local db sqlite - create db to initial 
 
     }, 200);
@@ -157,6 +186,7 @@ export default class Performer extends Component {
       </View>
     );
   };
+
   render() {
     let name = this.state.name;
     let code = this.state.code;
@@ -207,7 +237,7 @@ export default class Performer extends Component {
               <Content >
                 <Grid style={{ height: 100, width: '100%' }}>
                   <Col style={{ alignItems: "center", marginTop: '2%' }}>
-                  <Text style={{ color: "#000", fontSize: 25, letterSpacing:5 }}>
+                    <Text style={{ color: "#000", fontSize: 25, letterSpacing: 5 }}>
                       Bienvenido
                 </Text>
                     <Text style={{ color: "#000", fontSize: 15 }}>{this.state.user}</Text>
@@ -324,16 +354,28 @@ export default class Performer extends Component {
             keyExtractor={(item) => item.key}
             renderItem={({ item, index }) => {
               return (
-                <View>
+                <View >
                   <Button
-                    style={{ backgroundColor: '#fff', padding: 20 }}
+                    style={{ backgroundColor: '#fff', padding: 20, height: 80, width: '100%' }}
                     onPress={() => {
                       this.setState({ selectedChurch: item }),
                         this.closeMenu(),
                         console.log("selectedChurch", item)
                     }}
                   >
-                    <Text>{item.church}  {index}</Text>
+                    <View style={{ height: '100%', width: '100%', flexDirection: 'row', justifyContent: 'space-between' }}>
+                      <View style={{ justifyContent: 'center', alignItems: 'center', width: '20%', height: '100%',borderRadius:5,opacity:.95, backgroundColor: this.makeRandomColor() }}>
+                        <Text style={{ fontWeight: 'bold',color:'#fff' }}>{item.code.substr(0, 3) + ' ' + item.code.substr(3, 5)}</Text>
+                      </View>
+                      <View style={{ width: '80%', marginLeft: 10 }}>
+                        <Text style={{ fontSize: 18 }}>Director {item.nick} </Text>
+                        <Text style={styles.colorText}>Iglesia {item.church}  </Text>
+                        <Text style={styles.colorText} >{item.address}  </Text>
+
+                      </View>
+
+                    </View>
+
                   </Button>
                 </View>)
             }} />
@@ -355,7 +397,9 @@ const styles = StyleSheet.create({
     opacity: .4,
     position: 'absolute',
     bottom: 0
-
+  },
+  colorText:{
+    color:'#888'
   },
   active: {
     elevation: 0,

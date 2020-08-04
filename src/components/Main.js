@@ -32,7 +32,7 @@ class Main extends React.Component {
       const value = await AsyncStorage.getItem('@storage_Key')
       if (value !== null) {
         // We have data!!
-        console.log("store get", value);
+        //console.log("store get", value);
       } else {
         console.log("nullstore");
       }
@@ -69,11 +69,12 @@ class Main extends React.Component {
         return;
       }
       const token = await Notifications.getExpoPushTokenAsync();
-      console.log(token);
+      //console.log(token);
       this.setState({ expoPushToken: token });
       var updates = {}
       updates['/expoToken'] = token
-      await firebase.database().ref('/userss/' + currentUser.uid).update(updates)
+      let currentUser = firebase.auth().currentUser;
+      await firebase.database().ref('/users/' + currentUser.uid).update(updates)
     } else {
     }
     if (Platform.OS === 'android') {
@@ -118,6 +119,7 @@ class Main extends React.Component {
     const user = { name: "Tania", loggedIn: true };
     return (
       <UserProvider value={user}>
+      
         {this.state.loading == false
           ? this.Loading()
           : console.log("loading true")}

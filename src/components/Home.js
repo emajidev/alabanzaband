@@ -28,6 +28,8 @@ import getTheme from "../../native-base-theme/components";
 import Base64 from 'Base64'
 
 import { PreloadContacts } from './preload/PreloadComponents'
+import { chanelNotifications, SendNotificationSchedule } from './notifications/Notifications'
+
 const Preload = () => (
   <PreloadContacts />
 );
@@ -68,7 +70,6 @@ class Home extends React.Component {
 
   constructor(props) {
     super(props);
-    this.setBadge = this.setBadge.bind(this);
     this.state = {
       tab1: true,
       tab2: false,
@@ -77,8 +78,8 @@ class Home extends React.Component {
       context: "",
       songs: null,
       refreshCalendar: false,
-      infoTask: '',
-      badge: false,
+      infoTask: [],
+      badge:false,
       text: ''
 
     };
@@ -92,42 +93,81 @@ class Home extends React.Component {
       email = user.email;
       let itemsRef = db.ref('/users/user' + Base64.btoa(email) + '/' + 'events')
       itemsRef.limitToLast(1).on('child_added', snapshot => {
-        // console.log('A new node has been added2', snapshot.val().director)
-        console.log("child added")
+        // ultimo evento compartido
         this.events(itemsRef)
+        let data = snapshot.val();
+        if (data != null) {
+          let obj = Object.values(data)
+          console.log("child added2",data)
+          this.setBadge(true)
+          this.getStorageTask([data])
+
+        }
+
       });
-      this.badged(itemsRef)
-     
 
     }
   }
+
   async events(itemsRef) {
     let data = []
     try {
       itemsRef.orderByChild("dateStart").once('value', snapshot => {
         snapshot.forEach(child => {
-          //console.log("ordenados2", child.key, child.val());
           data.push(child.val())
         })
         if (data != null) {
           let obj = Object.values(data)
-          this.setState({ infoTask: obj, badge: true })
-
+          this.setState({ infoTask: obj })
         }
       });
     } catch (e) {
 
     }
-
   }
-  badged(itemsRef) {
-    itemsRef.limitToLast(1).on('child_changed', snapshot => {
-      // console.log('A new node has been added2', snapshot.val().director)
-      this.events(itemsRef)
+  async storageTask(tasks){
+      try {
+        await AsyncStorage.setItem('@storage_task', JSON.stringify(tasks));
+      } catch (err) {
+        console.log(err);
+      }
+  }
+  async getStorageTask(dataTask){
+    try {
+      console.log("con eventos2")
+      let value = await AsyncStorage.getItem("@storage_task");
+      if (value != null) {
+        let tasks = JSON.parse(value);
 
-    });
+        dataTask.forEach((newItem,index)=>{
+          let count = 0
+          for (let index = 0; index < tasks.length; index++){
+            console.log("mapeo", newItem.uid , tasks[index].uid)
 
-
+          if(newItem.uid === tasks[index].uid){
+              count++;
+            } else{ count=0}
+          }
+          if(count == 0){
+            console.log("index este es el nuevo2",index,newItem.title, newItem.dateStart)
+            this.LocalNotificationEventsSchedule(newItem.title, newItem.dateStart)
+            this.LocalNotificationEventsSchedule(newItem.title, newItem.dateEnd)
+          
+          }else{
+            console.log("macheados",count, index)
+          }
+        })
+       
+      } 
+    } catch (e) {
+      // Error retrieving data
+      console.log("error",e)
+      dataTask.forEach((item)=>{
+        console.log("erritemor2",item)
+        this.LocalNotificationEventsSchedule(item.title, item.dateStart)
+        this.LocalNotificationEventsSchedule(item.title, item.dateEnd)
+      })
+    }
   }
 
   songsBd() {
@@ -140,16 +180,19 @@ class Home extends React.Component {
       }
     });
   }
+  LocalNotificationEventsSchedule(title, timestamp) {
+    SendNotificationSchedule(title, timestamp)
+    console.log("llegada de infor",title, timestamp)
+  }
 
   componentDidMount() {
-    console.log("evento comenzo")
+    chanelNotifications();
+
     this.EventNotificationAlert()
     const color = this.context;
     this.setState({ context: color });
     //.log("context", user); // { name: 'Tania', loggedIn: true }
     this.songsBd();
-
-
   }
   closeDrawer() {
     this.drawer._root.close();
@@ -157,17 +200,19 @@ class Home extends React.Component {
   openDrawer() {
     this.drawer._root.open();
   }
-  asynChange = async tab => {
+  asyncChange = async tab => {
     if (tab == 2) {
-      this.props.navigation.navigate("NewEvent");
-      setTimeout(() => {
-        this.setState({ activeTab: 0 });
-      }, 800);
-
+      await   this.props.navigation.navigate("NewEvent");
+      this.setState({ activeTab: 0 });
     }
+    if(tab == 1){
+      await this.setState({ activeTab: 1 });
+      this.setBadge(false)
+    }
+
   };
   setBadge(e) {
-    this.setState({ badge: e });
+    this.setState({badge:e})
   }
   render() {
     console.disableYellowBox = true;
@@ -185,7 +230,7 @@ class Home extends React.Component {
           panCloseMask={0}
         >
           <Container>
-            <Header>
+            <Header style={{ paddingTop: StatusBar.currentHeight + 15, marginBottom: 5, elevation: 0, }}>
               <Left style={{ flex: 0.5 }}>
                 <Button transparent onPress={() => this.openDrawer()}>
                   <Icon name="md-list" />
@@ -201,15 +246,14 @@ class Home extends React.Component {
                 <Title style={{ letterSpacing: 5 }}>alabanzaband</Title>
               </Body>
               <Right style={{ flex: 0.5 }}>
-               {/*  <Button
+                <Button
                   transparent
                   onPress={() => {
-                    this.setState({ text: 'hola' })
-
+                    this.props.navigation.navigate('ListChat')
                   }}
                 >
-                  <Icon name="search" />
-                </Button> */}
+                  <Icon name="md-chatbubbles" />
+                </Button>
               </Right>
             </Header>
 
@@ -219,9 +263,7 @@ class Home extends React.Component {
               initialPage={this.state.initialPage}
               page={this.state.activeTab}
               onChangeTab={e => {
-                //console.log("tab", e.i);
-                this.asynChange(e.i);
-              }}
+                this.asyncChange(e.i);}}
             >
               <Tab
                 heading={
@@ -235,9 +277,7 @@ class Home extends React.Component {
                 <CalendarEvents infoTask={this.state.infoTask} text={this.state.text} />
               </Tab>
               <Tab
-                onChangeTab={() => {
-                  this.setBadge(false)
-                }}
+           
                 heading={
                   <TabHeading>
                     {this.state.badge ? (
@@ -250,13 +290,13 @@ class Home extends React.Component {
                 }
               >
                 {/* //component B */}
-                <ListNotification infoTask={this.state.infoTask} setBadge={this.setBadge}/>
+                <ListNotification infoTask={this.state.infoTask}/>
               </Tab>
-           
+
               <Tab
                 heading={
                   <Button transparent onPress={() => this.props.navigation.navigate("NewEvent")}>
-                    <Icon style={{ fontSize: 40, color:[this.props.global.color.color] }} name="ios-add-circle" />
+                    <Icon style={{ fontSize: 40, color: [this.props.global.color.color] }} name="ios-add-circle" />
                   </Button>
                 }
               ></Tab>
@@ -269,7 +309,7 @@ class Home extends React.Component {
               >
                 {/*  //component C  */}
 
-                {this.state.songs != null ? (<List songs={this.state.songs} hide={false}  category={true}/>) :
+                {this.state.songs != null ? (<List songs={this.state.songs} hide={false} category={true} />) :
                   (
                     <SafeAreaView style={styles.cont}>
                       <Preload />
@@ -297,7 +337,7 @@ class Home extends React.Component {
     );
   }
 }
-export default withGlobalContext(withNavigation(Home));
+export default  withNavigation(withGlobalContext(Home));
 
 const styles = StyleSheet.create({
   container: {

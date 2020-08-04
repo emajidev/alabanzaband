@@ -14,6 +14,7 @@ class UserProvider extends Component {
   getUriCache(email) {
     console.log("vacio", email)
   }
+
   songsBd() {
     let itemsRef = db.ref("/songs");
     itemsRef.on("value", snapshot => {
@@ -21,12 +22,12 @@ class UserProvider extends Component {
       if (data !== null) {
         let songs = Object.values(data);
         this.setState({ songsDb: songs });
-        console.log("canciones", songs)
+        //console.log("canciones", songs)
       }
     });
   }
+  
   getStore = async () => {
-    console.log("store llamado");
     this.songsBd()
     try {
       const value = await AsyncStorage.getItem("@storage_Key");
@@ -34,9 +35,8 @@ class UserProvider extends Component {
         // We have data!!
         let data = JSON.parse(value)
         let userMd5 = Base64.btoa(data.user)
-        this.setState({ account: userMd5 });
-        this.setState({ friends: [data.user] });
-
+        let director = Base64.btoa(data.director)
+        this.setState({ account: userMd5,director: director, friends: [data.user]});
       } else {
         console.log("nullstore");
       }
@@ -51,17 +51,21 @@ class UserProvider extends Component {
       theme: turquesa,
       color:'rgba(80,227,194,1)'
     },
+    badge:false, 
+    calendar: false, 
     text:'',
-    calendar: false,
-    friends: [],
+    director:'',
+    temporalGroup: '',
     songs: [],
     events:[],
-    temporalGroup: '',
-    songsDb:[]
-
+    songsDb:[],
+    friends: [],
+    infoTaskStorage:[],
   }
-
   // Method to update state
+  setBadge = badge => {
+    this.setState(prevState =>({badge}))
+  }
   setColor = color => {
     this.setState(prevState => ({ color }))
   }
@@ -70,6 +74,9 @@ class UserProvider extends Component {
   }
   setAccount = account => {
     this.setState(prevState => ({ account }))
+  }  
+  setDirector= director => {
+    this.setState(prevState => ({ director }))
   }
   setCalendar = calendar => {
     this.setState(prevState => ({ calendar }))
@@ -77,6 +84,7 @@ class UserProvider extends Component {
   setTemporalGroup = temporalGroup => {
     this.setState(prevState => ({ temporalGroup }))
   }
+
   setFriends = friends => {
 
     friends.map((email) => {
@@ -112,36 +120,43 @@ class UserProvider extends Component {
   }
 
   render() {
-    const { children } = this.props
-    const color= this.state.color
-    const { setColor } = this
-    const calendar = this.state.calendar
-    const friends = this.state.friends
-    const songs = this.state.songs
-    const events = this.state.events
-    const text = this.state.text
-    const temporalGroup = this.state.temporalGroup
-    const songsDb = this.state.songsDb
+    const { setColor } =      this
+    const { children } =      this.props
+    const text         =      this.state.text
+    const songs        =      this.state.songs
+    const color        =      this.state.color
+    const badge        =      this.state.badge
+    const events       =      this.state.events
+    const friends      =      this.state.friends
+    const songsDb      =      this.state.songsDb
+    const calendar     =      this.state.calendar
+    const director     =      this.state.director
+    const temporalGroup =     this.state.temporalGroup
+    const infoTaskStorage =   this.state.infoTaskStorage
+
     return (
       <UserContext.Provider
         value={{
           ...this.state,
-          setColor: this.setColor,
-          setAccount:this.setAccount,
-          setCalendar: this.setCalendar,
-          setFriends: this.setFriends,
-          setSongs: this.setSongs,
-          setEvents:this.setEvents,
-          setText:this.setText,
+          setText:          this.setText,
+          setColor:         this.setColor,
+          setBadge:         this.setBadge,
+          setSongs:         this.setSongs,
+          setEvents:        this.setEvents,
+          setAccount:       this.setAccount,
+          setFriends:       this.setFriends,
+          setCalendar:      this.setCalendar,
           setTemporalGroup: this.setTemporalGroup,
-          color,
-          calendar,
-          friends,
           songs,
-          songsDb,
+          color,
+          badge,
           events,
-          temporalGroup
-
+          songsDb,
+          friends,
+          calendar,
+          director,
+          temporalGroup,
+          infoTaskStorage
         }}
       >
         {this.props.children}

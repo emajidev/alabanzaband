@@ -11,13 +11,10 @@ const Preload = () => (
 class ListContacts extends Component {
   state = {
     text: '',
-
-
   };
   constructor(props) {
     super(props);
     this._isMounted = false;
-
     this.state = {
       items: false,
     }
@@ -27,13 +24,12 @@ class ListContacts extends Component {
   }
   componentDidMount() {
     this._isMounted = true;
-
   }
   getData = async () => {
-    let account = this.props.global.account
-    console.log("cuenta", account)
+    let director = this.props.global.director
+    console.log("cuenta director", director)
     try {
-      let itemsRef = db.ref('/users/user' + account + '/contacts');
+      let itemsRef = db.ref('/churches/user' + director + '/members');
         itemsRef.on('value', snapshot => {
         let data = snapshot.val();
         if(data != null){
@@ -71,7 +67,7 @@ class ListContacts extends Component {
 
             ) : (
                 <View style={styles.cont}>
-                  <Text style={{ margin: 10 ,color:'#A0A0A0'}}>No hay contactos</Text>
+                  <Text style={{ margin: 22 ,color:'#A0A0A0',fontSize:18,opacity:.5}}>No se han registrado integrantes por ahora ;( </Text>
 
                 </View>
               )

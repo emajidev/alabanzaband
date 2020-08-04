@@ -7,6 +7,19 @@ import { withNavigation } from 'react-navigation';
 
 
 class Contacts extends React.Component {
+  addContacts(){
+    return(
+      <TouchableOpacity style={styles.btn_nav}>
+      <Icon
+        name='person-add'
+        color='#A0A0A0'
+        onPress={() => this.props.navigation.navigate('AddContacts')}
+        size={30}
+
+      />
+    </TouchableOpacity>
+    )
+  }
 
   render() {
     const theme = this.props.theme
@@ -14,18 +27,10 @@ class Contacts extends React.Component {
       <View style={styles.container}>
         <View style={styles.header} >
           <View style={{ flex: 1, justifyContent: 'flex-start' }}>
-            <Text style={styles.title}> Amigos</Text>
+            <Text style={styles.title}> Miembros</Text>
           </View>
           <View style={styles.iconnavbar}>
-            <TouchableOpacity style={styles.btn_nav}>
-              <Icon
-                name='person-add'
-                color='#A0A0A0'
-                onPress={() => this.props.navigation.navigate('AddContacts')}
-                size={30}
-
-              />
-            </TouchableOpacity>
+          {/* {this.addContacts()} */}
           </View>
         </View>
         <View style={styles.body} >

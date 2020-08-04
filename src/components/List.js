@@ -46,7 +46,6 @@ class List extends Component {
     ).start()
   }
   returnSongs(data) {
-    console.log('data', data)
     this.setState({ returnSongs: data })
   }
   render() {
