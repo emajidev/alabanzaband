@@ -26,13 +26,12 @@ export function formatToProcess(date) {
   var month = format.getMonth() + 1; //Current Month
   var year = format.getFullYear(); //Current Year
   let newDate = year + "-" + month + "-" + date;
-  console.log("showDateHumman", newDate);
+  //console.log("showDateHumman", newDate);
 
   return newDate;
 }
 export function convertTimeStamp(date) {
   var timeStamp = new Date(date).getTime();
-  console.log("antes", date, "despues", timeStamp);
+  //console.log("antes", date, "despues", timeStamp);
   return timeStamp;
 }
-

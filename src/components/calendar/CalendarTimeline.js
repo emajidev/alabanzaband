@@ -166,14 +166,13 @@ class CalendarTimeline extends React.Component {
   repeatDays(propsDays, start, end) {
     let dayList = [];
     let repeatDays = propsDays;
-
     let startWeek = moment(start);
     let endWeek = moment(end);
-    console.log("dias", startWeek, endWeek);
+
     let nWeeks = endWeek.diff(startWeek, "days") / 7;
-    console.log(endWeek.diff(nWeeks, "days"), " dias de diferencia");
+
     repeatDays.map((day) => {
-      let week = moment(startWeek);
+      let week = moment(startWeek).startOf("week").day("Sunday");
       week.add(day, "d");
       let month = week.month();
       for (let i = 0; i < nWeeks; i++) {
@@ -382,7 +381,17 @@ class CalendarTimeline extends React.Component {
                 marginBottom: 2,
                 borderRadius: 50,
               }}
-            ></View>
+            >
+              <Text
+                style={{
+                  fontSize: 9,
+                  color: "#fff",
+                  textAlign: "center",
+                }}
+              >
+                {item.title}
+              </Text>
+            </View>
           );
         } else {
           return (
@@ -505,13 +514,12 @@ class CalendarTimeline extends React.Component {
                       textAlign: "center",
                       backgroundColor: "#F7F7F7",
                       color: "#C0C0C0",
-                      width: 50,
                     }}
                   >
                     <Text
                       style={{
                         textAlign: "center",
-                        borderColor: "#F7F7F7",
+                        borderColor: "#F1F1F1",
                         borderBottomWidth: 1,
                         color: "#C0C0C0",
                       }}
@@ -525,18 +533,32 @@ class CalendarTimeline extends React.Component {
                       textAlign: "center",
                       backgroundColor: "#F7F7F7",
                       color: "#C0C0C0",
-                      width: 50,
                     }}
                   >
-                    <Text
-                      style={{
-                        textAlign: "center",
-                        borderColor: "#F7F7F7",
-                        borderBottomWidth: 1,
-                      }}
-                    >
-                      {item.date.date()}
-                    </Text>
+                    {moment(item.date).format("YYYY-MM-DD") ===
+                    moment().format("YYYY-MM-DD") ? (
+                      <Text
+                        style={{
+                          textAlign: "center",
+                          borderColor: "#F7F7F7",
+                          borderBottomWidth: 1,
+                          color: "#f54",
+                          fontWeight: "bold",
+                        }}
+                      >
+                        {item.date.date()}
+                      </Text>
+                    ) : (
+                      <Text
+                        style={{
+                          textAlign: "center",
+                          borderColor: "#F7F7F7",
+                          borderBottomWidth: 1,
+                        }}
+                      >
+                        {item.date.date()}
+                      </Text>
+                    )}
                   </View>
                 )}
                 <View>{this.renderLines(item.dateLines, index)}</View>

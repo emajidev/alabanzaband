@@ -32,6 +32,7 @@
     "mem": "^6.0.1",
     "moment": "^2.24.0",
     "native-base": "^2.13.8",
+    "node-fetch": "^2.6.1",
     "picache": "^1.0.13",
     "picache2": "^2.0.0",
     "pouchdb-react-native": "^6.4.1",

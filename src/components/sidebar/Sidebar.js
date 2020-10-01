@@ -20,22 +20,22 @@ import {
   Body,
   Right,
   Switch,
-  Spinner
+  Spinner,
 } from "native-base";
 import UserContext from "../UserContext";
 import * as ImagePicker from "expo-image-picker";
-import * as firebase from 'firebase/app';
-import storage from 'firebase/storage';
-import { withGlobalContext } from '../UserContext';
-import { AppLoading } from 'expo';
+import * as firebase from "firebase/app";
+import storage from "firebase/storage";
+import { withGlobalContext } from "../UserContext";
+import { AppLoading } from "expo";
 
 import getTheme from "../../../native-base-theme/components";
 import Options from "./Options";
 import { StyleSheet, StatusBar, AsyncStorage, Image, View } from "react-native";
 import Settings from "./Settings";
-import { insert_In_avatarUri, select_avatarUri } from '../SqliteDateBase';
+import { insert_In_avatarUri, select_avatarUri } from "../SqliteDateBase";
 
-import CacheImage from './CacheImage';
+import CacheImage from "./CacheImage";
 class Sidebar extends Component {
   static contextType = UserContext;
 
@@ -46,7 +46,7 @@ class Sidebar extends Component {
       dataUser: [],
       source: null,
       refreshAvatar: false,
-      uploadStatus: false
+      uploadStatus: false,
     };
   }
 
@@ -64,7 +64,7 @@ class Sidebar extends Component {
       // Error retrieving data
     }
   };
-  uriToBlob = uri => {
+  uriToBlob = (uri) => {
     return new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
       xhr.onload = function () {
@@ -82,89 +82,89 @@ class Sidebar extends Component {
     });
   };
   uploadToFirebase = (blob, email) => {
-
     return new Promise((resolve, reject) => {
       var storageRef = firebase.storage().ref();
       storageRef
         .child("uploads/photo" + email + ".jpg")
         .put(blob, {
-          contentType: "image/jpeg"
+          contentType: "image/jpeg",
         })
-        .then(snapshot => {
+        .then((snapshot) => {
           blob.close();
           resolve(snapshot);
-          this.setState({ uploadStatus: true })
+          this.setState({ uploadStatus: true });
         })
-        .catch(error => {
+        .catch((error) => {
           reject(error);
         });
     });
   };
 
-
   handleGetImages = (email) => {
-
     ImagePicker.launchImageLibraryAsync({
       mediaTypes: "Images",
-      quality: 0.2
-    }).then((result) => {
-
-      if (!result.cancelled) {
-        // User picked an image
-        const { height, width, type, uri } = result;
-        this.setState({ urilink: uri });
-        return this.uriToBlob(uri);
-
-      }
-
-    }).then((blob) => {
-
-      return this.uploadToFirebase(blob, email);
-
-    }).then((snapshot) => {
-
-      //console.log("File uploaded");
-      firebase.storage().ref().child("uploads/photo" + email + ".jpg").getDownloadURL()
-        .then(response => {
-          //console.log("url", response)
-          this.setState({ source: response })
-          setTimeout(() => {
-            this.setState({ refreshAvatar: true })
-          }, 200)
-          setTimeout(() => {
-            this.setState({ refreshAvatar: false })
-            this.setState({ uploadStatus: false })
-          }, 200)
-
-
-        })
-        .catch(error => console.log("error", error))
-
-    }).catch((error) => {
-
-      throw error;
-
-    });
-
-  }
+      quality: 0.2,
+    })
+      .then((result) => {
+        if (!result.cancelled) {
+          // User picked an image
+          const { height, width, type, uri } = result;
+          this.setState({ urilink: uri });
+          return this.uriToBlob(uri);
+        }
+      })
+      .then((blob) => {
+        return this.uploadToFirebase(blob, email);
+      })
+      .then((snapshot) => {
+        //console.log("File uploaded");
+        firebase
+          .storage()
+          .ref()
+          .child("uploads/photo" + email + ".jpg")
+          .getDownloadURL()
+          .then((response) => {
+            //console.log("url", response)
+            this.setState({ source: response });
+            setTimeout(() => {
+              this.setState({ refreshAvatar: true });
+            }, 200);
+            setTimeout(() => {
+              this.setState({ refreshAvatar: false });
+              this.setState({ uploadStatus: false });
+            }, 200);
+          })
+          .catch((error) => console.log("error", error));
+      })
+      .catch((error) => {
+        throw error;
+      });
+  };
 
   componentDidMount() {
     this.getStore();
-
   }
 
   render() {
     const uri = this.state.urilink;
     const source = this.state.source;
-    const email = this.props.global.account
+    const email = this.props.global.account;
     const uridefault = require("./icon.jpg");
     const { color, setColor } = this.context;
-    const refreshAvatar = this.state.refreshAvatar
+    const refreshAvatar = this.state.refreshAvatar;
     console.log("refre", this.state.refresh);
     return (
       <StyleProvider style={getTheme(color.theme)}>
         <Container>
-          <Header style={{ backgroundColor: [this.props.global.color.color], height: 450, paddingLeft: 0, paddingRight: 0, paddingBottom: 0 }}>
+          <Header
+            style={{
+              backgroundColor: [this.props.global.color.color],
+              height: 450,
+              paddingLeft: 0,
+              paddingRight: 0,
+              paddingBottom: 0,
+            }}
+          >
             <Content contentContainerStyle={{ flex: 1 }}>
               <Grid style={{ marginTop: StatusBar.currentHeight + 5 }}>
                 <Row>
@@ -172,24 +172,35 @@ class Sidebar extends Component {
                     style={{
                       alignItems: "center",
                       justifyContent: "center",
-                      flexDirection: "row"
+                      flexDirection: "row",
                     }}
                   >
                     {refreshAvatar == false ? (
                       <View>
                         {this.state.uploadStatus == true ? (
-                          <View style={{ position: "absolute", zIndex: 2, width: 150, height: 150, borderRadius: 400, backgroundColor: "#fff", alignItems: 'center', justifyContent: 'center', opacity: 0.8 }} >
+                          <View
+                            style={{
+                              position: "absolute",
+                              zIndex: 2,
+                              width: 150,
+                              height: 150,
+                              borderRadius: 400,
+                              backgroundColor: "#fff",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              opacity: 0.8,
+                            }}
+                          >
                             <Spinner color={this.props.global.color.color} />
                           </View>
                         ) : (
-                            console.log("")
-                          )}
+                          console.log("")
+                        )}
                         <CacheImage uri={this.state.source} />
                       </View>
                     ) : (
-                        console.log("refresh")
-                      )
-                    }
+                      console.log("refresh")
+                    )}
 
                     <Button
                       ref="photo"
@@ -198,39 +209,109 @@ class Sidebar extends Component {
                       onPress={() => this.handleGetImages(email)}
                     >
                       <Icon
-                        style={{ color: [this.props.global.color.color], fontSize: 25 }}
+                        style={{
+                          color: [this.props.global.color.color],
+                          fontSize: 25,
+                        }}
                         name="md-camera"
                       />
                     </Button>
                   </Col>
                 </Row>
                 <Row>
-                  <Col style={{ alignItems: "center", justifyContent: "space-between" }} >
-                    <View style={{ alignItems: "center", justifyContent: "center", marginTop: 10 }} >
+                  <Col
+                    style={{
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <View
+                      style={{
+                        alignItems: "center",
+                        justifyContent: "center",
+                        marginTop: 10,
+                      }}
+                    >
                       <Text
-                        style={{ color: "#000", fontWeight: 'bold', opacity: .3, fontSize: 15 }}
+                        style={{
+                          color: "#000",
+                          fontWeight: "bold",
+                          opacity: 0.3,
+                          fontSize: 15,
+                        }}
                       >
                         BIENVENIDO
-                    </Text>
-                      <Text style={{ color: "#000", fontWeight: 'bold', opacity: .3, marginTop: 1, fontSize: 14 }}>
+                      </Text>
+                      <Text
+                        style={{
+                          color: "#000",
+                          fontWeight: "bold",
+                          opacity: 0.3,
+                          marginTop: 1,
+                          fontSize: 14,
+                        }}
+                      >
                         {this.state.dataUser.nick}
                       </Text>
                     </View>
 
-                    <View style={{ width: '100%', padding: 10, backgroundColor: 'rgba(255, 255, 255, 0.16)', marginTop: 5 }}>
-                      <Text style={{ color: "#000", opacity: .3, fontWeight: 'bold',marginBottom: 5, fontSize: 14 }}>
+                    <View
+                      style={{
+                        width: "100%",
+                        padding: 10,
+                        backgroundColor: "rgba(255, 255, 255, 0.16)",
+                        marginTop: 5,
+                      }}
+                    >
+                      <Text
+                        style={{
+                          color: "#000",
+                          opacity: 0.3,
+                          fontWeight: "bold",
+                          marginBottom: 5,
+                          fontSize: 14,
+                        }}
+                      >
                         Datos de perfil
                       </Text>
-                      <Text style={{ color: "#000", opacity: .3, marginTop: 2, fontSize: 14 }}>
+                      <Text
+                        style={{
+                          color: "#000",
+                          opacity: 0.3,
+                          marginTop: 2,
+                          fontSize: 14,
+                        }}
+                      >
                         * Director {this.state.dataUser.directorName}
                       </Text>
-                      <Text style={{ color: "#000", opacity: .3, marginTop: 2, fontSize: 14 }}>
+                      <Text
+                        style={{
+                          color: "#000",
+                          opacity: 0.3,
+                          marginTop: 2,
+                          fontSize: 14,
+                        }}
+                      >
                         * Iglesia {this.state.dataUser.church}
                       </Text>
-                      <Text style={{ color: "#000", opacity: .3, marginTop: 2, fontSize: 14 }}>
+                      <Text
+                        style={{
+                          color: "#000",
+                          opacity: 0.3,
+                          marginTop: 2,
+                          fontSize: 14,
+                        }}
+                      >
                         * Destreza: {this.state.dataUser.rol}
                       </Text>
-                      <Text style={{ color: "#000", opacity: .3, marginTop: 2, fontSize: 14 }}>
+                      <Text
+                        style={{
+                          color: "#000",
+                          opacity: 0.3,
+                          marginTop: 2,
+                          fontSize: 14,
+                        }}
+                      >
                         * cuenta: {this.state.dataUser.user}
                       </Text>
                     </View>
@@ -284,9 +365,11 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     justifyContent: "center",
     borderRadius: 300,
-    backgroundColor: "#fff"
+    backgroundColor: "#fff",
   },
   avatar: {
-    width: 150, height: 150, borderRadius: 400
-  }
+    width: 150,
+    height: 150,
+    borderRadius: 400,
+  },
 });

@@ -1,10 +1,10 @@
-import React, { Component } from 'react'
-import turquesa from '../../native-base-theme/variables/turquesa';
-import { AsyncStorage } from 'react-native';
+import React, { Component } from "react";
+import turquesa from "../../native-base-theme/variables/turquesa";
+import { AsyncStorage } from "react-native";
 import * as firebase from "firebase/app";
 import { db } from "./firebase.js";
-const UserContext = React.createContext(true)
-import Base64 from 'Base64';
+const UserContext = React.createContext(true);
+import Base64 from "Base64";
 
 class UserProvider extends Component {
   async componentDidMount() {
@@ -12,12 +12,12 @@ class UserProvider extends Component {
   }
 
   getUriCache(email) {
-    console.log("vacio", email)
+    console.log("vacio", email);
   }
 
   songsBd() {
     let itemsRef = db.ref("/songs");
-    itemsRef.on("value", snapshot => {
+    itemsRef.on("value", (snapshot) => {
       let data = snapshot.val();
       if (data !== null) {
         let songs = Object.values(data);
@@ -26,17 +26,22 @@ class UserProvider extends Component {
       }
     });
   }
-  
+
   getStore = async () => {
-    this.songsBd()
     try {
-      const value = await AsyncStorage.getItem("@storage_Key");
+      this.songsBd();
+      let value = await AsyncStorage.getItem("@storage_Key");
       if (value !== null) {
         // We have data!!
-        let data = JSON.parse(value)
-        let userMd5 = Base64.btoa(data.user)
-        let director = Base64.btoa(data.director)
-        this.setState({ account: userMd5,director: director, friends: [data.user]});
+        let data = JSON.parse(value);
+        console.log("storage recibido", data);
+        let userMd5 = Base64.btoa(data.user);
+        let director = Base64.btoa(data.director);
+        this.setState({
+          account: userMd5,
+          director: director,
+        });
+        this.setMyEmail("ema@gmail.com");
       } else {
         console.log("nullstore");
       }
@@ -47,131 +52,141 @@ class UserProvider extends Component {
   // Context state
   state = {
     color: {
-      name: '',
+      name: "",
       theme: turquesa,
-      color:'rgba(80,227,194,1)'
+      color: "rgba(80,227,194,1)",
     },
-    badge:false, 
-    calendar: false, 
-    text:'',
-    director:'',
-    temporalGroup: '',
+    badge: false,
+    calendar: false,
+    text: "",
+    director: "",
+    temporalGroup: "",
+    myEmail: "",
     songs: [],
-    events:[],
-    songsDb:[],
+    events: [],
+    songsDb: [],
     friends: [],
-    infoTaskStorage:[],
-  }
+    infoTaskStorage: [],
+  };
   // Method to update state
-  setBadge = badge => {
-    this.setState(prevState =>({badge}))
-  }
-  setColor = color => {
-    this.setState(prevState => ({ color }))
-  }
-  setText = text => {
-    this.setState(prevState => ({ text }))
-  }
-  setAccount = account => {
-    this.setState(prevState => ({ account }))
-  }  
-  setDirector= director => {
-    this.setState(prevState => ({ director }))
-  }
-  setCalendar = calendar => {
-    this.setState(prevState => ({ calendar }))
-  }
-  setTemporalGroup = temporalGroup => {
-    this.setState(prevState => ({ temporalGroup }))
-  }
+  setBadge = (badge) => {
+    this.setState((prevState) => ({ badge }));
+  };
+  setColor = (color) => {
+    this.setState((prevState) => ({ color }));
+  };
+  setText = (text) => {
+    this.setState((prevState) => ({ text }));
+  };
+  setMyEmail = (myEmail) => {
+    this.setState((prevState) => ({ myEmail }));
+  };
+  setAccount = (account) => {
+    this.setState((prevState) => ({ account }));
+  };
+  setDirector = (director) => {
+    this.setState((prevState) => ({ director }));
+  };
+  setCalendar = (calendar) => {
+    this.setState((prevState) => ({ calendar }));
+  };
+  setTemporalGroup = (temporalGroup) => {
+    this.setState((prevState) => ({ temporalGroup }));
+  };
+  setClrFriends = (friends) => {
+    this.setState((prevState) => ({ friends }));
+  };
 
-  setFriends = friends => {
-
+  setFriends = (friends) => {
     friends.map((email) => {
-      this.state.friends.push(email)
-    })
-    Array.prototype.unique = function (a) {
-      return function () { return this.filter(a) }
-    }(function (a, b, c) {
-      return c.indexOf(a, b + 1) < 0
+      this.state.friends.push(email);
     });
-    let newArray = this.state.friends.unique()
-    this.setState(prevState => ({ friends: newArray }))
-  }
-  setEvents = events => {
-    this.setState(prevState => ({ events: events }))
-  }
+    Array.prototype.unique = (function (a) {
+      return function () {
+        return this.filter(a);
+      };
+    })(function (a, b, c) {
+      return c.indexOf(a, b + 1) < 0;
+    });
+    let newArray = this.state.friends.unique();
+    this.setState((prevState) => ({ friends: newArray }));
+  };
+  setEvents = (events) => {
+    this.setState((prevState) => ({ events: events }));
+  };
   setSongs = (songs) => {
-    
-    if(songs == 'clear'){
-      this.setState({ songs: [] })
-    }else{
+    if (songs == "clear") {
+      this.setState({ songs: [] });
+    } else {
       songs.map((item) => {
-        this.state.songs.push(item)
-      })
-      Array.prototype.unique = function (a) {
-        return function () { return this.filter(a) }
-      }(function (a, b, c) {
-        return c.indexOf(a, b + 1) < 0
+        this.state.songs.push(item);
       });
-      let newArray = this.state.songs.unique()
-      this.setState(prevState => ({ songs: newArray }))
-   }
-  }
+      Array.prototype.unique = (function (a) {
+        return function () {
+          return this.filter(a);
+        };
+      })(function (a, b, c) {
+        return c.indexOf(a, b + 1) < 0;
+      });
+      let newArray = this.state.songs.unique();
+      this.setState((prevState) => ({ songs: newArray }));
+    }
+  };
 
   render() {
-    const { setColor } =      this
-    const { children } =      this.props
-    const text         =      this.state.text
-    const songs        =      this.state.songs
-    const color        =      this.state.color
-    const badge        =      this.state.badge
-    const events       =      this.state.events
-    const friends      =      this.state.friends
-    const songsDb      =      this.state.songsDb
-    const calendar     =      this.state.calendar
-    const director     =      this.state.director
-    const temporalGroup =     this.state.temporalGroup
-    const infoTaskStorage =   this.state.infoTaskStorage
+    const { setColor } = this;
+    const { children } = this.props;
+    const text = this.state.text;
+    const songs = this.state.songs;
+    const color = this.state.color;
+    const badge = this.state.badge;
+    const events = this.state.events;
+    const myEmail = this.state.myEmail;
+    const friends = this.state.friends;
+    const songsDb = this.state.songsDb;
+    const calendar = this.state.calendar;
+    const director = this.state.director;
+    const temporalGroup = this.state.temporalGroup;
+    const infoTaskStorage = this.state.infoTaskStorage;
 
     return (
       <UserContext.Provider
         value={{
           ...this.state,
-          setText:          this.setText,
-          setColor:         this.setColor,
-          setBadge:         this.setBadge,
-          setSongs:         this.setSongs,
-          setEvents:        this.setEvents,
-          setAccount:       this.setAccount,
-          setFriends:       this.setFriends,
-          setCalendar:      this.setCalendar,
+          setText: this.setText,
+          setColor: this.setColor,
+          setBadge: this.setBadge,
+          setSongs: this.setSongs,
+          setEvents: this.setEvents,
+          setAccount: this.setAccount,
+          setFriends: this.setFriends,
+          setCalendar: this.setCalendar,
           setTemporalGroup: this.setTemporalGroup,
+          setClrFriends: this.setClrFriends,
           songs,
           color,
           badge,
           events,
           songsDb,
+          myEmail,
           friends,
           calendar,
           director,
           temporalGroup,
-          infoTaskStorage
+          infoTaskStorage,
         }}
       >
         {this.props.children}
       </UserContext.Provider>
-    )
+    );
   }
 }
 // create the consumer as higher order component
-const withGlobalContext = ChildComponent => props => (
+const withGlobalContext = (ChildComponent) => (props) => (
   <UserContext.Consumer>
-    {
-      context => <ChildComponent {...props} global={context} />
-    }
+    {(context) => <ChildComponent {...props} global={context} />}
   </UserContext.Consumer>
 );
-export default UserContext
+export default UserContext;
 
-export { UserProvider, withGlobalContext }
+export { UserProvider, withGlobalContext };

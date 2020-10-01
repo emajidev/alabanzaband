@@ -101,38 +101,22 @@ class Date_picker extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      date: new Date().getDate(),
+      date: moment().format("DD-MM-YYYY"),
     };
   }
 
-  handlePress = () => {
+  handlePress() {
     this._datePicker.setNativeProps({ modalVisible: true });
-  };
+  }
   respStart(dete) {
     this.props.respStart(dete);
   }
   respEnd(dete) {
     this.props.respEnd(dete);
   }
-  currentDate() {
-    var date = new Date().getDate(); //Current Date
-    var month = new Date().getMonth() + 1; //Current Month
-    var year = new Date().getFullYear(); //Current Year
-    var hours = new Date().getHours(); //Current Hours
-    var min = new Date().getMinutes(); //Current Minutes
-    var sec = new Date().getSeconds(); //Current Seconds
-    this.setState({
-      dateCurrent: date + "/" + month + "/" + year + " ",
-    });
-  }
-
-  componentDidMount() {
-    this.currentDate();
-  }
 
   render() {
     const iconDatePicker = this.props.icon;
-    console.log("");
     return (
       <DatePicker
         date={this.state.date}
@@ -192,8 +176,8 @@ class ScheduleTypeA extends Component {
     this.handleDaysOfWeeks = this.handleDaysOfWeeks.bind(this);
     this.state = {
       switch: false,
-      dateStart: "",
-      dateEnd: "",
+      dateStart: moment().format("DD-MM-YYYY"),
+      dateEnd: moment().format("DD-MM-YYYY"),
       colorTag: "#50e2c3ff",
       token: "",
       title: null,
@@ -236,14 +220,15 @@ class ScheduleTypeA extends Component {
     if (min <= 9) {
       min = "0" + min;
     }
+    if (fiveMin <= 9) {
+      fiveMin = "0" + fiveMin;
+    }
 
     let newDate =
       ("0" + date).slice(-2) + "-" + ("0" + (month + 1)).slice(-2) + "-" + year;
     let newTimeStart = hours + ":" + min;
 
     let newTimeEnd = hours + ":" + fiveMin;
-    this.setState({ dateStart: newDate });
-    this.setState({ dateEnd: newDate });
     this.setState({ timeStart: newTimeStart, timeEnd: newTimeEnd });
   }
   handleDateStart = (e) => {
@@ -332,8 +317,7 @@ class ScheduleTypeA extends Component {
     this.pushEvent(members, event);
   }
   pushEvent(members, event) {
-    const yourEmail = this.props.global.account;
-    let push = pushEvent(yourEmail, members, event).then((resolve) => {
+    let push = pushEvent(members, event).then((resolve) => {
       this.setState({ uploadEvent: false });
       resolve(this.props.navigation.goBack());
     });
@@ -367,12 +351,30 @@ class ScheduleTypeA extends Component {
   setTheme(theme, color) {
     this.props.setTheme(theme, color);
   }
+
+  getStore = async () => {
+    try {
+      let value = await AsyncStorage.getItem("@storage_Key");
+      if (value !== null) {
+        // We have data!!
+        let data = JSON.parse(value);
+        console.log("storage recibido", data);
+        this.props.global.setFriends([data.user]);
+      } else {
+        console.log("nullstore");
+      }
+    } catch (error) {
+      // Error retrieving data
+    }
+  };
+
   componentDidMount() {
     this._isMounted = true;
 
     if (this._isMounted) {
       this.currentDate();
       this.generate_token(8);
+      this.getStore();
     }
   }
   componentWillUnmount() {
@@ -491,12 +493,10 @@ class ScheduleTypeA extends Component {
   }
 
   render() {
-    const currentDate = this.state.dateCurrent;
     const songs = this.props.global.songs;
     const songsDb = this.props.global.songsDb;
     const switchState = this.state.switch;
     let friends = this.props.global.friends;
-    /* console.log("currentDate", this.state.dateStart) */
     return (
       <Container>
         {this.state.uploadEvent ? (

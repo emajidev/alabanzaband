@@ -7,17 +7,18 @@ import {
   TouchableOpacity,
   AsyncStorage,
   Alert,
-  TouchableHighlight, SafeAreaView
+  TouchableHighlight,
+  SafeAreaView,
 } from "react-native";
 
 import { YellowBox } from "react-native";
-import List from "./List";
+import ListSong from "./ListSong";
 import CalendarEvents from "./CalendarEvents";
 import Contacts from "./contacts/Contacts";
 import Icon2 from "react-native-vector-icons/FontAwesome";
 import ItemComponent from "../components/ItemComponent";
 import IconsV from "react-native-vector-icons/AntDesign";
-import { select_avatarUri } from './SqliteDateBase'
+import { select_avatarUri } from "./SqliteDateBase";
 
 import { withNavigation } from "react-navigation";
 
@@ -25,14 +26,15 @@ import * as firebase from "firebase/app";
 import { db } from "./firebase.js";
 
 import getTheme from "../../native-base-theme/components";
-import Base64 from 'Base64'
+import Base64 from "Base64";
 
-import { PreloadContacts } from './preload/PreloadComponents'
-import { chanelNotifications, SendNotificationSchedule } from './notifications/Notifications'
+import { PreloadContacts } from "./preload/PreloadComponents";
+import {
+  chanelNotifications,
+  SendNotificationSchedule,
+} from "./notifications/Notifications";
 
-const Preload = () => (
-  <PreloadContacts />
-);
+const Preload = () => <PreloadContacts />;
 import {
   Container,
   Content,
@@ -53,17 +55,17 @@ import {
   Footer,
   StyleProvider,
   Drawer,
-  Badge
+  Badge,
 } from "native-base";
 import { Col, Row, Grid } from "react-native-easy-grid";
 
 import SideBar from "./sidebar/Sidebar";
 import UserContext from "./UserContext";
-import ListNotification from "./ListNotification"
+import ListNotification from "./ListNotification";
 let songsRef = db.ref("/songs");
 var storageRef = firebase.storage().ref();
 var mountainImagesRef = storageRef.child("../img/icon.jpg");
-import { withGlobalContext } from './UserContext';
+import { withGlobalContext } from "./UserContext";
 
 class Home extends React.Component {
   static contextType = UserContext;
@@ -79,100 +81,65 @@ class Home extends React.Component {
       songs: null,
       refreshCalendar: false,
       infoTask: [],
-      badge:false,
-      text: ''
-
+      badge: false,
+      text: "",
     };
   }
 
   EventNotificationAlert() {
-    let user = { email: 'emanuelyul@hotmail.com' }
-    console.log("firebase", user)
-    let email
+    let user = { email: "emanuelyul@hotmail.com" };
+    console.log("firebase", user);
+    let email;
     if (user != null) {
       email = user.email;
-      let itemsRef = db.ref('/users/user' + Base64.btoa(email) + '/' + 'events')
-      itemsRef.limitToLast(1).on('child_added', snapshot => {
+      let itemsRef = db.ref(
+        "/users/user" + Base64.btoa(email) + "/" + "events"
+      );
+      itemsRef.limitToLast(1).on("child_added", (snapshot) => {
         // ultimo evento compartido
-        this.events(itemsRef)
+        this.events(itemsRef);
         let data = snapshot.val();
         if (data != null) {
-          let obj = Object.values(data)
-          console.log("child added2",data)
-          this.setBadge(true)
-          this.getStorageTask([data])
-
+          let obj = Object.values(data);
+          console.log("task", data);
+          this.setBadge(true);
+          this.getStorageTask([data]);
         }
-
       });
-
     }
   }
 
   async events(itemsRef) {
-    let data = []
+    let data = [];
     try {
-      itemsRef.orderByChild("dateStart").once('value', snapshot => {
-        snapshot.forEach(child => {
-          data.push(child.val())
-        })
+      itemsRef.orderByChild("dateStart").once("value", (snapshot) => {
+        snapshot.forEach((child) => {
+          data.push(child.val());
+        });
         if (data != null) {
-          let obj = Object.values(data)
-          this.setState({ infoTask: obj })
+          let obj = Object.values(data);
+          this.setState({ infoTask: obj });
         }
       });
-    } catch (e) {
-
-    }
+    } catch (e) {}
   }
-  async storageTask(tasks){
-      try {
-        await AsyncStorage.setItem('@storage_task', JSON.stringify(tasks));
-      } catch (err) {
-        console.log(err);
-      }
-  }
-  async getStorageTask(dataTask){
+  async storageTask(tasks) {
     try {
-      console.log("con eventos2")
-      let value = await AsyncStorage.getItem("@storage_task");
-      if (value != null) {
-        let tasks = JSON.parse(value);
-
-        dataTask.forEach((newItem,index)=>{
-          let count = 0
-          for (let index = 0; index < tasks.length; index++){
-            console.log("mapeo", newItem.uid , tasks[index].uid)
-
-          if(newItem.uid === tasks[index].uid){
-              count++;
-            } else{ count=0}
-          }
-          if(count == 0){
-            console.log("index este es el nuevo2",index,newItem.title, newItem.dateStart)
-            this.LocalNotificationEventsSchedule(newItem.title, newItem.dateStart)
-            this.LocalNotificationEventsSchedule(newItem.title, newItem.dateEnd)
-          
-          }else{
-            console.log("macheados",count, index)
-          }
-        })
-       
-      } 
-    } catch (e) {
-      // Error retrieving data
-      console.log("error",e)
-      dataTask.forEach((item)=>{
-        console.log("erritemor2",item)
-        this.LocalNotificationEventsSchedule(item.title, item.dateStart)
-        this.LocalNotificationEventsSchedule(item.title, item.dateEnd)
-      })
+      await AsyncStorage.setItem("@storage_task", JSON.stringify(tasks));
+    } catch (err) {
+      console.log(err);
     }
+  }
+  async getStorageTask(dataTask) {
+    dataTask.forEach((item) => {
+      console.log("local", item);
+      SendNotificationSchedule(item.title, item.dateStart);
+    });
   }
 
   songsBd() {
     let itemsRef = db.ref("/songs");
-    itemsRef.on("value", snapshot => {
+    itemsRef.on("value", (snapshot) => {
       let data = snapshot.val();
       if (data !== null) {
         let songs = Object.values(data);
@@ -181,14 +148,14 @@ class Home extends React.Component {
     });
   }
   LocalNotificationEventsSchedule(title, timestamp) {
-    SendNotificationSchedule(title, timestamp)
-    console.log("llegada de infor",title, timestamp)
+    SendNotificationSchedule(title, timestamp);
+    console.log("llegada de infor", title, timestamp);
   }
 
   componentDidMount() {
     chanelNotifications();
 
-    this.EventNotificationAlert()
+    this.EventNotificationAlert();
     const color = this.context;
     this.setState({ context: color });
     //.log("context", user); // { name: 'Tania', loggedIn: true }
@@ -200,19 +167,18 @@ class Home extends React.Component {
   openDrawer() {
     this.drawer._root.open();
   }
-  asyncChange = async tab => {
+  asyncChange = async (tab) => {
     if (tab == 2) {
-      await   this.props.navigation.navigate("NewEvent");
+      await this.props.navigation.navigate("NewEvent");
       this.setState({ activeTab: 0 });
     }
-    if(tab == 1){
+    if (tab == 1) {
       await this.setState({ activeTab: 1 });
-      this.setBadge(false)
+      this.setBadge(false);
     }
-
   };
   setBadge(e) {
-    this.setState({badge:e})
+    this.setState({ badge: e });
   }
   render() {
     console.disableYellowBox = true;
@@ -222,7 +188,7 @@ class Home extends React.Component {
     return (
       <StyleProvider style={getTheme(this.props.global.color.theme)}>
         <Drawer
-          ref={ref => {
+          ref={(ref) => {
             this.drawer = ref;
           }}
           content={<SideBar navigator={this.navigator} />}
@@ -230,7 +196,13 @@ class Home extends React.Component {
           panCloseMask={0}
         >
           <Container>
-            <Header style={{ paddingTop: StatusBar.currentHeight + 15, marginBottom: 5, elevation: 0, }}>
+            <Header
+              style={{
+                paddingTop: StatusBar.currentHeight + 15,
+                marginBottom: 5,
+                elevation: 0,
+              }}
+            >
               <Left style={{ flex: 0.5 }}>
                 <Button transparent onPress={() => this.openDrawer()}>
                   <Icon name="md-list" />
@@ -240,7 +212,7 @@ class Home extends React.Component {
                 style={{
                   flex: 3,
                   justifyContent: "center",
-                  alignItems: "center"
+                  alignItems: "center",
                 }}
               >
                 <Title style={{ letterSpacing: 5 }}>alabanzaband</Title>
@@ -249,7 +221,7 @@ class Home extends React.Component {
                 <Button
                   transparent
                   onPress={() => {
-                    this.props.navigation.navigate('ListChat')
+                    this.props.navigation.navigate("ListChat");
                   }}
                 >
                   <Icon name="md-chatbubbles" />
@@ -262,8 +234,9 @@ class Home extends React.Component {
               tabBarPosition={"bottom"}
               initialPage={this.state.initialPage}
               page={this.state.activeTab}
-              onChangeTab={e => {
-                this.asyncChange(e.i);}}
+              onChangeTab={(e) => {
+                this.asyncChange(e.i);
+              }}
             >
               <Tab
                 heading={
@@ -274,29 +247,40 @@ class Home extends React.Component {
               >
                 {/* //component A  */}
 
-                <CalendarEvents infoTask={this.state.infoTask} text={this.state.text} />
+                <CalendarEvents
+                  infoTask={this.state.infoTask}
+                  text={this.state.text}
+                />
               </Tab>
               <Tab
-           
                 heading={
                   <TabHeading>
                     {this.state.badge ? (
                       <Badge style={{ height: 12 }} />
                     ) : (
-                        console.log("")
-                      )}
+                      console.log("")
+                    )}
                     <Icon name="md-bookmark" />
                   </TabHeading>
                 }
               >
                 {/* //component B */}
-                <ListNotification infoTask={this.state.infoTask}/>
+                <ListNotification infoTask={this.state.infoTask} />
               </Tab>
 
               <Tab
                 heading={
-                  <Button transparent onPress={() => this.props.navigation.navigate("NewEvent")}>
-                    <Icon style={{ fontSize: 40, color: [this.props.global.color.color] }} name="ios-add-circle" />
+                  <Button
+                    transparent
+                    onPress={() => this.props.navigation.navigate("NewEvent")}
+                  >
+                    <Icon
+                      style={{
+                        fontSize: 40,
+                        color: [this.props.global.color.color],
+                      }}
+                      name="ios-add-circle"
+                    />
                   </Button>
                 }
               ></Tab>
@@ -309,15 +293,20 @@ class Home extends React.Component {
               >
                 {/*  //component C  */}
 
-                {this.state.songs != null ? (<List songs={this.state.songs} hide={false} category={true} />) :
-                  (
-                    <SafeAreaView style={styles.cont}>
-                      <Preload />
-                      <Preload />
-                      <Preload />
-                      <Preload />
-                    </SafeAreaView>
-                  )}
+                {this.state.songs != null ? (
+                  <ListSong
+                    songs={this.state.songs}
+                    hide={false}
+                    category={true}
+                  />
+                ) : (
+                  <SafeAreaView style={styles.cont}>
+                    <Preload />
+                    <Preload />
+                    <Preload />
+                    <Preload />
+                  </SafeAreaView>
+                )}
               </Tab>
               <Tab
                 heading={
@@ -337,18 +326,17 @@ class Home extends React.Component {
     );
   }
 }
-export default  withNavigation(withGlobalContext(Home));
+export default withNavigation(withGlobalContext(Home));
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'flex-start',
+    justifyContent: "flex-start",
     marginTop: StatusBar.currentHeight + 15,
-
   },
   cont: {
-    height: '100%',
-    alignItems: 'center',
-    padding: 10
-  }
+    height: "100%",
+    alignItems: "center",
+    padding: 10,
+  },
 });
