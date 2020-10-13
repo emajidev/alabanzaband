@@ -30,6 +30,8 @@ import Chat from "./src/components/chat/Chat.js";
 import ListChat from "./src/components/chat/ListChat.js";
 import ViewerNotification from "./src/components/notifications/ViewerNotification";
 import CommentViewer from "./src/components/comments/CommentViewer";
+
+import Settings from "./src/components/sidebar/Settings";
 const AppNavigator = createStackNavigator(
   {
     Loading: { screen: Loading },
@@ -62,6 +64,7 @@ const AppNavigator = createStackNavigator(
     AdminDashboard: { screen: AdminDashboard },
     Suggestion: { screen: Suggestion },
     ShowSuggestion: { screen: ShowSuggestion },
+    Settings: { screen: Settings },
   },
   { headerMode: "none", initialRouteName: "Main" }
 );

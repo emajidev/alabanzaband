@@ -1,11 +1,51 @@
 [
-    {
-        "name": "Selecciona tu Rol en la banda"
-    },
-    {
-        "name": "Baterista"
-    },
-    {
-        "name": "Guitarrista"
-    }
+  {
+    "name": "Selecciona tu Rol en la banda"
+  },
+  {
+    "name": "Pianistas"
+  },
+  {
+    "name": "Baterista"
+  },
+  {
+    "name": "Bajistas"
+  },
+  {
+    "name": "Saxofonistas"
+  },
+  {
+    "name": "Violín-Viola"
+  },
+  {
+    "name": "Guitarrista eléctrico"
+  },
+  {
+    "name": "Guitarrista acústico"
+  },
+  {
+    "name": "Requinto"
+  },
+  {
+    "name": "Congas"
+  },
+  {
+    "name": "Timbal"
+  },
+  {
+    "name": "Acordeón"
+  },
+  {
+    "name": "Caja"
+  },
+  {
+    "name": "Guacharaca"
+  },
+  {
+    "name": "Flauta"
+  },
+  {
+    "name": "Charango"
+  }
 ]
+

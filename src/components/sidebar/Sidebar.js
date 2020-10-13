@@ -155,14 +155,18 @@ class Sidebar extends Component {
     console.log("refre", this.state.refresh);
     return (
       <StyleProvider style={getTheme(color.theme)}>
-        <Container>
+        <Container
+          style={{
+            backgroundColor: "white",
+          }}
+        >
           <Header
             style={{
-              backgroundColor: [this.props.global.color.color],
               height: 450,
               paddingLeft: 0,
               paddingRight: 0,
               paddingBottom: 0,
+              elevation: 0,
             }}
           >
             <Content contentContainerStyle={{ flex: 1 }}>
@@ -315,38 +319,12 @@ class Sidebar extends Component {
                         * cuenta: {this.state.dataUser.user}
                       </Text>
                     </View>
-
-                    {/*         <Text style={{ color: "#fff", marginTop: 5, fontSize: 12 }}>
-                      telefono: {phone}
-                    </Text> */}
                   </Col>
                 </Row>
               </Grid>
             </Content>
           </Header>
-
-          <Tabs tabContainerStyle={{ elevation: 0 }}>
-            <Tab
-              heading={
-                <TabHeading>
-                  <Icon name="ios-options" />
-                  <Text>Opciones</Text>
-                </TabHeading>
-              }
-            >
-              <Options />
-            </Tab>
-            <Tab
-              heading={
-                <TabHeading>
-                  <Icon name="ios-settings" />
-                  <Text>Ajustes</Text>
-                </TabHeading>
-              }
-            >
-              <Settings />
-            </Tab>
-          </Tabs>
+          <Options />
         </Container>
       </StyleProvider>
     );

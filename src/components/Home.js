@@ -14,6 +14,7 @@ import {
 import { YellowBox } from "react-native";
 import ListSong from "./ListSong";
 import CalendarEvents from "./CalendarEvents";
+import PublishContent from "./community/PublishContent";
 import Contacts from "./contacts/Contacts";
 import Icon2 from "react-native-vector-icons/FontAwesome";
 import ItemComponent from "../components/ItemComponent";
@@ -317,7 +318,7 @@ class Home extends React.Component {
               >
                 {/* //component D   */}
 
-                <Contacts theme={this.props.global.color.theme} />
+                <PublishContent />
               </Tab>
             </Tabs>
           </Container>

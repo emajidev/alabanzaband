@@ -48,6 +48,13 @@ class Options extends Component {
           >
             <Text>Chats</Text>
           </Button>
+          <Button
+            transparent
+            onPress={() => this.props.navigation.navigate("Settings")}
+          >
+            <Text>Configuracion</Text>
+          </Button>
+
           <Button transparent>
             <Text>Ayuda</Text>
           </Button>
