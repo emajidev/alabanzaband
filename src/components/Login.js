@@ -245,11 +245,17 @@ const styles = StyleSheet.create({
   },
   btn_sesion: {
     backgroundColor: "#10cb42",
-    marginTop: 20,
+    marginTop: 40,
     width: "80%",
     height: 50,
+    borderRadius: 50,
     justifyContent: "center",
     alignItems: "center",
+    flexDirection: "row",
+    shadowColor: "#000",
+    shadowOffset: { width: 2, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 10,
   },
   btn_facebook: {
     backgroundColor: "#235e86",

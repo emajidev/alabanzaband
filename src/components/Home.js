@@ -317,8 +317,9 @@ class Home extends React.Component {
                 }
               >
                 {/* //component D   */}
+                <Contacts theme={this.props.global.color.theme} />
 
-                <PublishContent />
+                {/*<PublishContent /> */}
               </Tab>
             </Tabs>
           </Container>
