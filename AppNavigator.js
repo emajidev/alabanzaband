@@ -30,8 +30,15 @@ import Chat from "./src/components/chat/Chat.js";
 import ListChat from "./src/components/chat/ListChat.js";
 import ViewerNotification from "./src/components/notifications/ViewerNotification";
 import CommentViewer from "./src/components/comments/CommentViewer";
-
+import YourProfile from "./src/components/profile/YourProfile"
+import ExternalProfile from "./src/components/profile/ExternalProfile"
+import MenuBand from "./src/components/Band/MenuBand"
+import CreateBand from "./src/components/Band/CreateBand"
+import JoinBand from "./src/components/Band/JoinBand"
+import BandProfile from "./src/components/Band/BandProfile";
 import Settings from "./src/components/sidebar/Settings";
+import ScheduleEvents from "./src/components/scheduledEvents/ScheduleEvents";
+
 const AppNavigator = createStackNavigator(
   {
     Loading: { screen: Loading },
@@ -65,6 +72,13 @@ const AppNavigator = createStackNavigator(
     Suggestion: { screen: Suggestion },
     ShowSuggestion: { screen: ShowSuggestion },
     Settings: { screen: Settings },
+    YourProfile:{screen:YourProfile},
+    ExternalProfile:{screen:ExternalProfile},
+    MenuBand:{screen:MenuBand},
+    CreateBand:{screen:CreateBand},
+    JoinBand:{screen:JoinBand},
+    BandProfile:{screen:BandProfile},
+    ScheduleEvents:{screen:ScheduleEvents}
   },
   { headerMode: "none", initialRouteName: "Main" }
 );

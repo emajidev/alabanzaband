@@ -1,604 +1,465 @@
-import React, { Component, useState } from "react";
-import {
-  StyleSheet,
-  View,
-  Text,
-  Modal,
-  StatusBar,
-  Image,
-  ImageBackground,
-  FlatList,
-  Animated,
-} from "react-native";
+import React, { Component } from "react";
+import { StyleSheet, View, Text, Animated, Alert } from "react-native";
 import { Dimensions } from "react-native";
+const { width, height } = Dimensions.get("window");
 
-import CodeCountries from "../codeCountries/CodeCountries";
-import Rol from "../codeCountries/Rol";
-import { AsyncStorage } from "react-native";
-import Base64 from "Base64";
-import MusicIcon from "react-native-vector-icons/FontAwesome";
-
-import {
-  Container,
-  Header,
-  Content,
-  Form,
-  Item,
-  Input,
-  Icon,
-  Label,
-  Spinner,
-  Card,
-  CardItem,
-  Body,
-  Switch,
-  ListItem,
-  Left,
-  Right,
-} from "native-base";
-import { Grid, Col, Button, Footer } from "native-base";
+import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
+import Welcome from "./forms/Welcome";
+import PersonalInformation from "./forms/PersonalInformation";
+import MusicalInformation from "./forms/MusicalInformation";
+import ChurchInformation from "./forms/ChurchInformation";
+import ContactInformation from "./forms/ContactInformation";
+import MusicSelect from "./forms/MusicSelect";
 import * as firebase from "firebase/app";
+import Base64 from "Base64";
 import { db } from "../firebase.js";
+const screenWidth = Dimensions.get("window").width;
 
 export default class Performer extends Component {
-  constructor() {
-    super();
+  scrollX = new Animated.Value(0);
+  constructor(props) {
+    super(props);
+    this.dataForm = this.dataForm.bind(this);
+    this.setName = this.setName.bind(this);
+    this.setLastName = this.setLastName.bind(this);
+    this.setBirthDate = this.setBirthDate.bind(this);
+    this.setMusicalInstrument = this.setMusicalInstrument.bind(this);
+    this.setMusicianLicense = this.setMusicianLicense.bind(this);
+    this.setTypeOfLicense = this.setTypeOfLicense.bind(this);
+    this.setIpucSite = this.setIpucSite.bind(this);
+    this.setAdministrativePastor = this.setAdministrativePastor.bind(this);
+    this.setContactPhone = this.setContactPhone.bind(this);
+    this.setAboutYou = this.setAboutYou.bind(this);
+
+    this.setModal = this.setModal.bind(this);
     this.state = {
-      language: "",
+      data: [],
+      disableNext:false,
       name: "",
-      code: "",
-      phone: null,
-      rol: "",
-      next: false,
-      loading: false,
-      user: "",
-      list: [],
-      selectedChurch: "",
-      animate: new Animated.Value(2000),
-      animateXY: new Animated.ValueXY({ x: 0, y: 0 }),
+      lastName: "",
+      birthDate: "",
+      musicalInstrument: [],
+      musicianLicense: false,
+      typeOfLicense: "",
+      ipucSite: "",
+      administrativePastor: "",
+      contactPhone: "",
+      aboutYou: "",
+      indicator: "Siguiente",
+      count: 0,
+      pos: "20%",
+      xPosition: new Animated.Value(-10 + (width * 30) / 100),
+      size: new Animated.Value(1),
     };
   }
-
-  handlerRol = (param) => {
-    this.setState({
-      rol: param,
-    });
-  };
-
-  storeData = async (phone, nick, user, rol, data) => {
-    data = {
-      phone: phone,
-      user: user,
-      nick: nick,
-      rol: rol,
-      director: data.director,
-      church: data.church,
-      directorName: data.nick,
-    };
-    try {
-      await AsyncStorage.setItem("@storage_Key", JSON.stringify(data));
-      console.log("storage enviado", data);
-    } catch (e) {
-      // saving error
-      console.log("error en store", e);
-    }
-  };
-  componentDidMount() {
-    this.dataAccount();
-    this.getChurchesList();
-  }
-  getChurchesList() {
-    db.ref("/churches").on("value", (snapshot) => {
-      var li = [];
-      snapshot.forEach((child) => {
-        li.push({
-          key: child.key,
-          church: child.val().church,
-          address: child.val().address,
-          nick: child.val().nick,
-          code: child.val().code,
-          director: child.val().user,
-        });
-      });
-      console.log("li", snapshot);
-      this.setState({ list: li });
-    });
-  }
-  dataAccount() {
-    var currentUser = firebase.auth().currentUser;
-    this.setState({ user: currentUser.email });
-    this.setState({ phone: currentUser.phoneNumber });
-    console.log("datos de cuenta iniciada", currentUser);
-  }
-  addUser = (user, rol, data) => {
-    var currentUser = firebase.auth().currentUser;
-    let convertMd5 = Base64.btoa(currentUser.email);
-    db.ref("/users/user" + convertMd5 + "/profile").set({
-      user: currentUser.email,
-      nick: user,
-      numberPhone: currentUser.phoneNumber,
-      rol: rol,
-      director: data.director,
-      church: data.church,
-      directorName: data.nick,
-    });
-  };
-  addMember = (data, name, user) => {
-    let convertMd5Member = Base64.btoa(user);
-    let convertMd5Director = Base64.btoa(data.director);
-    db.ref(
-      "/churches/user" +
-        convertMd5Director +
-        "/members/user" +
-        convertMd5Member +
-        "/"
-    ).set({
-      name: name,
-      userName: user,
-    });
-  };
-  makeRandomColor() {
-    let symbols = "0123456789ABCDEF";
-    let color = "#";
-    for (var i = 0; i < 6; i++) {
-      color = color + symbols[Math.floor(Math.random() * 16)];
-    }
-    return color;
-  }
-
-  handleNext = () => {
-    this.setState({ loading: true });
-    setTimeout(() => {
-      this.storeData(
-        this.state.phone,
-        this.state.name,
-        this.state.user,
-        this.state.rol,
-        this.state.selectedChurch
-      );
-      this.addUser(this.state.name, this.state.rol, this.state.selectedChurch),
-        this.props.navigation.navigate("Main");
-      this.addMember(
-        this.state.selectedChurch,
-        this.state.name,
-        this.state.user
-      );
-      //local db sqlite - create db to initial
-    }, 200);
-  };
-  openMenu() {
-    Animated.sequence([]);
-    Animated.timing(this.state.animate, {
-      toValue: 0,
-      duration: 500,
+  animationXpos(w) {
+    Animated.timing(this.state.xPosition, {
+      toValue: w,
+      duration: 200,
+      useNativeDriver: true,
+      modal: false,
     }).start();
   }
-  closeMenu() {
-    Animated.sequence([]);
-    Animated.timing(this.state.animate, {
-      toValue: Dimensions.get("window").height,
-      duration: 500,
-    }).start();
+  //animation
+  animationSize(s) {
+    Animated.sequence([
+      Animated.timing(this.state.size, {
+        toValue: 0.5,
+        duration: 80,
+        useNativeDriver: true,
+      }),
+      Animated.timing(this.state.size, {
+        toValue: 1,
+        duration: 80,
+        useNativeDriver: true,
+      }),
+      Animated.timing(this.state.size, {
+        toValue: 0.8,
+        duration: 80,
+        useNativeDriver: true,
+      }),
+      Animated.timing(this.state.size, {
+        toValue: 1.2,
+        duration: 80,
+        useNativeDriver: true,
+      }),
+      Animated.timing(this.state.size, {
+        toValue: 0.7,
+        duration: 80,
+        useNativeDriver: true,
+      }),
+      Animated.timing(this.state.size, {
+        toValue: 1,
+        duration: 80,
+        useNativeDriver: true,
+      }),
+    ]).start();
   }
-  Loading = () => {
-    return (
-      <View
-        style={{
-          flex: 1,
-          width: "100%",
-          height: "100%",
-          justifyContent: "center",
-          alignItems: "center",
-          position: "absolute",
-          zIndex: 2,
-          left: 0,
-          right: 0,
-          backgroundColor: "#ffffffcd",
-        }}
-      >
-        <Spinner color="rgba(80,227,194,1)" />
+  dataForm(e) {
+    this.setState({ data: e });
+  }
+  setName(e) {
+    this.setState({ name: e });
+  }
+  setLastName(e) {
+    this.setState({ lastName: e });
+  }
+  setBirthDate(e) {
+    this.setState({ birthDate: e });
+  }
+  setMusicalInstrument(e) {
+    this.setState({ musicalInstrumen: e });
+  }
+  setMusicianLicense(e) {
+    this.setState({ musicianLicense: e });
+  }
+  setTypeOfLicense(e) {
+    this.setState({ typeOfLicense: e });
+  }
+  setIpucSite(e) {
+    this.setState({ ipucSite: e });
+  }
+  setAdministrativePastor(e) {
+    this.setState({ administrativePastor: e });
+  }
+  setContactPhone(e) {
+    this.setState({ contactPhone: e });
+  }
+  setAboutYou(e) {
+    this.setState({ aboutYou: e });
+  }
+  async _scroll(count, data) {
+    let porcent;
+    console.log("condition1", count);
+    try{
+      let { name, lastName, birthDate } = data;
+      let condition1 = name != "" && lastName != "" && birthDate != "";
+      if (count == 0) {
+        porcent = -10 + (width * 30) / 100;
+        this.scroll.scrollTo({ x: 0 });
+        this.setState({ pos: "0%" });
+        this.animationXpos(porcent);
+        this.animationSize(20);
+  
+      }
+      if (count == 1) {
+        porcent = -10 + (width * 40) / 100;
+        this.scroll.scrollTo({ x: screenWidth });
+        this.setState({ pos: "40%" });
+        this.animationXpos(porcent);
+        this.animationSize(20);
+  
+      }
+    if (count == 2) {
+        console.log("ver codificion")
+        if (condition1) {
+          porcent = -10 + (width * 50) / 100;
+          this.scroll.scrollTo({ x: screenWidth * 2 });
+          this.setState({ pos: "50%" });
+          this.animationXpos(porcent);
+          this.animationSize(20);
+        } else {
+          Alert.alert("Alto!", "Debe completar todos los datos para continuar");
+          this.setState({count:1})
+        } 
+      }
+      if (count == 3) {
+        porcent = -10 + (width * 60) / 100;
+        this.scroll.scrollTo({ x: screenWidth * 3 });
+        this.setState({ pos: "60%" });
+        this.animationXpos(porcent);
+        this.animationSize(20);
+      }
+      if (count == 4) {
+        porcent = -10 + (width * 70) / 100;
+  
+        this.scroll.scrollTo({ x: screenWidth * 4 });
+        this.setState({ indicator: "Terminar" });
+        this.setState({ pos: "70%" });
+        this.animationXpos(porcent);
+        this.animationSize(20);
+      }
+      if (count == 5) {
+        console.log("terminar");
+        this.setUser(data);
+      }
+    }catch(e){
+      console.log("error incrment",e)
+    }
+/*   
+  
+  
+    if (count == 4) {
+      this.props.navigation.navigate("FinishProfile");
+      this.handleNext();
+    } */
+  }
+  
+async increment(data) {
+    if (this.state.count <= 5) {
+      let next = await this.state.count+1;
+      await this.setState({ count:next});
+      this._scroll(next,data);
+    }
+  }
+async decrement(data) {
 
-        <Text
-          style={{
-            fontSize: 14,
-            margin: 20,
-            letterSpacing: 15,
-            color: "rgba(80,227,194,1)",
-          }}
-        >
-          cargando
-        </Text>
-      </View>
-    );
-  };
+    if (this.state.count >=0) {
+      let back = await this.state.count-1;
+      await this.setState({ count: back });
+      console.log("back",back)
+      this._scroll(back, data);
 
+      //this.backScroll(back);
+    }
+  }
+  setModal(e) {
+    this.setState({ modal: e });
+  }
+  
+  async setUser(data) {
+    let currentUser = await firebase.auth().currentUser;
+    let convertMd5 = await Base64.btoa(currentUser.email);
+    await db.ref("/users/user" + convertMd5 + "/profile").set(data);
+    this.props.navigation.navigate("FinishProfile");
+    
+  }
+/*   handleNext() {
+    this.setUser();
+  } */
   render() {
-    let name = this.state.name;
-    let code = this.state.code;
-    let phone = this.state.phone;
-    let rol = this.state.rol;
-    let selectedChurch = this.state.selectedChurch;
-    let next = false;
+    let instruments = typeof(this.props.navigation.state.params)=='undefined' ? false : this.props.navigation.state.params
 
-    const fullNumber = code + phone;
-    if (rol.length != 0 && name.length != 0 && selectedChurch.length != 0) {
-      console.log("numero", fullNumber);
-      next = true;
-    }
-
+    const data = {
+      name: this.state.name,
+      lastName: this.state.lastName,
+      birthDate: this.state.birthDate,
+      musicalInstrument: instruments.instruments,
+      musicianLicense: this.state.musicianLicense,
+      typeOfLicense: this.state.typeOfLicense,
+      ipucSite: this.state.ipucSite,
+      administrativePastor: this.state.administrativePastor,
+      contactPhone: this.state.contactPhone,
+      aboutYou: this.state.aboutYou,
+    };
+    //console.log("instruments",instruments)
     return (
-      <Container
-        style={{
-          paddingLeft: 0,
-          paddingRight: 0,
-          paddingTop: 0,
-          paddingBottom: 0,
-        }}
-      >
-        {this.state.loading == true
-          ? this.Loading()
-          : console.log("loading true")}
+      <View style={styles.container}>
+        {this.state.modal && (
+          <View style={styles.modal}>
+            <MusicSelect setModal={this.setModal} />
+          </View>
+        )}
 
-        <Content>
-          <StatusBar backgroundColor={"#fff"} barStyle="dark-content" />
-
-          {next == true ? (
-            <Text
-              style={{
-                color: "rgb(255, 209, 41)",
-                marginTop: 50,
-                fontSize: 20,
-                textAlign: "center",
-              }}
-            >
-              Completo
-            </Text>
-          ) : (
-            <Text
-              style={{
-                color: "rgba(80,227,194,1)",
-                marginTop: 50,
-                fontSize: 22,
-                textAlign: "center",
-              }}
-            >
-              Completa tu perfil
-            </Text>
-          )}
-
-          <Form style={{ marginBottom: 50 }}>
-            <Item
-              floatingLabel
-              style={{ borderColor: "rgba(80,227,194,1)", marginBottom: 10 }}
-            >
-              <Label style={{ fontSize: 16, color: "#000" }}>Nombre</Label>
-              <Input
-                onChangeText={(name) => this.setState({ name })}
-                value={this.state.name}
-                placeholder="Nombre"
-                style={{
-                  marginTop: 15,
-                  color: "rgba(80,227,194,1)",
-                  fontSize: 16,
-                }}
-                placeholderTextColor="rgba(80,227,194,1)"
-              />
-            </Item>
-            <Item
-              floatingLabel
-              style={{ borderColor: "rgba(80,227,194,1)", marginBottom: 10 }}
-            >
-              <Label style={{ fontSize: 16, color: "#000" }}>Apellido</Label>
-              <Input
-                onChangeText={(name) => this.setState({ name })}
-                value={this.state.name}
-                placeholder="Apellido"
-                style={{
-                  marginTop: 15,
-                  color: "rgba(80,227,194,1)",
-                  fontSize: 16,
-                }}
-                placeholderTextColor="rgba(80,227,194,1)"
-              />
-            </Item>
-
-            <Item style={{ borderWidth: 0, marginBottom: 10 }}>
-              <Rol handlerRol={this.handlerRol} />
-            </Item>
-
-            <Text
-              style={{
-                fontSize: 16,
-                color: "#000",
-                marginLeft: 15,
-                marginBottom: 15,
-              }}
-            >
-              Sede Ipuc a la que Asistes
-            </Text>
-
-            <Button
-              style={{
-                fontSize: 16,
-                marginLeft: 15,
-                elevation: 0,
-                width: "100%",
-                backgroundColor: "#fff",
-                borderBottomColor: "rgba(80,227,194,1)",
-                borderBottomWidth: 1,
-              }}
-              onPress={() => {
-                this.openMenu();
-              }}
-            >
-              {this.state.selectedChurch.length != 0 ? (
-                <Text style={{ fontSize: 16, color: "rgba(80,227,194,1)" }}>
-                  {this.state.selectedChurch.church}
-                </Text>
-              ) : (
-                <Text style={{ fontSize: 16, color: "rgba(80,227,194,1)" }}>
-                  Elije tu Iglesia
-                </Text>
-              )}
-            </Button>
-            <Item
-              floatingLabel
-              style={{ borderColor: "rgba(80,227,194,1)", marginBottom: 10 }}
-            >
-              <Label style={{ fontSize: 16, color: "#000" }}>
-                Pastor Administrativo
-              </Label>
-              <Input
-                onChangeText={(name) => this.setState({ name })}
-                value={this.state.name}
-                placeholder="Pastor Administrativo"
-                style={{
-                  marginTop: 15,
-                  color: "rgba(80,227,194,1)",
-                  fontSize: 16,
-                }}
-                placeholderTextColor="rgba(80,227,194,1)"
-              />
-            </Item>
-            <ListItem icon>
-              <Left>
-                <Button style={{ backgroundColor: "#FF9501" }}>
-                  <Icon active name="airplane" />
-                </Button>
-              </Left>
-              <Body>
-                <Text>Director de banda</Text>
-              </Body>
-              <Right>
-                <Switch value={false} />
-              </Right>
-            </ListItem>
-            <Item
-              floatingLabel
-              style={{ borderColor: "rgba(80,227,194,1)", marginBottom: 10 }}
-            >
-              <Label style={{ fontSize: 16, color: "#000" }}>
-                Nombre de la banda
-              </Label>
-              <Input
-                onChangeText={(name) => this.setState({ name })}
-                value={this.state.name}
-                placeholder="Nombre de la banda"
-                style={{
-                  marginTop: 15,
-                  color: "rgba(80,227,194,1)",
-                  fontSize: 16,
-                }}
-                placeholderTextColor="rgba(80,227,194,1)"
-              />
-            </Item>
-
-            <ListItem icon>
-              <Left>
-                <Button style={{ backgroundColor: "#FF9501" }}>
-                  <Icon active name="airplane" />
-                </Button>
-              </Left>
-              <Body>
-                <Text>Director de grupo de Alabanza</Text>
-              </Body>
-              <Right>
-                <Switch value={false} />
-              </Right>
-            </ListItem>
-            <ListItem icon>
-              <Left>
-                <Button style={{ backgroundColor: "#FF9501" }}>
-                  <Icon active name="airplane" />
-                </Button>
-              </Left>
-              <Body>
-                <Text>Licencia de musico</Text>
-              </Body>
-              <Right>
-                <Switch value={false} />
-              </Right>
-            </ListItem>
-
-            <Item
-              floatingLabel
-              style={{ borderColor: "rgba(80,227,194,1)", marginBottom: 10 }}
-            >
-              <Label style={{ fontSize: 16, color: "#000" }}>
-                Numero de telefono
-              </Label>
-              <Input
-                onChangeText={(name) => this.setState({ name })}
-                value={this.state.name}
-                placeholder="Numero de telefono"
-                style={{
-                  marginTop: 15,
-                  color: "rgba(80,227,194,1)",
-                  fontSize: 16,
-                }}
-                placeholderTextColor="rgba(80,227,194,1)"
-              />
-            </Item>
-            <Item
-              floatingLabel
-              style={{ borderColor: "rgba(80,227,194,1)", marginBottom: 10 }}
-            >
-              <Label style={{ fontSize: 16, color: "#000" }}>Sobre ti </Label>
-              <Input
-                onChangeText={(name) => this.setState({ name })}
-                value={this.state.name}
-                placeholder="Escrbe un breve resumen "
-                style={{
-                  marginTop: 15,
-                  color: "rgba(80,227,194,1)",
-                  fontSize: 16,
-                }}
-                placeholderTextColor="rgba(80,227,194,1)"
-              />
-            </Item>
-          </Form>
-          <Button
-            style={next == false ? styles.inactive : styles.active}
-            onPress={() => {
-              next == true ? this.handleNext() : console.log("falso");
-            }}
-          >
-            {/* <Icon style={{ color: "#fff", fontSize: 50 }} name="ios-checkmark" /> */}
-            <Text style={{ opacity: 0.2, fontSize: 20, letterSpacing: 2 }}>
-              continuar
-            </Text>
-          </Button>
-        </Content>
-        <Animated.View
-          style={{
-            position: "absolute",
-            width: "100%",
-            height: "100%",
-            backgroundColor: "#F9F9F9",
-            zIndex: 999,
-            elevation: 1,
-            transform: [{ translateY: this.state.animate }],
+        <Text>{this.state.data[0]}</Text>
+        <ScrollView
+          horizontal={true}
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.ScrollViewContainer}
+          scrollEventThrottle={16}
+          decelerationRate="fast"
+          pagingEnabled
+          scrollEnabled={true}
+          ref={(re) => {
+            this.scroll = re;
           }}
         >
-          <Text
-            style={{
-              fontSize: 24,
-              textAlign: "center",
-              margin: 10,
-              color: "rgba(80,227,194,1)",
-            }}
-          >
-            Lista de Canales
-          </Text>
-          <Text
-            style={{
-              fontSize: 15,
-              textAlign: "center",
-              margin: 10,
-              color: "rgba(80,227,194,1)",
-              opacity: 0.8,
-            }}
-          >
-            Aqui encontraras las diferentes iglesias creadas por tus directores
-          </Text>
-          <FlatList
-            style={{ width: "100%" }}
-            data={this.state.list}
-            keyExtractor={(item) => item.key}
-            renderItem={({ item, index }) => {
-              return (
-                <View>
-                  <Button
-                    style={{
-                      backgroundColor: "#fff",
-                      padding: 20,
-                      height: 80,
-                      width: "100%",
-                    }}
-                    onPress={() => {
-                      this.setState({ selectedChurch: item }),
-                        this.closeMenu(),
-                        console.log("selectedChurch", item);
-                    }}
-                  >
-                    <View
-                      style={{
-                        height: "100%",
-                        width: "100%",
-                        flexDirection: "row",
-                        justifyContent: "space-between",
-                      }}
-                    >
-                      <View
-                        style={{
-                          justifyContent: "center",
-                          alignItems: "center",
-                          width: "20%",
-                          height: "100%",
-                          borderRadius: 5,
-                          opacity: 0.95,
-                          backgroundColor: this.makeRandomColor(),
-                        }}
-                      >
-                        <Text style={{ fontWeight: "bold", color: "#fff" }}>
-                          {item.code.substr(0, 3) +
-                            " " +
-                            item.code.substr(3, 5)}
-                        </Text>
-                      </View>
-                      <View style={{ width: "80%", marginLeft: 10 }}>
-                        <Text style={{ fontSize: 18 }}>
-                          Director {item.nick}{" "}
-                        </Text>
-                        <Text style={styles.colorText}>
-                          Iglesia {item.church}{" "}
-                        </Text>
-                        <Text style={styles.colorText}>{item.address} </Text>
-                      </View>
-                    </View>
-                  </Button>
-                </View>
-              );
-            }}
-          />
-        </Animated.View>
-      </Container>
+          <View style={[styles.container, styles.items]}>
+            <Welcome />
+          </View>
+          <View style={[styles.container, styles.items]}>
+            <PersonalInformation
+              setName={this.setName}
+              setLastName={this.setLastName}
+              setBirthDate={this.setBirthDate}
+            />
+          </View>
+          <View style={[styles.container, styles.items]}>
+            <MusicalInformation
+              setModal={this.setModal}
+              setMusicianLicense={this.setMusicianLicense}
+              setTypeOfLicense={this.setTypeOfLicense}
+              instruments={instruments}
+            />
+          </View>
+          <View style={[styles.container, styles.items]}>
+            <ChurchInformation
+              setIpucSite={this.setIpucSite}
+              setAdministrativePastor={this.setAdministrativePastor}
+            />
+          </View>
+          <View style={[styles.container, styles.items]}>
+            <ContactInformation
+              setContactPhone={this.setContactPhone}
+              setAboutYou={this.setAboutYou}
+            />
+          </View>
+        </ScrollView>
+        <View style={styles.indicatorContainer}>
+          <Animated.View
+            style={[
+              styles.indicatorPoint,
+              {
+                transform: [
+                  {
+                    translateX: this.state.xPosition,
+                  },
+                  {
+                    scaleX: this.state.size,
+                  },
+                  {
+                    scaleY: this.state.size,
+                  },
+                ],
+              },
+            ]}
+          ></Animated.View>
+          <View style={styles.line}></View>
+          <View
+            style={[
+              styles.point,
+              {
+                transform: [{ translateX: -10 + (width * 30) / 100 }],
+              },
+            ]}
+          ></View>
+          <View
+            style={[
+              styles.point,
+              {
+                transform: [{ translateX: -10 + (width * 40) / 100 }],
+              },
+            ]}
+          ></View>
+          <View
+            style={[
+              styles.point,
+              {
+                transform: [{ translateX: -10 + (width * 50) / 100 }],
+              },
+            ]}
+          ></View>
+          <View
+            style={[
+              styles.point,
+              {
+                transform: [{ translateX: -10 + (width * 60) / 100 }],
+              },
+            ]}
+          ></View>
+          <View
+            style={[
+              styles.point,
+              {
+                transform: [{ translateX: -10 + (width * 70) / 100 }],
+              },
+            ]}
+          ></View>
+          <View style={this.state.count >= 1? styles.next : styles.initialNext }>
+          {this.state.count >= 1 && (
+              <TouchableOpacity
+              //style={{opacity:[this.state.disableNext ? 1 : 0.2]}}
+              style={styles.btn_next}
+              disabled={this.state.disableNext}
+              onPress={() => {
+                this.decrement(data);
+              }}
+            >
+              <Text >Atras</Text>
+            </TouchableOpacity>
+            )
+
+            }
+            <TouchableOpacity
+              //style={{opacity:[this.state.disableNext ? 1 : 0.2]}}
+              style={styles.btn_next}
+              disabled={this.state.disableNext}
+              onPress={() => {
+                this.increment(data);
+              }}
+            >
+              <Text >{this.state.indicator}</Text>
+            </TouchableOpacity>
+           
+          </View>
+        </View>
+      </View>
     );
   }
 }
 const styles = StyleSheet.create({
-  inactive: {
-    elevation: 0,
+  container: {
+    flex: 1,
+    paddingTop: 50,
+  },
+  items: {
+    width,
+    height,
+  },
+  initialNext:{
     width: "100%",
-    height: 50,
-    alignSelf: "center",
-    justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#d5d5d5",
-    opacity: 0.4,
+    justifyContent: "center",
   },
-  colorText: {
-    color: "#888",
+  btn_next:{
+    height:32,
+    padding:10,
+    borderRadius:20,
+    justifyContent:"center",
+    backgroundColor:"#f3f3f3"
   },
-  active: {
-    elevation: 0,
+  next:{
     width: "100%",
-    height: 50,
-    alignSelf: "center",
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(80,227,194,1)",
+    justifyContent: "space-between",
+    flexDirection:"row",
+    paddingLeft:20,
+    paddingRight:20,
   },
-  TrapezoidStyle: {
+  indicatorContainer: {
     position: "absolute",
-    width: 200,
-    height: 0,
-    bottom: "-10%",
-    borderBottomColor: "#fff",
-    borderBottomWidth: 100,
-    borderLeftWidth: 96,
-    borderRightWidth: 96,
-    borderRightColor: "transparent",
-    borderLeftColor: "transparent",
+    width: "100%",
+    height: 85,
+    alignItems: "center",
+    justifyContent: "center",
+    transform: [{ translateY: height - 50 }],
+  },
+  indicatorPoint: {
+    width: 25,
+    height: 25,
+    top: 0,
+    left: 0,
+    backgroundColor: "#50e2c3ff",
+    borderRadius: 20,
+    position: "absolute",
+    zIndex: 99,
+  },
+  point: {
+    width: 20,
+    height: 20,
+    top: 2,
+    left: 0,
+    backgroundColor: "#E4E4E4",
+    borderRadius: 20,
+    position: "absolute",
+  },
+  ScrollViewContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  line: {
+    position: "absolute",
+    top: 10,
+    width: "40%",
+    height: 5,
+    backgroundColor: "#E4E4E4",
+  },
+  modal: {
+    position: "absolute",
+    zIndex: 999,
+    top: 0,
+    width,
+    height,
+    paddingTop: 50,
+    backgroundColor: "#fff",
   },
 });

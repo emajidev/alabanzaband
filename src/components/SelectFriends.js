@@ -91,16 +91,21 @@ class SelectFriends extends React.Component {
   }
   getData = async () => {
     try {
-      let account = firebase.auth().currentUser.email;
-      account = Base64.btoa(account);
+      let email = firebase.auth().currentUser.email;
+      let account = Base64.btoa(email);
 
-      console.log("cuenta2", account);
+      console.log("cuenta2",account, email);
       let itemsRef = db.ref("/users/user" + account + "/contacts");
       itemsRef.on("value", (snapshot) => {
+        console.log("contactos nulos", snapshot.val()===null);
+
+        if(snapshot.val()===null)return;
+
         let data = snapshot.val();
         let items = Object.values(data);
         console.log("contactos", items);
         this.setState({ items });
+        
       });
     } catch (e) {
       // error reading value

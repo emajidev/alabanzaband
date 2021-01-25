@@ -26,6 +26,7 @@ const styles = StyleSheet.create({
     marginTop: StatusBar.currentHeight,
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor:"transparent"
   },
   content: {
     flex: 6,
@@ -67,7 +68,7 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
   },
   btn_sesion: {
-    backgroundColor: "#10cb42",
+    backgroundColor: "rgba(80,227,194,1)",
 
     marginTop: 40,
     width: "80%",
@@ -161,4 +162,3 @@ const navbarStyles = StyleSheet.create({
   },
 });
 export { styles, navbarStyles };
-

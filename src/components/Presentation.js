@@ -5,6 +5,7 @@ import {
   Text,
   AsyncStorage,
   View,
+  Image,
   TouchableOpacity,
   Alert,
 } from "react-native";
@@ -98,98 +99,111 @@ export default class Login extends React.Component {
       } else {
         // type === 'cancel'
       }
-    } catch ({ message }) {
-      alert(`Facebook Login Error: ${message}`);
+    } catch (error) {
+      console.log("Facebook Login Error", error);
+      Alert.alert("Error 400",":( Lo sentimos ha ocurrido un error inesperado")
     }
   }
 
   render() {
     return (
       <View style={styles.container}>
-        <View style={styles.header}>
-          <Text
-            style={{
-              color: "#4b5b68",
-              fontSize: 25,
-              fontStyle: "italic",
-              letterSpacing: 5,
-              fontWeight: "bold",
-            }}
-          >
-            AlabanzaBand
-          </Text>
-        </View>
-        <View style={styles.content}>
-          {/* <ImageBackground source={require('../img/bg.jpg')} style={localStyles.background} > */}
-
-          <Text
-            style={{
-              color: "white",
-              width: "80%",
-              marginBottom: 40,
-              fontSize: 14,
-              fontWeight: "bold",
-              letterSpacing: 2,
-              fontStyle: "italic",
-              textAlign: "center",
-            }}
-          >
-            Ingresa tu cuenta y disfruta de tu repertorio
-          </Text>
-          {this.state.errorMessage && (
-            <Text style={{ color: "#fff" }}>
-              datos invalidos{this.state.errorMessage}
-              {console.log(this.state.errorMessage)}
-            </Text>
-          )}
-
-          <TouchableOpacity style={styles.btn_sesion} onPress={this._Login}>
-            <Text style={{ color: "#fff", fontSize: 15, fontWeight: "bold" }}>
-              Accede con tu correo electrónico
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.btn_accept}
-            onPress={this.handleLoginFacebook}
-          >
-            <Icon
-              name="facebook"
-              color="#fff"
-              size={20}
-              style={{ position: "absolute", left: 0, marginLeft: 30 }}
-            ></Icon>
+        <ImageBackground
+          source={require("../img/bgmusic.jpg")}
+          style={localStyles.background}
+        >
+          <View style={styles.header}>
             <Text
               style={{
-                fontSize: 15,
-                color: "#fff",
+                color: "rgba(80,227,194,1)",
+                fontSize: 25,
+                fontStyle: "italic",
+                letterSpacing: 5,
                 fontWeight: "bold",
-                paddingLeft: 5,
               }}
             >
-              Iniciar con Facebook
+              AlabanzaBand
             </Text>
-          </TouchableOpacity>
-          <View style={{ marginTop: 20, alignItems: "center" }}>
-            <TouchableOpacity
-              onPress={() => this.props.navigation.navigate("SignUp")}
-              style={{ alignItems: "center" }}
+          </View>
+          <View style={styles.content}>
+            <Image
+              style={{
+                width: 200,
+                height: 200,
+                margin: 0,
+              }}
+              source={require("../img/logo.png")}
+            />
+            <Text
+              style={{
+                color: "rgba(80,227,194,1)",
+                width: "80%",
+                marginBottom: 40,
+                fontSize: 14,
+                fontWeight: "bold",
+                letterSpacing: 2,
+                fontStyle: "italic",
+                textAlign: "center",
+              }}
             >
-              <View
+              Ingresa tu cuenta y disfruta de los ensayos con tu banda musical
+            </Text>
+            {this.state.errorMessage && (
+              <Text style={{ color: "#f45" }}>
+                datos invalidos{this.state.errorMessage}
+                {console.log(this.state.errorMessage)}
+              </Text>
+            )}
+
+            <TouchableOpacity style={styles.btn_sesion} onPress={this._Login}>
+              <Text style={{ color: "#fff", fontSize: 15, fontWeight: "bold" }}>
+                Accede con tu correo electrónico
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.btn_accept}
+              onPress={this.handleLoginFacebook}
+            >
+              <Icon
+                name="facebook"
+                color="#fff"
+                size={20}
+                style={{ position: "absolute", left: 0, marginLeft: 30 }}
+              ></Icon>
+              <Text
                 style={{
-                  flexDirection: "row",
-                  width: "80%",
-                  textAlign: "center",
+                  fontSize: 15,
+                  color: "#fff",
+                  fontWeight: "bold",
+                  paddingLeft: 5,
                 }}
               >
-                <Text style={{ color: "#ddd", fontSize: 16, marginTop: 15 }}>
-                  ¿No tienes una cuenta?, toca aqui para{" "}
-                  <Text style={{ color: "#10cb42" }}>crear una cuenta...</Text>
-                </Text>
-              </View>
+                Iniciar con Facebook
+              </Text>
             </TouchableOpacity>
+            <View style={{ marginTop: 20, alignItems: "center" }}>
+              <TouchableOpacity
+                onPress={() => this.props.navigation.navigate("SignUp")}
+                style={{ alignItems: "center" }}
+              >
+                <View
+                  style={{
+                    flexDirection: "row",
+                    width: "80%",
+                    textAlign: "center",
+                  }}
+                >
+                  <Text style={{ color: "#ddd", fontSize: 16, marginTop: 15 }}>
+                    ¿No tienes una cuenta?, toca aqui para{" "}
+                    <Text style={{ color: "rgba(80,227,194,1)" }}>
+                      crear una cuenta...
+                    </Text>
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            </View>
           </View>
-          {/* </ImageBackground> */}
-        </View>
+        </ImageBackground>
       </View>
     );
   }

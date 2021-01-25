@@ -27,10 +27,10 @@ class Contacts extends React.Component {
       <View style={styles.container}>
         <View style={styles.header} >
           <View style={{ flex: 1, justifyContent: 'flex-start' }}>
-            <Text style={styles.title}> Miembros</Text>
+            <Text style={styles.title}> Contactos</Text>
           </View>
           <View style={styles.iconnavbar}>
-          {/* {this.addContacts()} */}
+          {this.addContacts()}
           </View>
         </View>
         <View style={styles.body} >

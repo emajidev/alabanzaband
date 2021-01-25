@@ -1,19 +1,18 @@
 import { db } from "../firebase";
-import md5 from "md5";
-import Base64 from "Base64";
-
+//import md5 from "md5";
 import * as firebase from "firebase/app";
+import Base64 from "Base64";
 
 export async function pushEvent(members, event) {
   try {
     members.map((friend, index) => {
       //buzon de recibido
 
-      const yourEmail = firebase.auth().currentUser.email;
-      const decoYourEmail = Base64.atob(yourEmail);
+      let yourEmail = firebase.auth().currentUser.email;
+      let convertMd5 = Base64.btoa(yourEmail);
 
       console.log("data fire", yourEmail, members, event);
-      let status = decoYourEmail == friend ? "accept" : "waiting";
+      let status = convertMd5 == friend ? "accept" : "waiting";
       const arrival = db.ref("/users/user" + Base64.btoa(friend) + "/events");
       if (event.type === "timeline") {
         arrival
@@ -83,3 +82,4 @@ export async function removeEvent(yourEmail, id) {
     console.log("error remove event", error);
   }
 }
+

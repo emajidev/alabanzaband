@@ -8,76 +8,39 @@ import Icon from 'react-native-vector-icons/FontAwesome5';
 
 class CacheImage extends React.Component {
     state = {
-        source: null,
-        refresh: false,
-        uri: null
+        uriPhoto: ""
     }
-    async cache_img() {
-        let uri = this.props.uri
-        if (uri != null) {
-            const email = this.props.global.account
-            const name = shorthash.unique(uri)
-            const path = FileSystem.cacheDirectory + name
-            const image = await FileSystem.getInfoAsync(path);
-            if (image.exists) {
-                this.setState({
-                    source: {
-                        uri: image.uri
-                    }
-                })
-                return;
-            } else {
-                const newImage = await FileSystem.downloadAsync(uri, path)
-                    .then(({ uri }) => {
-                        this.setState({
-                            source: { uri: uri }
-                        })
-                        if (uri != null) {
-                            this.pushPersistense(uri)
-                        }
-
-                    })
-                    .catch(error => {
-                        console.error(error);
-                    });
-            }
-        }
-    }
-    async pushPersistense(uri) {
-        await AsyncStorage.setItem("avatar", uri)
-         
-    }
-    async getPersistense(uri) {
-        let daaPersist = await AsyncStorage.getItem("avatar")
-            .then((uri) => {
-                if (uri != null) {
-                    this.setState({
-                        source: { uri: uri }
-                    })
-                }
-            })
-    }
-
+    
     componentDidMount() {
-        if (this.props.uri == null) {
-            this.getPersistense()
-        } else { this.cache_img() }
-
+    
+        this.photoProfile()
 
     }
-
+    photoProfile() {
+        let email =  firebase.auth().currentUser.email;
+        let convertMd5 = Base64.btoa(email);
+        firebase
+          .storage()
+          .ref()
+          .child("uploads/photo" + convertMd5 + ".jpg")
+          .getDownloadURL()
+          .then((url) => {
+            console.log("URL",url)
+            this.setState({ uriPhoto: url });
+          })
+          .catch((e) => {
+            console.log("no hay foto de perfil");
+          });
+      }
     render() {
-/*         "https://firebasestorage.googleapis.com/v0/b/alabanzaband.appspot.com/o/uploads%2Fphotof1d948141c3c7b78ff5d2fab5c0123ff.jpg?alt=media&token=ac5104b4-5250-4e6a-b126-bdb395aa35c8"
- */        const uri = this.props.uri
-
+        const uri = this.props.uri
         return (
             <View>
                 {
                     this.state.source != null ? (
-                        <Image style={{ width: 150, height: 150, borderRadius: 400 }} source={this.state.source} />
+                        <Image style={{ width: 150, height: 150, borderRadius: 400 }} source={this.state.uriPhoto} />
                     ) : (
                             <View style={{ width: 150, height: 150, borderRadius: 400, backgroundColor: "#fff", alignItems: 'center', justifyContent: 'center', opacity: 1 }} >
-                                {/*  <Spinner color="rgba(80,227,194,1)" /> */}
                                 <Icon
                                     name='user-alt'
                                     color='#717070'

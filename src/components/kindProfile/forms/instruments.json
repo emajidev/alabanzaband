@@ -1,0 +1,63 @@
+[
+  {
+    "name": "Pianistas",
+    "id":"1"
+  },
+  {
+    "name": "Baterista",
+    "id":"2"
+  },
+  {
+    "name": "Bajistas",
+    "id":"3"
+  },
+  {
+    "name": "Saxofonistas",
+    "id":"4"
+  },
+  {
+    "name": "Violín-Viola",
+    "id":"5"
+  },
+  {
+    "name": "Guitarra eléctrico",
+    "id":"6"
+  },
+  {
+    "name": "Guitarra acústico",
+    "id":"7"
+  },
+  {
+    "name": "Requinto",
+    "id":"8"
+  },
+  {
+    "name": "Congas",
+    "id":"9"
+  },
+  {
+    "name": "Timbal",
+    "id":"10"
+  },
+  {
+    "name": "Acordeón",
+    "id":"11"
+  },
+  {
+    "name": "Caja",
+    "id":"12"
+  },
+  {
+    "name": "Guacharaca",
+    "id":"13"
+  },
+  {
+    "name": "Flauta",
+    "id":"14"
+  },
+  {
+    "name": "Charango",
+    "id":"15"
+  }
+]
+

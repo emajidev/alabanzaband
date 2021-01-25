@@ -9,6 +9,10 @@ import Login from "./src/components/Login.js";
 import FormProfile from "./src/components/FormProfile";
 import Director from "./src/components/kindProfile/Director";
 import Performer from "./src/components/kindProfile/Performer";
+import MusicSelect from "./src/components/kindProfile/forms/MusicSelect";
+import MusicalInformation from "./src/components/kindProfile/forms/MusicalInformation";
+
+import FinishProfile from "./src/components/kindProfile/forms/FinishProfile"
 import RecoverPassword from "./src/components/RecoverPassword";
 const AuthNavigation = createStackNavigator(
   {
@@ -19,7 +23,10 @@ const AuthNavigation = createStackNavigator(
     RecoverPassword: { screen: RecoverPassword },
     FormProfile: { screen: FormProfile },
     Performer: { screen: Performer },
+    MusicSelect:{screen:MusicSelect},
+    MusicalInformation:{screen:MusicalInformation},
     Director: { screen: Director },
+    FinishProfile:{screen:FinishProfile}
   },
   { headerMode: "none", initialRouteName: "Presentation" }
 );

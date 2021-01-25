@@ -3,7 +3,6 @@ import { Text, View, StatusBar } from "react-native";
 import { Container, Header, StyleProvider, Body, Content, Footer, FooterTab, Tabs, Tab, TabHeading } from 'native-base';
 import { withGlobalContext } from './UserContext';
 import ScheduleTypeA from './scheduledEvents/ScheduleTypeA'
-import ScheduleTypeB from './scheduledEvents/ScheduleTypeB'
 import getTheme from "../../native-base-theme/components";
 import Icon from 'react-native-vector-icons/Feather';
 import themeA from '../../native-base-theme/variables/themeA';
@@ -78,7 +77,7 @@ class NewEvent extends Component {
 
     return (
       <Container>
-        <Header style={{ marginBottom: 20, elevation: 0 }} iosBarStyle={"dark-content"} >
+        <Header style={{ marginBottom: 20, elevation: 0, backgroundColor:"transparent" }} iosBarStyle={"dark-content"} >
           <StatusBar
             backgroundColor={this.state.colorTag}
             barStyle="light-content"

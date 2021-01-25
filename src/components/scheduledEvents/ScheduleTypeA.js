@@ -36,6 +36,7 @@ import { withNavigation } from "react-navigation";
 import AvatarComponent from "../avatar/AvatarComponent";
 import { showSongs } from "../functions/showSongs";
 import moment from "moment";
+import * as firebase from "firebase/app";
 
 var colorTags = [
   { color: "#50e2c3ff", theme: "themeA" },
@@ -316,11 +317,10 @@ class ScheduleTypeA extends Component {
     this.props.global.setCalendar(true);
     this.pushEvent(members, event);
   }
-  pushEvent(members, event) {
-    let push = pushEvent(members, event).then((resolve) => {
-      this.setState({ uploadEvent: false });
-      resolve(this.props.navigation.goBack());
-    });
+ async pushEvent(members, event) {
+    await pushEvent(members, event);
+    this.setState({ uploadEvent: false });
+    this.props.navigation.goBack()
   }
 
   handleTask() {
@@ -352,29 +352,14 @@ class ScheduleTypeA extends Component {
     this.props.setTheme(theme, color);
   }
 
-  getStore = async () => {
-    try {
-      let value = await AsyncStorage.getItem("@storage_Key");
-      if (value !== null) {
-        // We have data!!
-        let data = JSON.parse(value);
-        console.log("storage recibido", data);
-        this.props.global.setFriends([data.user]);
-      } else {
-        console.log("nullstore");
-      }
-    } catch (error) {
-      // Error retrieving data
-    }
-  };
-
   componentDidMount() {
     this._isMounted = true;
 
     if (this._isMounted) {
       this.currentDate();
       this.generate_token(8);
-      this.getStore();
+      const account = firebase.auth().currentUser.email;
+      this.props.global.setFriends([account]);
     }
   }
   componentWillUnmount() {

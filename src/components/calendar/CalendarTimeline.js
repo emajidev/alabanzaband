@@ -458,7 +458,6 @@ class CalendarTimeline extends React.Component {
             </View>
           </TouchableOpacity>
           <Text>
-            {" "}
             {this.monthSrt(this.state.currentMonth.month())} de{" "}
             {this.state.currentMonth.year()}{" "}
           </Text>

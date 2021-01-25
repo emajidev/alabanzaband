@@ -6,6 +6,9 @@ import UserContext from "../UserContext";
 import getTheme from "../../../native-base-theme/components";
 import { db } from '../firebase.js';
 import { withGlobalContext } from '../UserContext';
+import * as firebase from "firebase/app";
+
+import Base64 from "Base64";
 
 
  
@@ -37,9 +40,9 @@ class AddContacts extends Component {
    };
 
  addItem = async (userName,name,phoneContact,band) => {
-   console.log("cuenta",this.props.global.account)
-   let account = this.props.global.account
-   db.ref('/users/user'+ account +'/'+'contacts/').push({
+   let email =  firebase.auth().currentUser.email;
+   let convertMd5 = Base64.btoa(email);
+   db.ref('/users/user'+ convertMd5 +'/'+'contacts/').push({
       userName:userName,
       name: name,
       phoneContact:phoneContact,

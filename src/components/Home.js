@@ -17,12 +17,13 @@ import CalendarEvents from "./CalendarEvents";
 import PublishContent from "./community/PublishContent";
 import Contacts from "./contacts/Contacts";
 import Icon2 from "react-native-vector-icons/FontAwesome";
+import IconDirector from "react-native-vector-icons/Entypo";
 import ItemComponent from "../components/ItemComponent";
 import IconsV from "react-native-vector-icons/AntDesign";
 import { select_avatarUri } from "./SqliteDateBase";
-
+import ScheduleEvents from "./scheduledEvents/ScheduleEvents"
 import { withNavigation } from "react-navigation";
-
+import MenuBand from "./Band/MenuBand"
 import * as firebase from "firebase/app";
 import { db } from "./firebase.js";
 
@@ -78,21 +79,52 @@ class Home extends React.Component {
       tab2: false,
       tab3: false,
       tab4: false,
-      context: "",
       songs: null,
-      refreshCalendar: false,
-      infoTask: [],
       badge: false,
-      text: "",
+      text   : "",
+      context: "",
+      infoTask: [],
+      profile : {},
+      changeMod: false,
     };
   }
+  async profile_Information() {
+    try {
+      let yourEmail  = await firebase.auth().currentUser.email;
+      let convertMd5 = await Base64.btoa(yourEmail);
+      let ref = await db.ref("/users/user" + convertMd5);
+      await ref.on("value", (snapshot) => {
+        let data = snapshot.val();
 
+        if (data !== null) {
+          this.setState({profile:data.profile});
+          if(data.yourBands !== undefined){
+            let yourBands = Object.values(data.yourBands)
+            if( yourBands.length >= 1){
+              this.setState({changeMod:true});
+              console.log("yourBands",true)
+
+            }else{
+              this.setState({changeMod:false});
+              console.log("yourBands",false)
+            }
+          }
+          
+          this.setState({band:data});
+
+         
+
+        }
+      });
+    } catch (error) {
+      console.log("error remove event", error);
+    }
+  }
   EventNotificationAlert() {
-    let user = { email: "emanuelyul@hotmail.com" };
-    console.log("firebase", user);
+    let currentUser = firebase.auth().currentUser;
     let email;
-    if (user != null) {
-      email = user.email;
+    if (currentUser != null) {
+      email = currentUser.email;
       let itemsRef = db.ref(
         "/users/user" + Base64.btoa(email) + "/" + "events"
       );
@@ -155,7 +187,8 @@ class Home extends React.Component {
 
   componentDidMount() {
     chanelNotifications();
-
+    this.profile_Information()
+    console.log("changeMod",this.state.changeMod)
     this.EventNotificationAlert();
     const color = this.context;
     this.setState({ context: color });
@@ -169,14 +202,21 @@ class Home extends React.Component {
     this.drawer._root.open();
   }
   asyncChange = async (tab) => {
-    if (tab == 2) {
+    if(this.state.changeMod)
+    {
+      if (tab == 2) {
       await this.props.navigation.navigate("NewEvent");
       this.setState({ activeTab: 0 });
     }
+  }
+  if(this.state.changeMod){
     if (tab == 1) {
       await this.setState({ activeTab: 1 });
       this.setBadge(false);
     }
+  }
+
+ 
   };
   setBadge(e) {
     this.setState({ badge: e });
@@ -229,7 +269,13 @@ class Home extends React.Component {
                 </Button>
               </Right>
             </Header>
-
+           {/*  identificador */}
+           {this.state.changeMod&&(
+            <View style={styles.IconDirector}>
+              <IconDirector size={25} name="open-book" />
+            </View>
+           )}
+           
             <Tabs
               locked
               tabBarPosition={"bottom"}
@@ -247,11 +293,11 @@ class Home extends React.Component {
                 }
               >
                 {/* //component A  */}
-
-                <CalendarEvents
+                <ScheduleEvents infoTask={this.state.infoTask} text={this.state.text}/>
+              {/*      <CalendarEvents
                   infoTask={this.state.infoTask}
                   text={this.state.text}
-                />
+                /> */}
               </Tab>
               <Tab
                 heading={
@@ -266,10 +312,12 @@ class Home extends React.Component {
                 }
               >
                 {/* //component B */}
+                
                 <ListNotification infoTask={this.state.infoTask} />
               </Tab>
-
-              <Tab
+              
+              {(this.state.changeMod)&&
+                <Tab
                 heading={
                   <Button
                     transparent
@@ -278,13 +326,17 @@ class Home extends React.Component {
                     <Icon
                       style={{
                         fontSize: 40,
-                        color: [this.props.global.color.color],
+                        color:[this.props.global.color.color],
                       }}
                       name="ios-add-circle"
                     />
                   </Button>
                 }
               ></Tab>
+              }
+
+             
+
               <Tab
                 heading={
                   <TabHeading>
@@ -341,4 +393,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 10,
   },
+  IconDirector:{
+    position:"absolute",
+    left:"50%",
+    transform:[{translateX:-12}],
+    top:20
+
+  }
 });

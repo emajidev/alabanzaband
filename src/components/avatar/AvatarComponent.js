@@ -21,6 +21,7 @@ export default class AvatarComponent extends Component {
 
   avatar() {
     let email = Base64.btoa(this.props.email);
+
     firebase
       .storage()
       .ref()
@@ -28,6 +29,7 @@ export default class AvatarComponent extends Component {
       .getDownloadURL()
       .then((url) => {
         this.setState({ uri: url });
+        console.log("avatar",uri)
       })
       .catch((e) => {
         console.log("no hay foto de perfil");

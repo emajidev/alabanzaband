@@ -13,8 +13,10 @@ import { withNavigation } from "react-navigation";
 import { withGlobalContext } from "../UserContext";
 import { db } from "../firebase.js";
 import { PreloadContacts } from "../preload/PreloadComponents";
+import * as firebase from "firebase/app";
 
 import { filterData, SearchType } from "filter-data";
+import Base64 from "Base64";
 
 const Preload = () => <PreloadContacts />;
 
@@ -59,9 +61,11 @@ class ListContacts extends Component {
     this._isMounted = true;
   }
   getData = async () => {
-    let director = this.props.global.director;
+    let yourEmail  = await firebase.auth().currentUser.email;
+    let convertMd5 = await Base64.btoa(yourEmail);
+
     try {
-      let itemsRef = db.ref("/churches/user" + director + "/members");
+      let itemsRef = db.ref('/users/user'+ convertMd5 +'/'+'contacts/');
       itemsRef.on("value", (snapshot) => {
         let data = snapshot.val();
         if (data != null) {
@@ -115,7 +119,7 @@ class ListContacts extends Component {
                     opacity: 0.5,
                   }}
                 >
-                  No se han registrado integrantes por ahora ;({" "}
+                  No se han registrado contactos por ahora ;({" "}
                 </Text>
               </View>
             )}

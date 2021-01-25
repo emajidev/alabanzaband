@@ -220,13 +220,7 @@ class ShowProfile extends React.Component {
                 color='#000'
                 size={50}
               />
-              <Text style={{textAlign:'center',fontSize:20,margin:20}}>Datos de cuenta</Text>
             <View>
-              <Text style={{textAlign:'left',fontSize:16,margin:10,color:"#888"}}>Usuario: {this.state.email}</Text>
-              <Text style={{textAlign:'left',fontSize:16,margin:10,color:"#888"}}>Telefono: {this.state.phone}</Text>
-              <Text style={{textAlign:'left',fontSize:16,margin:10,color:"#888"}}>Id: user{this.state.phone}</Text>
-              <Text style={{textAlign:'left',fontSize:16,margin:10,color:"#888"}}>Rol musical: user{this.state.rol}</Text>
-
 
             </View>
              

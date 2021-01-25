@@ -13,10 +13,12 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 
 import Base64 from "Base64";
 import * as firebase from "firebase/app";
+import { db } from "./firebase";
 
 import { PushNotifications } from "./notifications/PushNotifications";
 import base64 from "Base64";
-
+import { Root } from 'native-base';
+import * as Font from 'expo-font';
 class Main extends React.Component {
   constructor() {
     super();
@@ -44,11 +46,16 @@ class Main extends React.Component {
   pushFetch() {
     PushNotifications(this.state.expoPushToken);
   }
-  componentDidMount() {
+  async componentDidMount() {
     this._isMounted = true;
     if (this._isMounted) {
       this.registerForPushNotificationsAsync();
       this.getStore();
+      this.store_profile_Information()
+      await Font.loadAsync({
+        Roboto: require('native-base/Fonts/Roboto.ttf'),
+        Roboto_medium: require('native-base/Fonts/Roboto_medium.ttf'),
+      });
       setTimeout(() => {
         this.setState({ loading: true });
       }, 5000);
@@ -56,6 +63,31 @@ class Main extends React.Component {
   }
   componentWillUnmount() {
     this._isMounted = false;
+  }
+  storeData = async (data) => {
+    try {
+      console.log("STORAGE",data)
+
+      await AsyncStorage.setItem(
+      'PROFILE_INFO',
+      JSON.stringify(data)
+      );
+    } catch (error) {
+      // Error saving data
+      console.log("ERROR EN GUARDAR EN STORAGE",error)
+    }
+  };
+  store_profile_Information() {
+      let yourEmail  =  firebase.auth().currentUser.email;
+      let convertMd5 =  Base64.btoa(yourEmail);
+      let ref =  db.ref("/uploads/photo" + convertMd5 + "/profile/");
+      ref.on("value", (snapshot) => {
+        let data = snapshot.val();
+        if (data !== null) {
+          this.storeData(data)
+        }
+      });
+  
   }
   registerForPushNotificationsAsync = async () => {
     if (Constants.isDevice) {
@@ -135,10 +167,10 @@ class Main extends React.Component {
         {this.state.loading == false
           ? this.Loading()
           : console.log("loading true")}
-        {/* <TouchableOpacity onPress={() => this.pushFetch()}>
-          <Text style={{ margin: 50 }}>agregar</Text>
-        </TouchableOpacity> */}
-        <Home />
+          <Root>
+            <Home />
+          </Root>
+
       </UserProvider>
     );
   }

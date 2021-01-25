@@ -23,8 +23,12 @@ import {
   Spinner,
 } from "native-base";
 import UserContext from "../UserContext";
+import { withNavigation } from "react-navigation";
+
 import * as ImagePicker from "expo-image-picker";
 import * as firebase from "firebase/app";
+import Base64 from "Base64";
+
 import storage from "firebase/storage";
 import { withGlobalContext } from "../UserContext";
 import { AppLoading } from "expo";
@@ -35,7 +39,8 @@ import { StyleSheet, StatusBar, AsyncStorage, Image, View } from "react-native";
 import Settings from "./Settings";
 import { insert_In_avatarUri, select_avatarUri } from "../SqliteDateBase";
 
-import CacheImage from "./CacheImage";
+import CacheImage from "../cacheImage/CacheImage";
+import { TouchableOpacity } from "react-native-gesture-handler";
 class Sidebar extends Component {
   static contextType = UserContext;
 
@@ -100,7 +105,10 @@ class Sidebar extends Component {
     });
   };
 
-  handleGetImages = (email) => {
+  handleGetImages = async() => {
+    let currentUser = await firebase.auth().currentUser;
+    let email = await Base64.btoa(currentUser.email);
+
     ImagePicker.launchImageLibraryAsync({
       mediaTypes: "Images",
       quality: 0.2,
@@ -148,7 +156,6 @@ class Sidebar extends Component {
   render() {
     const uri = this.state.urilink;
     const source = this.state.source;
-    const email = this.props.global.account;
     const uridefault = require("./icon.jpg");
     const { color, setColor } = this.context;
     const refreshAvatar = this.state.refreshAvatar;
@@ -162,7 +169,7 @@ class Sidebar extends Component {
         >
           <Header
             style={{
-              height: 450,
+              height: 340,
               paddingLeft: 0,
               paddingRight: 0,
               paddingBottom: 0,
@@ -210,7 +217,7 @@ class Sidebar extends Component {
                       ref="photo"
                       style={styles.imageSelect}
                       transparent
-                      onPress={() => this.handleGetImages(email)}
+                      onPress={() => this.handleGetImages()}
                     >
                       <Icon
                         style={{
@@ -233,7 +240,6 @@ class Sidebar extends Component {
                       style={{
                         alignItems: "center",
                         justifyContent: "center",
-                        marginTop: 10,
                       }}
                     >
                       <Text
@@ -251,74 +257,29 @@ class Sidebar extends Component {
                           color: "#000",
                           fontWeight: "bold",
                           opacity: 0.3,
-                          marginTop: 1,
+                          marginTop: 10,
                           fontSize: 14,
                         }}
                       >
-                        {this.state.dataUser.nick}
+                       asdas {this.state.dataUser.nick}
                       </Text>
                     </View>
 
-                    <View
+                    <Button
+                     
+                      transparent
                       style={{
-                        width: "100%",
+                        width: "90%",
                         padding: 10,
-                        backgroundColor: "rgba(255, 255, 255, 0.16)",
+                        backgroundColor: "#f8f8f8",
                         marginTop: 5,
+                        borderRadius:50,
+                        justifyContent:"center"
                       }}
+                      onPress={() => this.props.navigation.navigate("YourProfile")}
                     >
-                      <Text
-                        style={{
-                          color: "#000",
-                          opacity: 0.3,
-                          fontWeight: "bold",
-                          marginBottom: 5,
-                          fontSize: 14,
-                        }}
-                      >
-                        Datos de perfil
-                      </Text>
-                      <Text
-                        style={{
-                          color: "#000",
-                          opacity: 0.3,
-                          marginTop: 2,
-                          fontSize: 14,
-                        }}
-                      >
-                        * Director {this.state.dataUser.directorName}
-                      </Text>
-                      <Text
-                        style={{
-                          color: "#000",
-                          opacity: 0.3,
-                          marginTop: 2,
-                          fontSize: 14,
-                        }}
-                      >
-                        * Iglesia {this.state.dataUser.church}
-                      </Text>
-                      <Text
-                        style={{
-                          color: "#000",
-                          opacity: 0.3,
-                          marginTop: 2,
-                          fontSize: 14,
-                        }}
-                      >
-                        * Destreza: {this.state.dataUser.rol}
-                      </Text>
-                      <Text
-                        style={{
-                          color: "#000",
-                          opacity: 0.3,
-                          marginTop: 2,
-                          fontSize: 14,
-                        }}
-                      >
-                        * cuenta: {this.state.dataUser.user}
-                      </Text>
-                    </View>
+                    <Text style={{textAlign:"center"}}>Ver perfil</Text>   
+                    </Button>
                   </Col>
                 </Row>
               </Grid>
@@ -330,12 +291,12 @@ class Sidebar extends Component {
     );
   }
 }
-export default withGlobalContext(Sidebar);
+export default withNavigation(withGlobalContext(Sidebar));
 
 const styles = StyleSheet.create({
   imageSelect: {
     position: "absolute",
-    bottom: 0,
+    bottom: -25,
     elevation: 5,
     padding: 0,
     width: 55,

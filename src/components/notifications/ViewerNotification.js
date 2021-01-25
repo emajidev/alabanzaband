@@ -21,7 +21,7 @@ class ViewerNotification extends Component {
     render() {
         const songsDb = this.props.global.songsDb;
         const event = this.props.navigation.state.params.infoEvent
-        const director = Base64.atob(event.director)
+        const director =event.director
         const dateStart = showFormatHumman(event.dateStart)
         const dateEnd = showFormatHumman(event.dateEnd)
         const note = event.note
