@@ -2973,9 +2973,9 @@ dom-storage@2.1.0:
   integrity sha512-g6RpyWXzl0RR6OTElHKBl7nwnK87GUyZMYC7JWsB/IA73vpqK2K6LT39x4VepLxlSsWBFrPVLnsSR5Jyty0+2Q==
 
 dot-prop@^4.1.0:
-  version "4.2.0"
-  resolved "https://registry.yarnpkg.com/dot-prop/-/dot-prop-4.2.0.tgz#1f19e0c2e1aa0e32797c49799f2837ac6af69c57"
-  integrity sha512-tUMXrxlExSW6U2EXiiKGSBVdYgtV8qlHL+C10TsW4PURY/ic+eaysnSkwB4kA/mBlCyy/IKDJ+Lc3wbWeaXtuQ==
+  version "4.2.1"
+  resolved "https://registry.yarnpkg.com/dot-prop/-/dot-prop-4.2.1.tgz#45884194a71fc2cda71cbb4bceb3a4dd2f433ba4"
+  integrity sha512-l0p4+mIuJIua0mhxGoh4a+iNL9bmeK5DvnSVQa6T0OhrVmaEa1XScX5Etc673FePCJOArq/4Pa2cLGODUWTPOQ==
   dependencies:
     is-obj "^1.0.0"
 
@@ -3578,6 +3578,13 @@ fill-range@^7.0.1:
   integrity sha512-qOo9F+dMUmC2Lcb4BbVvnKJxTPjCm+RRpe4gDuGrzkL7mEVl/djYSu2OdQ2Pa302N4oqkSg9ir6jaLWJ2USVpQ==
   dependencies:
     to-regex-range "^5.0.1"
+
+filter-data@^0.1.3:
+  version "0.1.3"
+  resolved "https://registry.yarnpkg.com/filter-data/-/filter-data-0.1.3.tgz#211c9ff2126389263a6d51785df7392e0a8a30e2"
+  integrity sha512-NgRxWo4VnJ71ay7CZ9npLXrq4X4aeFdR6x72cs/sKzLYI+tkDkI8mO7zgulB7Wpj6duLzELIN0XeUDGfEKjKDw==
+  dependencies:
+    ramda "0.27.0"
 
 finalhandler@1.1.2:
   version "1.1.2"
@@ -4638,6 +4645,11 @@ jetifier@^1.6.2:
   resolved "https://registry.yarnpkg.com/jetifier/-/jetifier-1.6.5.tgz#ea87324a4230bef20a9651178ecab978ee54a8cb"
   integrity sha512-T7yzBSu9PR+DqjYt+I0KVO1XTb1QhAfHnXV5Nd3xpbXM6Xg4e3vP60Q4qkNU8Fh6PHC2PivPUNN3rY7G2MxcDQ==
 
+js-filter@^1.0.5:
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/js-filter/-/js-filter-1.0.5.tgz#f6cdbf7adbb0776e1b3286fa02dff7ab14544a9c"
+  integrity sha512-v5DfZVcSZ4Y9UrQrS9sxH8DLoLrIkrG8Q+0qpnsPDfShoT9iLVDvnziYNSdqiejGb5rXa6fMUZBIPrK8idg3Sw==
+
 "js-tokens@^3.0.0 || ^4.0.0", js-tokens@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/js-tokens/-/js-tokens-4.0.0.tgz#19203fb59991df98e3a287050d4647cdeaf32499"
@@ -5555,6 +5567,11 @@ node-fetch@^2.2.0, node-fetch@^2.5.0:
   version "2.6.0"
   resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-2.6.0.tgz#e633456386d4aa55863f676a7ab0daa8fdecb0fd"
   integrity sha512-8dG4H5ujfvFiqDmVu9fQ5bOHUC15JMjMY/Zumv26oOvvVJjM67KF8koCWIabKQ1GJIa9r2mMZscBq/TbdOcmNA==
+
+node-fetch@^2.6.1:
+  version "2.6.1"
+  resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-2.6.1.tgz#045bd323631f76ed2e2b55573394416b639a0052"
+  integrity sha512-V4aYg89jEoVRxRb2fJdAg8FHvI7cEyYdVAh94HH0UIK8oJxUfkjlDQN9RbMx+bEjP7+ggMiFRprSti032Oipxw==
 
 node-int64@^0.4.0:
   version "0.4.0"
@@ -6529,6 +6546,11 @@ raf@^3.1.0:
   dependencies:
     performance-now "^2.1.0"
 
+ramda@0.27.0:
+  version "0.27.0"
+  resolved "https://registry.yarnpkg.com/ramda/-/ramda-0.27.0.tgz#915dc29865c0800bf3f69b8fd6c279898b59de43"
+  integrity sha512-pVzZdDpWwWqEVVLshWUHjNwuVP7SfcmPraYuqocJp1yo2U1R7P+5QAfDhdItkuoGqIBnBYrtPp7rEPqDn9HlZA==
+
 range-parser@~1.2.1:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/range-parser/-/range-parser-1.2.1.tgz#3cf37023d199e1c24d1a55b84800c2f3e6468031"
@@ -6713,6 +6735,11 @@ react-native-iphone-x-helper@^1.0.3, react-native-iphone-x-helper@^1.2.0:
   resolved "https://registry.yarnpkg.com/react-native-iphone-x-helper/-/react-native-iphone-x-helper-1.2.1.tgz#645e2ffbbb49e80844bb4cbbe34a126fda1e6772"
   integrity sha512-/VbpIEp8tSNNHIvstuA3Swx610whci1Zpc9mqNkqn14DkMbw+ORviln2u0XyHG1kPvvwTNGZY6QpeFwxYaSdbQ==
 
+react-native-iphone-x-helper@^1.3.1:
+  version "1.3.1"
+  resolved "https://registry.yarnpkg.com/react-native-iphone-x-helper/-/react-native-iphone-x-helper-1.3.1.tgz#20c603e9a0e765fd6f97396638bdeb0e5a60b010"
+  integrity sha512-HOf0jzRnq2/aFUcdCJ9w9JGzN3gdEg0zFE4FyYlp4jtidqU03D5X7ZegGKfT1EWteR0gPBGp9ye5T5FvSWi9Yg==
+
 react-native-keyboard-aware-scroll-view@0.9.1:
   version "0.9.1"
   resolved "https://registry.yarnpkg.com/react-native-keyboard-aware-scroll-view/-/react-native-keyboard-aware-scroll-view-0.9.1.tgz#9e54b565a5f19b30bed12221d48921781f7630af"
@@ -6727,6 +6754,11 @@ react-native-lightbox@^0.8.1:
   integrity sha512-TFZA6iKEEHpAUIXjMTRb6vx0/9rHgEKy3ZBiRAy295PwldYg5c8opwnbyURLIl522ykeqhVx9uGdXjSMIowLvA==
   dependencies:
     prop-types "^15.7.2"
+
+react-native-masonry-layout@^1.0.6:
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/react-native-masonry-layout/-/react-native-masonry-layout-1.0.6.tgz#b0ac509fb22a07b1df91e91b7c56374251aa68e2"
+  integrity sha1-sKxQn7IqB7HfkekbfFY3QlGqaOI=
 
 react-native-material-menu@^1.0.0:
   version "1.1.3"
@@ -6770,6 +6802,13 @@ react-native-responsive-dimensions@^3.1.1:
   version "3.1.1"
   resolved "https://registry.yarnpkg.com/react-native-responsive-dimensions/-/react-native-responsive-dimensions-3.1.1.tgz#c4daf977b30a909f21164de53a8ba4c9451efefc"
   integrity sha512-Vo2OhWsphq0HgKsmeZOeyW+c+vsFn1ZaCFkGDgdeCEEiLriT76jGA1JlUjtrj27hvyo/xzeTlBZ+vBso1A84fw==
+
+react-native-responsive-fontsize@^0.5.0:
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/react-native-responsive-fontsize/-/react-native-responsive-fontsize-0.5.0.tgz#76940797bebdce146ead84beb4418fb14309c980"
+  integrity sha512-yeZ6ub1QhBmK5cwkj2+SzrcNOE5OXS9ritLDF3X7x7X6aRbOGXAOKQ7VoLnctOeLxJla98n+Fcs5+0rtvYwlBA==
+  dependencies:
+    react-native-iphone-x-helper "^1.3.1"
 
 react-native-safe-area-view@^0.14.9:
   version "0.14.9"
@@ -8173,6 +8212,11 @@ trim-x@^3.0.0:
   dependencies:
     trim-left-x "^3.0.0"
     trim-right-x "^3.0.0"
+
+ts-data-filter@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/ts-data-filter/-/ts-data-filter-1.0.1.tgz#3aef1085a191f99861fe0051695ebf60ade1939a"
+  integrity sha512-LstKgqwTJezpF9pHIeWtDJ+z0OerzDChN7y1rWCzLIBXCbuIXtoHlEx0nk7R33P+ligC6vEK7ZeZGoXPu+iymA==
 
 tslib@1.11.1:
   version "1.11.1"
