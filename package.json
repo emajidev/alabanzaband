@@ -40,7 +40,7 @@
     "pouchdb-react-native": "^6.4.1",
     "react": "16.9.0",
     "react-dom": "16.9.0",
-    "react-native": "0.61.4",
+    "react-native": "0.62.3",
     "react-native-alphabet-sectionlist": "0.0.4",
     "react-native-calendars": "^1.264.0",
     "react-native-country-code-list": "^1.1.2",
